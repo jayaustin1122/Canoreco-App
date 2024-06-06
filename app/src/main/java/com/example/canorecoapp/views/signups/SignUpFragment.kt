@@ -49,6 +49,7 @@ class SignUpFragment : Fragment() {
         adapter.addFragment(StepOneFragment())
         adapter.addFragment(StepTwoFragment())
         adapter.addFragment(StepThreeFragment())
+        adapter.addFragment(StepFourFragment())
         stepView.go(0, true)
         viewPager.isUserInputEnabled = false
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
