@@ -15,4 +15,9 @@
         tools:layout="@layout/fragment_sign_up"
         android:name="com.example.canorecoapp.views.signups.SignUpFragment"
         android:label="SignUpFragment" />
+    <fragment
+        android:id="@+id/signInFragment"
+        android:name="com.example.canorecoapp.views.SignInFragment"
+        android:label="fragment_sign_in"
+        tools:layout="@layout/fragment_sign_in" />
 </navigation>
