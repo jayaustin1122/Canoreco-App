@@ -21,24 +21,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:layout_marginTop="124dp"
+            android:layout_marginTop="10dp"
             android:gravity="center"
             android:text="CANORECO APP"
             android:textAlignment="center"
-            android:textColor="@color/g_green"
+            android:textColor="@color/black"
             android:textSize="35sp"
             app:layout_constraintEnd_toStartOf="@+id/guidelineLoginRight"
             app:layout_constraintStart_toStartOf="@id/guidelineLoginLeft"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/circleImageView" />
+
         <LinearLayout
             android:id="@+id/tvDontHaveAccount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             app:layout_constraintEnd_toStartOf="@+id/guidelineLoginRight"
             app:layout_constraintStart_toStartOf="@id/guidelineLoginLeft"
-            app:layout_constraintTop_toBottomOf="@id/tvLetsLogin"
-            android:orientation="horizontal"
-            >
+            app:layout_constraintTop_toBottomOf="@id/tvLetsLogin">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -49,14 +49,15 @@
                 app:layout_constraintEnd_toStartOf="@+id/guidelineLoginRight"
                 app:layout_constraintStart_toStartOf="@id/guidelineLoginLeft"
                 app:layout_constraintTop_toBottomOf="@id/tvLetsLogin" />
+
             <TextView
                 android:id="@+id/register"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="Register"
-                android:textColor="@color/g_blue2"
                 android:textAlignment="center"
+                android:textColor="@color/g_blue2"
                 app:layout_constraintEnd_toStartOf="@+id/guidelineLoginRight"
                 app:layout_constraintStart_toStartOf="@id/guidelineLoginLeft"
                 app:layout_constraintTop_toBottomOf="@id/tvLetsLogin" />
@@ -76,9 +77,6 @@
             android:textColor="@color/g_blue2"
             app:layout_constraintEnd_toStartOf="@+id/guidelineLoginRight"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout2" />
-
-
-
 
 
         <com.google.android.material.button.MaterialButton
@@ -160,6 +158,16 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.91" />
 
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/circleImageView"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="40dp"
+            android:src="@drawable/logo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
