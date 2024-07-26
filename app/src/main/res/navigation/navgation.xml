@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navgation"
-    app:startDestination="@id/userHolderFragment">
+    app:startDestination="@id/newsDetailsFragment">
 
     <fragment
         android:id="@+id/splashFragment"
@@ -30,4 +30,9 @@
         android:name="com.example.canorecoapp.views.user.UserHolderFragment"
         android:label="fragment_user_holder"
         tools:layout="@layout/fragment_user_holder" />
+    <fragment
+        android:id="@+id/newsDetailsFragment"
+        android:name="com.example.canorecoapp.views.user.news.NewsDetailsFragment"
+        android:label="fragment_news_details"
+        tools:layout="@layout/fragment_news_details" />
 </navigation>
