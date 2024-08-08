@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Account"
+        android:fontFamily="@font/bold"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -48,7 +49,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="8dp"
-                android:text="Julius Bundalian"
+                android:text="Mang Canor"
+                android:fontFamily="@font/bold"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <TextView
@@ -82,6 +84,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="App Security"
+                android:fontFamily="@font/bold"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <View
@@ -136,19 +139,21 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:padding="16dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Notifications"
+                android:fontFamily="@font/bold"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
             <Switch
                 android:id="@+id/notifications_switch"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity=""
                 android:layout_gravity="end" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
@@ -176,6 +181,7 @@
                 android:layout_height="wrap_content"
                 android:paddingVertical="12dp"
                 android:text="Logout"
+                android:fontFamily="@font/bold"
                 android:drawableEnd="@drawable/baseline_arrow_forward_24"
                 android:clickable="true"
                 android:focusable="true"

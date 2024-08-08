@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navgation"
-    app:startDestination="@id/newsDetailsFragment">
+    app:startDestination="@id/splashFragment">
 
     <fragment
         android:id="@+id/splashFragment"
@@ -22,9 +22,9 @@
         tools:layout="@layout/fragment_sign_in" />
     <fragment
         android:id="@+id/adminHolderFragment"
-        android:name="com.example.canorecoapp.views.admin.AdminHolderFragment"
+        android:name="com.example.canorecoapp.views.linemen.LineMenHolderFragment"
         android:label="fragment_admin_holder"
-        tools:layout="@layout/fragment_admin_holder" />
+        tools:layout="@layout/fragment_line_men_holder" />
     <fragment
         android:id="@+id/userHolderFragment"
         android:name="com.example.canorecoapp.views.user.UserHolderFragment"
@@ -35,4 +35,9 @@
         android:name="com.example.canorecoapp.views.user.news.NewsDetailsFragment"
         android:label="fragment_news_details"
         tools:layout="@layout/fragment_news_details" />
+    <fragment
+        android:id="@+id/loginOrSignUpFragment"
+        android:name="com.example.canorecoapp.views.LoginOrSignUpFragment"
+        android:label="fragment_login_or_sign_up"
+        tools:layout="@layout/fragment_login_or_sign_up" />
 </navigation>
