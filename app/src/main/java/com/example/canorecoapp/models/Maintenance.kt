@@ -1,0 +1,19 @@
+package com.example.canorecoapp.models
+
+data class Maintenance (
+    val title: String = "",
+    val shortDescription: String = "",
+    val fullDescription: String = "",
+    val image: String = "",
+    val timestamp : String =  "",
+    val date : String =  "",
+    val gawain : String =  "",
+    val lugar : String =  "",
+    val oras : String =  "",
+    val petsa : String =  "",
+
+) {
+    constructor() : this("",  "","","","","",  "","","","") {
+        // Default constructor required for Firebase
+    }
+}
