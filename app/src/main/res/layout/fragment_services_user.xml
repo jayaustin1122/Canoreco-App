@@ -24,7 +24,9 @@
         android:id="@+id/outages"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
         app:layout_constraintTop_toBottomOf="@id/textView"
@@ -41,7 +43,7 @@
                 android:id="@+id/imageView"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/logo" />
+                android:src="@drawable/bargraph" />
 
             <TextView
                 android:id="@+id/viewOutages"
@@ -60,7 +62,9 @@
         android:id="@+id/consumerComplaints"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -77,7 +81,7 @@
                 android:id="@+id/imageView2"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/logo" />
+                android:src="@drawable/bad" />
 
             <TextView
                 android:id="@+id/tvConsumerComplaints"
@@ -96,7 +100,9 @@
         android:id="@+id/billingInformation"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -113,7 +119,7 @@
                 android:id="@+id/imageView3"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/logo" />
+                android:src="@drawable/bill" />
 
             <TextView
                 android:id="@+id/tvBillingInformation"
@@ -132,7 +138,9 @@
         android:id="@+id/bayadCenters"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -149,7 +157,7 @@
                 android:id="@+id/imageView4"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/logo" />
+                android:src="@drawable/map" />
 
             <TextView
                 android:id="@+id/tvBayadCenters"
@@ -168,7 +176,9 @@
         android:id="@+id/serviceApplication"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -185,7 +195,7 @@
                 android:id="@+id/imageView5"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/logo" />
+                android:src="@drawable/customer" />
 
             <TextView
                 android:id="@+id/tvServiceApplication"
