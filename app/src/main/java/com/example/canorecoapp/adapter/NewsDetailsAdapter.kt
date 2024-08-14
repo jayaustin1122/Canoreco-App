@@ -17,21 +17,19 @@ import com.example.canorecoapp.databinding.NewsItemViewBinding
 import com.example.canorecoapp.models.News
 import com.example.canorecoapp.views.user.news.NewsDetailsFragment
 
-class NewsAdapter(private val context: Context,
-                  private val navController: NavController,
-                  private var newsArrayList: List<News>
-                ): RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
-    private  lateinit var binding: NewsActivitiesItemViewsBinding
+class NewsDetailsAdapter(private val context: Context,
+                         private val navController: NavController,
+                         private var newsArrayList: List<News>
+                ): RecyclerView.Adapter<NewsDetailsAdapter.ViewHolder>() {
+    private  lateinit var binding: NewsItemViewBinding
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var title: TextView = binding.tvActivityTitle
-        var moreBtn: ImageView = binding.moreBtn
-        var date: TextView = binding.tvActivityDate
-        var image: ImageView = binding.imageBackground
-        var shortDescription: TextView = binding.tvActivityDescription
+        var title: TextView = binding.tvTitle
+        var date: TextView = binding.tvDate
+        var image: ImageView = binding.ivThumbnail
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        binding = NewsActivitiesItemViewsBinding.inflate(LayoutInflater.from(context), parent, false)
+        binding = NewsItemViewBinding.inflate(LayoutInflater.from(context), parent, false)
         return ViewHolder(binding.root)
     }
 
@@ -48,10 +46,9 @@ class NewsAdapter(private val context: Context,
         val timeStamp = model.timestamp
 
         holder.title.text = newsTitle
-        holder.shortDescription.text = newsDesc
         holder.date.text = date
 
-        Glide.with(this@NewsAdapter.context)
+        Glide.with(this@NewsDetailsAdapter.context)
             .load(image)
             .into(holder.image)
 

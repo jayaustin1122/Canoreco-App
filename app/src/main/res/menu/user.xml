@@ -2,15 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/navigation_Home"
-        android:icon="@drawable/baseline_home_24"
+        android:icon="@drawable/home"
         android:title="@string/home" />
     <item
         android:id="@+id/navigation_services"
-        android:icon="@drawable/baseline_home_24"
+        android:icon="@drawable/settings"
         android:title="@string/sevices"/>
     <item
         android:id="@+id/navigation_account"
-        android:icon="@drawable/baseline_home_24"
+        android:icon="@drawable/user"
         android:title="@string/account"/>
 
 
