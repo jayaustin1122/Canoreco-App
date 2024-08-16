@@ -54,4 +54,9 @@
         android:name="com.example.canorecoapp.views.user.news.NewsFragment"
         android:label="fragment_news"
         tools:layout="@layout/fragment_news" />
+    <fragment
+        android:id="@+id/outagesFragment"
+        android:name="com.example.canorecoapp.views.user.OutagesFragment"
+        android:label="fragment_outages"
+        tools:layout="@layout/fragment_outages" />
 </navigation>

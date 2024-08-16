@@ -11,6 +11,7 @@
     <color name="ww">#D3D3D3</color>
 
     <color name="g_gray700">#666666</color>
+    <color name="g_gray100">#CACACA</color>
     <color name="g_black">#171717</color>
     <color name="g_blue">#000DAE</color>
     <color name="g_white">#F5F8FA</color>
