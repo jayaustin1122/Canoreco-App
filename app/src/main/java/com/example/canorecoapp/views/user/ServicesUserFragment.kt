@@ -28,6 +28,11 @@ class ServicesUserFragment : Fragment() {
                 navigate(R.id.outagesFragment)
             }
         }
+        binding.billingInformation.setOnClickListener {
+            findNavController().apply {
+                navigate(R.id.billingInformation)
+            }
+        }
     }
 
 }

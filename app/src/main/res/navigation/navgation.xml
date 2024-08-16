@@ -59,4 +59,9 @@
         android:name="com.example.canorecoapp.views.user.OutagesFragment"
         android:label="fragment_outages"
         tools:layout="@layout/fragment_outages" />
+    <fragment
+        android:id="@+id/billingInformationFragment"
+        android:name="com.example.canorecoapp.views.user.BillingInformationFragment"
+        tools:layout="@layout/fragment_billing_information"
+        android:label="BillingInformationFragment" />
 </navigation>
