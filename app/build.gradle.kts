@@ -104,12 +104,5 @@ dependencies {
     implementation("com.google.android.gms:play-services-maps:18.2.0")
     implementation("com.google.firebase:firebase-messaging-ktx:23.3.1")
 
-    //stripe
-    implementation ("com.stripe:stripe-android:20.48.4")
 
-    implementation("com.amitshekhar.android:android-networking:1.0.2")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("com.google.code.gson:gson:2.10.1")
-
-    implementation("com.paypal.android:paypal-web-payments:1.5.0")
 }

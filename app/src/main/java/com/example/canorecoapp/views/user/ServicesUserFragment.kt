@@ -30,7 +30,7 @@ class ServicesUserFragment : Fragment() {
         }
         binding.billingInformation.setOnClickListener {
             findNavController().apply {
-                navigate(R.id.billingInformation)
+                navigate(R.id.billingInformationFragment)
             }
         }
     }
