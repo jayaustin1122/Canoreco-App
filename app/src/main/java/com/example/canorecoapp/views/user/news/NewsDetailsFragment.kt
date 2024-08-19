@@ -38,6 +38,10 @@ class NewsDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val timestamp = arguments?.getString("timeStamp")
         getNewsDetailsByTimestamp(timestamp)
+        binding.backArrow.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
     }
 
     private fun getNewsDetailsByTimestamp(timestamp: String?) {

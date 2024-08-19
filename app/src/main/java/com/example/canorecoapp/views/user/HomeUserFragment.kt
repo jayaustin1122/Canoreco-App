@@ -47,7 +47,7 @@ class HomeUserFragment : Fragment() {
         }
         binding.tvViewAllMaintenance.setOnClickListener {
             findNavController().apply {
-                navigate(R.id.newsFragment)
+                navigate(R.id.maintenanceListFragment)
             }
         }
     }
@@ -93,7 +93,7 @@ class HomeUserFragment : Fragment() {
         val freeItems = ArrayList<Maintenance>()
         val db = FirebaseFirestore.getInstance()
         // Materials papalitan ko rin hehe
-        val ref = db.collection("News")
+        val ref = db.collection("Maintenance")
 
         // Fetch data from Firestore
         ref.get()

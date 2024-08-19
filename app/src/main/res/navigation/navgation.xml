@@ -64,4 +64,24 @@
         android:name="com.example.canorecoapp.views.user.BillingInformationFragment"
         tools:layout="@layout/fragment_billing_information"
         android:label="BillingInformationFragment" />
+    <fragment
+        android:id="@+id/reportFragment"
+        android:name="com.example.canorecoapp.views.user.ReportFragment"
+        android:label="fragment_report"
+        tools:layout="@layout/fragment_report" />
+    <fragment
+        android:id="@+id/bayadCentersFragment"
+        android:name="com.example.canorecoapp.views.user.BayadCentersFragment"
+        android:label="fragment_bayad_centers"
+        tools:layout="@layout/fragment_bayad_centers" />
+    <fragment
+        android:id="@+id/servicesFragment"
+        android:name="com.example.canorecoapp.views.user.ServicesFragment"
+        android:label="fragment_services"
+        tools:layout="@layout/fragment_services" />
+    <fragment
+        android:id="@+id/maintenanceListFragment"
+        android:name="com.example.canorecoapp.views.user.maintenance.MaintenanceListFragment"
+        android:label="fragment_maintenance_list"
+        tools:layout="@layout/fragment_maintenance_list" />
 </navigation>

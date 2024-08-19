@@ -19,11 +19,12 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
 
-
 class UserHolderFragment : Fragment() {
     private lateinit var binding: FragmentUserHolderBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var fragmentManager: FragmentManager
+    private var isUserInfoLoaded = false
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -31,6 +32,7 @@ class UserHolderFragment : Fragment() {
         binding = FragmentUserHolderBinding.inflate(layoutInflater)
         return binding.root
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         auth = FirebaseAuth.getInstance()
@@ -38,7 +40,11 @@ class UserHolderFragment : Fragment() {
         val homeFragment = HomeUserFragment()
         val serviceFragment = ServicesUserFragment()
         val accountUserFragment = AccountUserFragment()
-        loadUsersInfo()
+
+        if (!isUserInfoLoaded) {
+            loadUsersInfo()
+        }
+
         val bottomNavigationView: BottomNavigationView = binding.bottomNavigation
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             val selectedFragment: Fragment = when (item.itemId) {
@@ -50,11 +56,11 @@ class UserHolderFragment : Fragment() {
             }
             fragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, selectedFragment)
-                .commitAllowingStateLoss() // Use commitAllowingStateLoss() to retain fragment state
+                .commitAllowingStateLoss()
             true
         }
+
         if (savedInstanceState == null) {
-            // Initially load the HomeFragment only if it's not already added
             if (!homeFragment.isAdded) {
                 fragmentManager.beginTransaction()
                     .add(R.id.fragment_container, homeFragment)
@@ -63,6 +69,7 @@ class UserHolderFragment : Fragment() {
             bottomNavigationView.selectedItemId = R.id.navigation_Home
         }
     }
+
     private fun loadUsersInfo() {
         val db = FirebaseFirestore.getInstance()
         val currentUser = FirebaseAuth.getInstance().currentUser
@@ -76,6 +83,7 @@ class UserHolderFragment : Fragment() {
                         "Welcome ${userName ?: "User"}!",
                         Toast.LENGTH_SHORT
                     ).show()
+                    isUserInfoLoaded = true // Mark user info as loaded
                 }
                 .addOnFailureListener { exception ->
                     Toast.makeText(
@@ -92,6 +100,4 @@ class UserHolderFragment : Fragment() {
             ).show()
         }
     }
-
-
 }

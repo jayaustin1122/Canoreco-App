@@ -33,6 +33,21 @@ class ServicesUserFragment : Fragment() {
                 navigate(R.id.billingInformationFragment)
             }
         }
+        binding.consumerComplaints.setOnClickListener {
+            findNavController().apply {
+                navigate(R.id.reportFragment)
+            }
+        }
+        binding.serviceApplication.setOnClickListener {
+            findNavController().apply {
+                navigate(R.id.servicesFragment)
+            }
+        }
+        binding.bayadCenters.setOnClickListener {
+            findNavController().apply {
+                navigate(R.id.bayadCentersFragment)
+            }
+        }
     }
 
 }

@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
+import androidx.navigation.fragment.findNavController
 import com.example.canorecoapp.R
 import com.example.canorecoapp.adapter.ViewPagerAdapter
 import com.example.canorecoapp.databinding.FragmentOutagesBinding
@@ -42,6 +43,9 @@ class OutagesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.backButton.setOnClickListener {
+            findNavController().navigateUp()
+        }
 
         // Set up the tabs
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Current Outages"))

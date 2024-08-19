@@ -104,5 +104,8 @@ dependencies {
     implementation("com.google.android.gms:play-services-maps:18.2.0")
     implementation("com.google.firebase:firebase-messaging-ktx:23.3.1")
 
+    implementation ("com.github.kittinunf.fuel:fuel:2.3.1")
+    implementation ("com.github.kittinunf.fuel:fuel-json:2.3.1")
+    implementation ("com.paytm.appinvokesdk:appinvokesdk:1.6.12") // Updated version
 
 }
