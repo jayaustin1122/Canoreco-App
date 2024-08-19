@@ -35,7 +35,7 @@
         android:layout_width="179dp"
         android:layout_height="121dp"
         android:layout_margin="10dp"
-        android:src="@drawable/profile"
+        android:src="@drawable/profiles"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"

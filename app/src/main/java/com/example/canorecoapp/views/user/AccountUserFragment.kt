@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentAccountUserBinding
 import com.example.canorecoapp.databinding.FragmentHomeUserBinding
@@ -48,9 +49,14 @@ class AccountUserFragment : Fragment() {
                 .addOnSuccessListener { document ->
                     val userName = document.getString("fullName")
                     val contact = document.getString("phone")
+                    val image = document.getString("image")
 
                     binding.username.text = userName
                     binding.contactNumber.text = contact
+                    Glide.with(requireContext())
+                        .load(userName)
+                        .into(binding.imgUserProfile)
+
                 }
                 .addOnFailureListener { exception ->
                     Toast.makeText(

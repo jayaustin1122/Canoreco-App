@@ -87,7 +87,6 @@
             android:layout_marginTop="30dp"
             android:text="Sign-In"
             app:backgroundTint="@color/g_blue2"
-            app:cornerRadius="10dp"
             app:layout_constraintEnd_toEndOf="@id/guidelineLoginRight"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="@id/guidelineLoginLeft"

@@ -6,4 +6,6 @@
     <string name="sevices">Sevices</string>
     <string name="account">Account</string>
     <string name="google_map_api_key">AIzaSyB8LLSP7qQiVbs-JmX9Uynq-CnKB-TDEo0</string>
+    <string name="navigation_drawer_open">open\n</string>
+    <string name="navigation_drawer_close">close\n</string>
 </resources>

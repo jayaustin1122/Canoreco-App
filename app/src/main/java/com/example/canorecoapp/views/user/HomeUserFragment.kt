@@ -6,15 +6,18 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.example.canorecoapp.R
 import com.example.canorecoapp.adapter.MaintenanceAdapter
 import com.example.canorecoapp.adapter.NewsAdapter
 import com.example.canorecoapp.databinding.FragmentHomeUserBinding
 import com.example.canorecoapp.models.Maintenance
 import com.example.canorecoapp.models.News
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -40,6 +43,7 @@ class HomeUserFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         getNews()
         getMaintenances()
+        loadUsersInfo()
         binding.tvViewAllNews.setOnClickListener {
             findNavController().apply {
                 navigate(R.id.newsFragment)
@@ -49,6 +53,35 @@ class HomeUserFragment : Fragment() {
             findNavController().apply {
                 navigate(R.id.maintenanceListFragment)
             }
+        }
+    }
+    private fun loadUsersInfo() {
+        val db = FirebaseFirestore.getInstance()
+        val currentUser = FirebaseAuth.getInstance().currentUser
+
+        currentUser?.let { user ->
+            db.collection("Users").document(user.uid).get()
+                .addOnSuccessListener { document ->
+                    val userName = document.getString("image")
+
+                    Glide.with(requireContext())
+                        .load(userName)
+                        .into(binding.imgProfile)
+
+                }
+                .addOnFailureListener { exception ->
+                    Toast.makeText(
+                        requireContext(),
+                        "Error Loading User Data: ${exception.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+        } ?: run {
+            Toast.makeText(
+                requireContext(),
+                "User not authenticated",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
     private fun getNews() {

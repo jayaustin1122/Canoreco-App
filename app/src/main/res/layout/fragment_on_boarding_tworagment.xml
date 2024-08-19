@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
-        android:backgroundTint="@color/gray_8ba6c1"
+        android:backgroundTint="@color/g_blue2"
         android:elevation="10dp"
         app:cardCornerRadius="30dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -43,6 +43,7 @@
                 android:text="CANORECO"
                 android:textAlignment="center"
                 android:textSize="20sp"
+                android:textColor="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
@@ -56,6 +57,8 @@
                 android:text="Some Notes for On boarding Screens"
                 android:textAlignment="center"
                 android:textSize="15sp"
+                android:id="@+id/tv"
+                android:textColor="@color/black_222222"
                 app:layout_constraintBottom_toTopOf="@+id/btnGetStarted"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"
@@ -67,14 +70,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
+                android:layout_marginTop="50dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
                 android:fontFamily="@font/medium"
+                android:textColor="@color/g_blue2"
+                app:backgroundTint="@color/white"
                 android:text="Get Started"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                tools:layout_editor_absoluteY="95dp" />
+                app:layout_constraintTop_toBottomOf="@+id/textView" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

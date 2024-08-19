@@ -21,27 +21,54 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/g_blue2"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" >
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+<!--            <ImageButton-->
+<!--                android:id="@+id/menu_button"-->
+<!--                android:layout_width="40dp"-->
+<!--                android:layout_height="40dp"-->
+<!--                android:src="@drawable/menu"-->
+<!--                android:background="@android:color/transparent"-->
+<!--                app:layout_collapseMode="pin"/>-->
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/logo"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_gravity="start"
+                android:src="@drawable/logo"
+                android:background="@android:color/transparent" />
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="CANORECO APP"
-                android:textSize="24sp"
+                android:layout_marginStart="20dp"
+                android:text="CAN-APP"
+                android:textSize="18sp"
                 android:textColor="@color/white"
-                android:layout_gravity="center"
                 android:fontFamily="@font/bold"
-                />
+                android:layout_gravity="center_vertical" />
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/back_button"
+                android:id="@+id/imgProfile"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/logo"
+                android:layout_gravity="end"
+                android:src="@drawable/profiles"
                 android:background="@android:color/transparent"
+                android:paddingEnd="10dp"/>
+            <ImageButton
+                android:id="@+id/notification_button"
+                android:layout_width="35dp"
+                android:layout_height="30dp"
+                android:layout_gravity="end"
+                android:scaleType="fitXY"
+                android:src="@drawable/notification"
+                android:background="@android:color/transparent"
+                android:paddingEnd="10dp"
                 app:tint="@color/white"/>
-        </androidx.appcompat.widget.Toolbar>
 
+
+
+        </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
@@ -69,6 +96,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
+                    android:layout_marginStart="10dp"
                     android:fontFamily="@font/bold"
                     android:text="Maintenance Activities"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
@@ -81,6 +109,7 @@
                     android:fontFamily="@font/bold"
                     android:gravity="end|bottom"
                     android:text="VIEW ALL"
+                    android:layout_marginEnd="10dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     android:textColor="@color/black" />
             </LinearLayout>
@@ -90,6 +119,8 @@
                 android:id="@+id/viewDivider"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="@dimen/dimen_10dp"
                 android:layout_marginTop="8dp"
                 android:background="@android:color/darker_gray" />
 
@@ -116,6 +147,7 @@
                     android:layout_marginTop="8dp"
                     android:fontFamily="@font/bold"
                     android:text="Latest News"
+                    android:layout_marginStart="@dimen/dimen_10dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:textColor="@color/black" />
 
@@ -126,6 +158,7 @@
                     android:fontFamily="@font/bold"
                     android:gravity="end|bottom"
                     android:text="VIEW ALL"
+                    android:layout_marginEnd="@dimen/dimen_10dp"
                     android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     android:textColor="@color/black" />
 
@@ -135,6 +168,8 @@
                 android:id="@+id/viewDivider2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="@dimen/dimen_10dp"
                 android:layout_marginTop="8dp"
                 android:background="@android:color/darker_gray" />
 

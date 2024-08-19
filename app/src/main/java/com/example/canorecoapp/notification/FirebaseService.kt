@@ -1,5 +1,6 @@
 package com.example.bidnshare.notification
 
+import MainActivity
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -13,8 +14,6 @@ import android.graphics.Color
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat.getSystemService
-import com.example.canorecoapp.MainActivity
 import com.example.canorecoapp.R
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -59,7 +58,7 @@ class FirebaseService : FirebaseMessagingService() {
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(message.data["title"])
             .setContentText(message.data["message"])
-            .setSmallIcon(R.drawable.profile)
+            .setSmallIcon(R.drawable.profiles)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
             .build()
