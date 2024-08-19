@@ -31,6 +31,9 @@ class LoginOrSignUpFragment : Fragment() {
         binding.signupButton.setOnClickListener {
             animateViewsAndNavigate()
         }
+        binding.loginButton.setOnClickListener {
+            findNavController().navigate(R.id.signInFragment)
+        }
     }
 
     private fun animateViewsAndNavigate() {

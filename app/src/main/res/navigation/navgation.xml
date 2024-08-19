@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navgation"
-    app:startDestination="@id/userHolderFragment">
+    app:startDestination="@id/splashFragment">
 
     <fragment
         android:id="@+id/splashFragment"
@@ -63,7 +63,11 @@
         android:id="@+id/billingInformationFragment"
         android:name="com.example.canorecoapp.views.user.BillingInformationFragment"
         tools:layout="@layout/fragment_billing_information"
-        android:label="BillingInformationFragment" />
+        android:label="BillingInformationFragment" >
+        <action
+            android:id="@+id/action_billingInformationFragment_to_outagesFragment"
+            app:destination="@id/outagesFragment" />
+    </fragment>
     <fragment
         android:id="@+id/reportFragment"
         android:name="com.example.canorecoapp.views.user.ReportFragment"
@@ -84,4 +88,14 @@
         android:name="com.example.canorecoapp.views.user.maintenance.MaintenanceListFragment"
         android:label="fragment_maintenance_list"
         tools:layout="@layout/fragment_maintenance_list" />
+    <fragment
+        android:id="@+id/servicesUserFragment"
+        android:name="com.example.canorecoapp.views.user.ServicesUserFragment"
+        android:label="fragment_services_user"
+        tools:layout="@layout/fragment_services_user" />
+    <fragment
+        android:id="@+id/onBoardingMainFragment"
+        android:name="com.example.canorecoapp.views.onboardingscreens.OnBoardingMainFragment"
+        android:label="fragment_on_boarding_main"
+        tools:layout="@layout/fragment_on_boarding_main" />
 </navigation>
