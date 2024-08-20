@@ -74,8 +74,8 @@
         <ImageView
             android:scaleType="fitXY"
             android:id="@+id/news_image"
-            android:layout_width="0dp"
-            android:layout_height="150dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:background="@android:color/darker_gray"
             app:layout_constraintTop_toBottomOf="@id/news_date"

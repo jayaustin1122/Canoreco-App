@@ -53,9 +53,12 @@ class AccountUserFragment : Fragment() {
 
                     binding.username.text = userName
                     binding.contactNumber.text = contact
-                    Glide.with(requireContext())
+                    // Safely load the image using Glide
+                    val context = context ?: return@addOnSuccessListener
+                    Glide.with(context)
                         .load(userName)
                         .into(binding.imgUserProfile)
+
 
                 }
                 .addOnFailureListener { exception ->

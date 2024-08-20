@@ -64,9 +64,12 @@ class HomeUserFragment : Fragment() {
                 .addOnSuccessListener { document ->
                     val userName = document.getString("image")
 
-                    Glide.with(requireContext())
+                    // Safely load the image using Glide
+                    val context = context ?: return@addOnSuccessListener
+                    Glide.with(context)
                         .load(userName)
                         .into(binding.imgProfile)
+
 
                 }
                 .addOnFailureListener { exception ->
