@@ -8,4 +8,5 @@
     <string name="google_map_api_key">AIzaSyB8LLSP7qQiVbs-JmX9Uynq-CnKB-TDEo0</string>
     <string name="navigation_drawer_open">open\n</string>
     <string name="navigation_drawer_close">close\n</string>
+    <string name="map_id">714a7a57ec28897b</string>
 </resources>

@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.tabs.TabLayout
+import com.google.firebase.firestore.FirebaseFirestore
 import java.io.IOException
 import java.util.Locale
 
@@ -46,7 +47,16 @@ class OutagesFragment : Fragment() {
         binding.backButton.setOnClickListener {
             findNavController().navigateUp()
         }
+        binding.viewListButton.setOnClickListener {
+            val coordinates = listOf(
+                mapOf("lat" to 14.08446, "lng" to 122.88797),
+                mapOf("lat" to 14.08500, "lng" to 122.88800),
+                mapOf("lat" to 14.08400, "lng" to 122.88900)
+            )
 
+            addBarangayBoundary("Daet", coordinates, true)
+
+        }
         // Set up the tabs
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Current Outages"))
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Future Outages"))
@@ -79,5 +89,22 @@ class OutagesFragment : Fragment() {
         childFragmentManager.beginTransaction()
             .replace(R.id.map_fragment_container, fragment)
             .commit()
+    }
+    fun addBarangayBoundary(name: String, coordinates: List<Map<String, Double>>, isAffected: Boolean) {
+        val firestore = FirebaseFirestore.getInstance()
+        val barangayData = hashMapOf(
+            "name" to name,
+            "coordinates" to coordinates,
+            "isAffected" to isAffected
+        )
+
+        firestore.collection("barangay_boundaries")
+            .add(barangayData)
+            .addOnSuccessListener {
+                Log.d("Firestore", "DocumentSnapshot successfully written!")
+            }
+            .addOnFailureListener { e ->
+                Log.w("Firestore", "Error writing document", e)
+            }
     }
 }

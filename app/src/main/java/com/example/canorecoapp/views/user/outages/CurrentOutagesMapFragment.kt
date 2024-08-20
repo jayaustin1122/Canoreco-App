@@ -23,6 +23,8 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolygonOptions
+import com.google.firebase.firestore.FirebaseFirestore
 import java.io.IOException
 import java.util.Locale
 
@@ -52,6 +54,7 @@ class CurrentOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnM
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.fragmentMap) as SupportMapFragment
         mapFragment.getMapAsync(this)
+         showAffectedAreas()
     }
     private fun zoomIn(location: LatLng? = null) {
         gMap?.let {
@@ -198,4 +201,45 @@ class CurrentOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnM
 
         //getCurrentLocation()
     }
+    fun showAffectedAreas() {
+        val firestoreReference = FirebaseFirestore.getInstance().collection("barangay_boundaries")
+
+        firestoreReference.get().addOnSuccessListener { querySnapshot ->
+            for (document in querySnapshot.documents) {
+                val name = document.getString("name")
+                val coordinates = document.get("coordinates") as? List<Map<String, Double>>
+                val isAffected = document.getBoolean("isAffected") ?: false
+
+                if (coordinates != null && coordinates.isNotEmpty()) {
+                    val latLngList = coordinates.map { LatLng(it["lat"]!!, it["lng"]!!) }
+                    val polygonOptions = PolygonOptions().addAll(latLngList)
+                    // Set fill color based on whether the area is affected
+                    val fillColor = if (isAffected) {
+                        getRandomColor() // Random color for affected areas
+                    } else {
+                        0x5500FF00 // Semi-transparent green for non-affected areas
+                    }
+
+                    polygonOptions.fillColor(fillColor)
+                    polygonOptions.strokeColor(0xFF000000.toInt()) // Black border
+                    // Add the polygon to the map
+                    gMap?.addPolygon(polygonOptions)?.let {
+                        it.tag = name
+                    }
+                }
+            }
+        }.addOnFailureListener { exception ->
+            Log.e("MapData", "Error retrieving data from Firestore: ${exception.message}")
+        }
+    }
+
+    // Function to generate a random color for affected areas
+    fun getRandomColor(): Int {
+        val random = java.util.Random()
+        val red = random.nextInt(256)
+        val green = random.nextInt(256)
+        val blue = random.nextInt(256)
+        return 0x55000000 or (red shl 16) or (green shl 8) or blue
+    }
+
 }
