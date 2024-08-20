@@ -146,7 +146,7 @@ class SignInFragment : Fragment() {
         val firebaseUser = auth.currentUser
 
         if (firebaseUser != null) {
-            val dbref = FirebaseFirestore.getInstance().collection("Users").document(firebaseUser.uid)
+            val dbref = FirebaseFirestore.getInstance().collection("users").document(firebaseUser.uid)
             dbref.get().addOnCompleteListener { task ->
                 progressDialog.dismiss()
                 if (task.isSuccessful) {

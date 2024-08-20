@@ -49,7 +49,7 @@ class MaintenanceListFragment : Fragment() {
     }
 
     private fun getListOfMaintenance() {
-        val collectionRef = db.collection("Maintenance")
+        val collectionRef = db.collection("maintenance")
 
         collectionRef.get()
             .addOnSuccessListener { documents ->

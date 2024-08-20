@@ -60,7 +60,7 @@ class HomeUserFragment : Fragment() {
         val currentUser = FirebaseAuth.getInstance().currentUser
 
         currentUser?.let { user ->
-            db.collection("Users").document(user.uid).get()
+            db.collection("users").document(user.uid).get()
                 .addOnSuccessListener { document ->
                     val userName = document.getString("image")
 
@@ -91,7 +91,7 @@ class HomeUserFragment : Fragment() {
         // Initialize the news ArrayList
         val freeItems = ArrayList<News>()
         val db = FirebaseFirestore.getInstance()
-        val ref = db.collection("News")
+        val ref = db.collection("news")
 
         // Fetch data from Firestore
         ref.get()
@@ -104,7 +104,7 @@ class HomeUserFragment : Fragment() {
                     val timestamp = document.getString("timestamp") ?: ""
                     val image = document.getString("Image") ?: ""
                     Log.d("HOme", ": $title, $shortDesc, $date, $image")
-                    freeItems.add(News(title, shortDesc, "", image, timestamp, date, "", "", "", ""))
+                    freeItems.add(News(title, shortDesc, "", image, timestamp.toString(), date, "", "", "", ""))
 
                 }
                 // Set up the adapter after retrieving data for all users
@@ -129,7 +129,7 @@ class HomeUserFragment : Fragment() {
         val freeItems = ArrayList<Maintenance>()
         val db = FirebaseFirestore.getInstance()
         // Materials papalitan ko rin hehe
-        val ref = db.collection("Maintenance")
+        val ref = db.collection("news")
 
         // Fetch data from Firestore
         ref.get()

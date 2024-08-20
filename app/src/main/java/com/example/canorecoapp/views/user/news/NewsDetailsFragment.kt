@@ -54,7 +54,7 @@ class NewsDetailsFragment : Fragment() {
         Log.d("Firestore", "Querying document with timestamp: $timestamp")
 
         // Query the "News" collection where the "timestamp" field matches the given timestamp
-        val collectionRef = db.collection("News")
+        val collectionRef = db.collection("news")
         val query = collectionRef.whereEqualTo("timestamp", timestamp)
 
         query.get()

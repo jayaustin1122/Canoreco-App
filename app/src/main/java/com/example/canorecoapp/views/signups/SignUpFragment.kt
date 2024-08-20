@@ -312,7 +312,7 @@ class SignUpFragment : Fragment() {
         )
         val firestore = FirebaseFirestore.getInstance()
         try {
-            firestore.collection("Users")
+            firestore.collection("users")
                 .document(uid!!)
                 .set(user)
                 .addOnCompleteListener { task ->

@@ -48,7 +48,7 @@ class NewsFragment : Fragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun getAllNews() {
-        val collectionRef = db.collection("News")
+        val collectionRef = db.collection("news")
 
         collectionRef.get()
             .addOnSuccessListener { documents ->

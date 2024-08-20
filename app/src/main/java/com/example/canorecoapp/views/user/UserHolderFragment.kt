@@ -75,7 +75,7 @@ class UserHolderFragment : Fragment() {
         val currentUser = FirebaseAuth.getInstance().currentUser
 
         currentUser?.let { user ->
-            db.collection("Users").document(user.uid).get()
+            db.collection("users").document(user.uid).get()
                 .addOnSuccessListener { document ->
                     val userName = document.getString("fullName")
                     Toast.makeText(

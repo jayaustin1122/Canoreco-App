@@ -84,7 +84,7 @@ class SplashFragment : Fragment() {
 
     private fun handleUserInfo() {
         val userId = FirebaseAuth.getInstance().currentUser!!.uid
-        val dbref = FirebaseFirestore.getInstance().collection("Users")
+        val dbref = FirebaseFirestore.getInstance().collection("users")
 
         dbref.document(userId).get().addOnSuccessListener { document ->
             if (document != null && document.exists()) {

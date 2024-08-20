@@ -22,6 +22,11 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.firestore.FirebaseFirestore
 import java.io.IOException
 import java.util.Locale
 
@@ -50,6 +55,7 @@ class BayadFragmentOne : Fragment() , OnMapReadyCallback, GoogleMap.OnMarkerClic
         val mapFragment =
             childFragmentManager.findFragmentById(R.id.fragmentMap) as SupportMapFragment
         mapFragment.getMapAsync(this)
+        showAllDataOnMaps()
     }
     private fun zoomIn(location: LatLng? = null) {
         gMap?.let {
@@ -63,42 +69,37 @@ class BayadFragmentOne : Fragment() , OnMapReadyCallback, GoogleMap.OnMarkerClic
     override fun onMarkerClick(marker: Marker): Boolean {
         val dataKey = marker.tag as? String
         if (dataKey != null) {
-            //  showMarkerDetailsDialog(dataKey)
+            //showMarkerDetailsDialog(dataKey)
             return true
         } else {
             // Handle the case when marker.tag is null
             return false
         }
     }
-    private fun getLocationName(latitude: String?, longitude: String?, locationTextView: TextView) {
-        val latitudeValue = latitude?.toDoubleOrNull()
-        val longitudeValue = longitude?.toDoubleOrNull()
+    fun showAllDataOnMaps() {
+        // Get a reference to your Firestore collection
+        val firestoreReference = FirebaseFirestore.getInstance().collection("bayad_centers")
 
-        if (latitudeValue != null && longitudeValue != null) {
-            val geocoder = Geocoder(requireContext(), Locale.getDefault())
+        // Fetch all documents in the collection
+        firestoreReference.get().addOnSuccessListener { querySnapshot ->
+            for (document in querySnapshot.documents) {
+                val locationName = document.getString("locationName")
+                val latitude = document.getString("latitude")?.toDoubleOrNull()
+                val longitude = document.getString("longitude")?.toDoubleOrNull()
 
-            try {
-                val addresses = geocoder.getFromLocation(latitudeValue, longitudeValue, 1)
-
-                if (addresses != null) {
-                    if (addresses.isNotEmpty()) {
-                        val locationName = addresses?.get(0)?.getAddressLine(0)
-                        locationTextView.text = locationName
-                    } else {
-                        // Handle the case where no address is found
-                        locationTextView.text = "Unknown Location"
-                    }
+                // Check if latitude and longitude are not null
+                if (latitude != null && longitude != null) {
+                    // Add a marker for each item
+                    val marker = gMap?.addMarker(MarkerOptions().position(LatLng(latitude, longitude)).title(locationName))
+                    marker?.tag = document.id // Save the Firestore document ID as a tag for reference
                 }
-            } catch (e: IOException) {
-                // Handle the exception
-                Log.e("Geocoding", "Error getting location name: ${e.message}")
-                locationTextView.text = "Error getting location name"
             }
-        } else {
-            // Handle the case where latitude or longitude is null or not a valid number
-            locationTextView.text = "Invalid Coordinates"
+        }.addOnFailureListener { exception ->
+            // Handle errors if needed
+            Log.e("MapData", "Error retrieving data from Firestore: ${exception.message}")
         }
     }
+
 
     private fun checkPermissionLocation() {
         // Request location permission
@@ -194,6 +195,6 @@ class BayadFragmentOne : Fragment() , OnMapReadyCallback, GoogleMap.OnMarkerClic
         // Move the camera to the initial position
         gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(sanVicenteCamarinesNorte, zoomLevel))
 
-        //getCurrentLocation()
+        getCurrentLocation()
     }
 }
