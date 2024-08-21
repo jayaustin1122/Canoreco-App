@@ -100,6 +100,7 @@ dependencies {
 
     implementation("androidx.biometric:biometric:1.1.0")
     implementation ("com.squareup.picasso:picasso:2.8")
+    implementation ("com.google.code.gson:gson:2.8.8")
 
 
     implementation("com.google.android.gms:play-services-location:21.0.1")

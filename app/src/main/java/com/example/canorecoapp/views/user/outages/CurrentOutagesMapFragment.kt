@@ -2,6 +2,7 @@ package com.example.canorecoapp.views.user.outages
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
@@ -13,7 +14,6 @@ import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentCurrentOutagesMapBinding
-import com.example.canorecoapp.databinding.FragmentFutureOutagesMapBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -24,38 +24,78 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolygonOptions
-import com.google.firebase.firestore.FirebaseFirestore
+import org.json.JSONException
+import org.json.JSONObject
 import java.io.IOException
 import java.util.Locale
 
+class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
-class CurrentOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMarkerClickListener{
-
-    private lateinit var binding : FragmentCurrentOutagesMapBinding
+    private lateinit var binding: FragmentCurrentOutagesMapBinding
     private var gMap: GoogleMap? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentCurrentOutagesMapBinding.inflate(layoutInflater)
-        // Inflate the layout for this fragment
-        val mapFragment =
-            childFragmentManager.findFragmentById(R.id.fragmentMap) as SupportMapFragment
+        binding = FragmentCurrentOutagesMapBinding.inflate(inflater, container, false)
+        val mapFragment = childFragmentManager.findFragmentById(R.id.fragmentMap) as SupportMapFragment
         mapFragment.getMapAsync(this)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         return binding.root
     }
 
+    private fun loadJsonFromRaw(resourceId: Int): String? {
+        return try {
+            val inputStream = requireContext().resources.openRawResource(resourceId)
+            inputStream.bufferedReader().use { it.readText() }
+        } catch (e: IOException) {
+            Log.e("JSON", "Error reading JSON file from raw resources: ${e.message}")
+            null
+        }
+    }
+
+    private fun parseAndDrawPolygons(jsonData: String) {
+        Log.d("JSON", "Parsing JSON data")
+        try {
+            val jsonObject = JSONObject(jsonData)
+            val features = jsonObject.getJSONArray("features")
+            Log.d("JSON", "Number of features: ${features.length()}")
+
+            for (i in 0 until features.length()) {
+                val feature = features.getJSONObject(i)
+                val geometry = feature.getJSONObject("geometry")
+
+                if (geometry.getString("type") == "Polygon") {
+                    val coordinates = geometry.getJSONArray("coordinates").getJSONArray(0)
+
+                    val polygonOptions = PolygonOptions()
+
+                    for (j in 0 until coordinates.length()) {
+                        val coordinate = coordinates.getJSONArray(j)
+                        val latLng = LatLng(coordinate.getDouble(1), coordinate.getDouble(0))
+                        polygonOptions.add(latLng)
+                    }
+
+                    polygonOptions.strokeColor(Color.RED) // Customize as needed
+                    polygonOptions.fillColor(Color.BLUE) // Customize as needed
+                    polygonOptions.strokeWidth(2f) // Customize as needed
+
+                    gMap?.addPolygon(polygonOptions)
+                }
+            }
+            Log.d("JSON", "Polygons successfully drawn on map")
+        } catch (e: JSONException) {
+            Log.e("JSON", "Error parsing JSON data: ${e.message}")
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         checkPermissionLocation()
-        val mapFragment =
-            childFragmentManager.findFragmentById(R.id.fragmentMap) as SupportMapFragment
-        mapFragment.getMapAsync(this)
-         showAffectedAreas()
     }
+
     private fun zoomIn(location: LatLng? = null) {
         gMap?.let {
             val cameraPosition = it.cameraPosition
@@ -65,16 +105,18 @@ class CurrentOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnM
             it.animateCamera(newCameraPosition)
         }
     }
+
     override fun onMarkerClick(marker: Marker): Boolean {
         val dataKey = marker.tag as? String
         if (dataKey != null) {
-            //  showMarkerDetailsDialog(dataKey)
+            // showMarkerDetailsDialog(dataKey)
             return true
         } else {
             // Handle the case when marker.tag is null
             return false
         }
     }
+
     private fun getLocationName(latitude: String?, longitude: String?, locationTextView: TextView) {
         val latitudeValue = latitude?.toDoubleOrNull()
         val longitudeValue = longitude?.toDoubleOrNull()
@@ -84,38 +126,26 @@ class CurrentOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnM
 
             try {
                 val addresses = geocoder.getFromLocation(latitudeValue, longitudeValue, 1)
-
                 if (addresses != null) {
-                    if (addresses.isNotEmpty()) {
-                        val locationName = addresses?.get(0)?.getAddressLine(0)
-                        locationTextView.text = locationName
-                    } else {
-                        // Handle the case where no address is found
-                        locationTextView.text = "Unknown Location"
-                    }
+                    locationTextView.text = addresses.firstOrNull()?.getAddressLine(0) ?: "Unknown Location"
                 }
             } catch (e: IOException) {
-                // Handle the exception
                 Log.e("Geocoding", "Error getting location name: ${e.message}")
                 locationTextView.text = "Error getting location name"
             }
         } else {
-            // Handle the case where latitude or longitude is null or not a valid number
             locationTextView.text = "Invalid Coordinates"
         }
     }
 
     private fun checkPermissionLocation() {
-        // Request location permission
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            // Get current location and add marker
             getCurrentLocation()
         } else {
-            // Request location permission
             ActivityCompat.requestPermissions(
                 requireActivity(),
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
@@ -123,6 +153,7 @@ class CurrentOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnM
             )
         }
     }
+
     private fun getCurrentLocation() {
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
@@ -131,7 +162,6 @@ class CurrentOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnM
         ) {
             fusedLocationClient.lastLocation
                 .addOnSuccessListener { location ->
-                    // Add marker for the current location
                     location?.let {
                         val currentLatLng = LatLng(it.latitude, it.longitude)
                         gMap?.addMarker(
@@ -140,106 +170,28 @@ class CurrentOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnM
 
                         val cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentLatLng, 15.0f)
                         gMap?.animateCamera(cameraUpdate)
-
-                        // binding.tvCurrentLocation.text = it.latitude.toString()
-                        //     binding.tvCurrentLocation2.text = it.longitude.toString()
                     }
-
                 }
         }
     }
-    override fun onResume() {
-        // Initialize the map if it hasn't been initialized already
-        if (gMap == null) {
-            val mapFragment =
-                childFragmentManager.findFragmentById(R.id.fragmentMap) as SupportMapFragment
-            mapFragment.getMapAsync(this)
-        }
-        super.onResume()
-    }
 
-    override fun onPause() {
-        super.onPause()
-        // Initialize the map if it hasn't been initialized already
-        if (gMap == null) {
-            val mapFragment =
-                childFragmentManager.findFragmentById(R.id.fragmentMap) as SupportMapFragment
-            mapFragment.getMapAsync(this)
-        }
-    }
+    override fun onMapReady(googleMap: GoogleMap) {
+        gMap = googleMap
+        val sanVicenteCamarinesNorte = LatLng(14.08446, 122.88797)
+        val zoomLevel = 5.0f
+        gMap?.setOnMarkerClickListener(this)
+        gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(sanVicenteCamarinesNorte, zoomLevel))
 
-    override fun onDestroy() {
-        super.onDestroy()
-        // Initialize the map if it hasn't been initialized already
-        if (gMap == null) {
-            val mapFragment =
-                childFragmentManager.findFragmentById(R.id.fragmentMap) as SupportMapFragment
-            mapFragment.getMapAsync(this)
-        }
-    }
+        // Directly load and parse the JSON file
+        val jsonData = loadJsonFromRaw(R.raw.barangaycamnorte)
+        Log.d("JSON", "Loaded JSON data: $jsonData")
 
-    override fun onLowMemory() {
-        super.onLowMemory()
-        // Initialize the map if it hasn't been initialized already
-        if (gMap == null) {
-            val mapFragment =
-                childFragmentManager.findFragmentById(R.id.fragmentMap) as SupportMapFragment
-            mapFragment.getMapAsync(this)
+        jsonData?.let { parseAndDrawPolygons(it) } ?: run {
+            Log.e("JSON", "Failed to load JSON data")
         }
     }
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
-    override fun onMapReady(googleMap: GoogleMap) {
-        gMap = googleMap
-        val sanVicenteCamarinesNorte = LatLng(14.08446, 122.88797)
-        val zoomLevel = 5.0f // Adjust the zoom level as needed
-        gMap?.setOnMarkerClickListener(this)
-        // Move the camera to the initial position
-        gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(sanVicenteCamarinesNorte, zoomLevel))
-
-        //getCurrentLocation()
-    }
-    fun showAffectedAreas() {
-        val firestoreReference = FirebaseFirestore.getInstance().collection("barangay_boundaries")
-
-        firestoreReference.get().addOnSuccessListener { querySnapshot ->
-            for (document in querySnapshot.documents) {
-                val name = document.getString("name")
-                val coordinates = document.get("coordinates") as? List<Map<String, Double>>
-                val isAffected = document.getBoolean("isAffected") ?: false
-
-                if (coordinates != null && coordinates.isNotEmpty()) {
-                    val latLngList = coordinates.map { LatLng(it["lat"]!!, it["lng"]!!) }
-                    val polygonOptions = PolygonOptions().addAll(latLngList)
-                    // Set fill color based on whether the area is affected
-                    val fillColor = if (isAffected) {
-                        getRandomColor() // Random color for affected areas
-                    } else {
-                        0x5500FF00 // Semi-transparent green for non-affected areas
-                    }
-
-                    polygonOptions.fillColor(fillColor)
-                    polygonOptions.strokeColor(0xFF000000.toInt()) // Black border
-                    // Add the polygon to the map
-                    gMap?.addPolygon(polygonOptions)?.let {
-                        it.tag = name
-                    }
-                }
-            }
-        }.addOnFailureListener { exception ->
-            Log.e("MapData", "Error retrieving data from Firestore: ${exception.message}")
-        }
-    }
-
-    // Function to generate a random color for affected areas
-    fun getRandomColor(): Int {
-        val random = java.util.Random()
-        val red = random.nextInt(256)
-        val green = random.nextInt(256)
-        val blue = random.nextInt(256)
-        return 0x55000000 or (red shl 16) or (green shl 8) or blue
-    }
-
 }
