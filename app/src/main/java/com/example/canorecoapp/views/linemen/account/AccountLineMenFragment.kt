@@ -4,6 +4,7 @@ import android.app.ProgressDialog
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,13 +14,15 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentAccountLineMenBinding
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 
 class AccountLineMenFragment : Fragment() {
-    private lateinit var binding : FragmentAccountLineMenBinding
-    private lateinit var auth : FirebaseAuth
+    private lateinit var binding: FragmentAccountLineMenBinding
+    private lateinit var auth: FirebaseAuth
     private lateinit var progressDialog: ProgressDialog
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,6 +40,7 @@ class AccountLineMenFragment : Fragment() {
             setMessage("Please wait...")
             setCancelable(false)
         }
+
         loadUsersInfo()
         binding.logout.setOnClickListener {
             showProgressDialog()
@@ -49,6 +53,9 @@ class AccountLineMenFragment : Fragment() {
             }, 3000) // 3 seconds delay
         }
     }
+
+
+
 
     private fun loadUsersInfo() {
         val db = FirebaseFirestore.getInstance()

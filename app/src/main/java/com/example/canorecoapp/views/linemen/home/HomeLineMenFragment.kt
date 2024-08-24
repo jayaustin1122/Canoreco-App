@@ -1,7 +1,10 @@
 package com.example.canorecoapp.views.linemen.home
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
 import android.location.Geocoder
 import android.os.Bundle
@@ -12,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentHomeLineMenBinding
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -20,10 +24,13 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolygonOptions
+import com.google.firebase.firestore.FirebaseFirestore
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
@@ -56,40 +63,6 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
         }
     }
 
-    private fun parseAndDrawPolygons(jsonData: String) {
-        Log.d("JSON", "Parsing JSON data")
-        try {
-            val jsonObject = JSONObject(jsonData)
-            val features = jsonObject.getJSONArray("features")
-            Log.d("JSON", "Number of features: ${features.length()}")
-
-            for (i in 0 until features.length()) {
-                val feature = features.getJSONObject(i)
-                val geometry = feature.getJSONObject("geometry")
-
-                if (geometry.getString("type") == "Polygon") {
-                    val coordinates = geometry.getJSONArray("coordinates").getJSONArray(0)
-
-                    val polygonOptions = PolygonOptions()
-
-                    for (j in 0 until coordinates.length()) {
-                        val coordinate = coordinates.getJSONArray(j)
-                        val latLng = LatLng(coordinate.getDouble(1), coordinate.getDouble(0))
-                        polygonOptions.add(latLng)
-                    }
-
-                    polygonOptions.strokeColor(Color.RED) // Customize as needed
-                    polygonOptions.fillColor(Color.BLUE) // Customize as needed
-                    polygonOptions.strokeWidth(2f) // Customize as needed
-
-                    gMap?.addPolygon(polygonOptions)
-                }
-            }
-            Log.d("JSON", "Polygons successfully drawn on map")
-        } catch (e: JSONException) {
-            Log.e("JSON", "Error parsing JSON data: ${e.message}")
-        }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -97,6 +70,7 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
         binding.btnZoomIn.setOnClickListener {
             getCurrentLocation()
         }
+
     }
 
     private fun zoomIn(location: LatLng? = null) {
@@ -120,26 +94,6 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
         }
     }
 
-    private fun getLocationName(latitude: String?, longitude: String?, locationTextView: TextView) {
-        val latitudeValue = latitude?.toDoubleOrNull()
-        val longitudeValue = longitude?.toDoubleOrNull()
-
-        if (latitudeValue != null && longitudeValue != null) {
-            val geocoder = Geocoder(requireContext(), Locale.getDefault())
-
-            try {
-                val addresses = geocoder.getFromLocation(latitudeValue, longitudeValue, 1)
-                if (addresses != null) {
-                    locationTextView.text = addresses.firstOrNull()?.getAddressLine(0) ?: "Unknown Location"
-                }
-            } catch (e: IOException) {
-                Log.e("Geocoding", "Error getting location name: ${e.message}")
-                locationTextView.text = "Error getting location name"
-            }
-        } else {
-            locationTextView.text = "Invalid Coordinates"
-        }
-    }
 
     private fun checkPermissionLocation() {
         if (ActivityCompat.checkSelfPermission(
@@ -177,6 +131,45 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
                 }
         }
     }
+    private fun showAllDevicesLocations() {
+        val firestoreReference = FirebaseFirestore.getInstance().collection("devicelocation")
+        firestoreReference.get().addOnSuccessListener { querySnapshot ->
+            for (document in querySnapshot.documents) {
+                val lat = (document.getDouble("lat") ?: document.getLong("lat")?.toDouble()) ?: document.getString("lat")?.toDoubleOrNull()
+                val lng = (document.getDouble("lng") ?: document.getLong("lng")?.toDouble()) ?: document.getString("lng")?.toDoubleOrNull()
+                if (lat != null && lng != null) {
+                    val markerIcon = bitmapFromVector(this@HomeLineMenFragment.requireContext(), R.drawable.baseline_adjust_24)
+
+                    // Add a marker for each item with the custom icon
+                    val marker = gMap?.addMarker(
+                        MarkerOptions()
+                            .position(LatLng(lat, lng))
+                            .icon(markerIcon)
+                    )
+                    marker?.tag = document.id // Save the Firestore document ID as a tag for reference
+                }
+            }
+        }.addOnFailureListener { exception ->
+            // Handle errors if needed
+            Log.e("MapData", "Error retrieving data from Firestore: ${exception.message}")
+        }
+    }
+    private fun bitmapFromVector(context: Context, vectorResId: Int): BitmapDescriptor {
+        val vectorDrawable = ContextCompat.getDrawable(context, vectorResId)
+        vectorDrawable?.setBounds(
+            0, 0,
+            vectorDrawable.intrinsicWidth,
+            vectorDrawable.intrinsicHeight
+        )
+        val bitmap = Bitmap.createBitmap(
+            vectorDrawable!!.intrinsicWidth,
+            vectorDrawable.intrinsicHeight,
+            Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        vectorDrawable.draw(canvas)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
+    }
 
     override fun onMapReady(googleMap: GoogleMap) {
         gMap = googleMap
@@ -184,15 +177,87 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
         val zoomLevel = 5.0f
         gMap?.setOnMarkerClickListener(this)
         gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(sanVicenteCamarinesNorte, zoomLevel))
+        showAllDevicesLocations()
+        showPolygonsBasedOnFirestore()
+    }
+    private fun showPolygonsBasedOnFirestore() {
+        val firestoreReference = FirebaseFirestore.getInstance().collection("areas_affected")
+        firestoreReference.get().addOnSuccessListener { querySnapshot ->
+            val validBarangays = mutableSetOf<String>()
 
-        // Directly load and parse the JSON file
-        val jsonData = loadJsonFromRaw(R.raw.barangaycamnorte)
-        Log.d("JSON", "Loaded JSON data: $jsonData")
+            Log.d("FirestoreData", "Retrieving data from Firestore")
+            for (document in querySnapshot.documents) {
+                Log.d("FirestoreData", "Document ID: ${document.id}")
 
-        jsonData?.let { parseAndDrawPolygons(it) } ?: run {
-            Log.e("JSON", "Failed to load JSON data")
+                // Assuming each document contains a map where keys are barangay names and values are booleans
+                val barangayDataMap = document.data
+                barangayDataMap?.forEach { (barangayName, isAffected) ->
+                    if (barangayName is String && isAffected is Boolean && isAffected) {
+                        validBarangays.add(barangayName)
+                        Log.d("FirestoreData", "Barangay: $barangayName, Affected: $isAffected")
+                    } else {
+                        Log.w("FirestoreData", "Unexpected data format for barangay: $barangayName")
+                    }
+                }
+            }
+
+            Log.d("FirestoreData", "Valid Barangays: $validBarangays")
+
+            // Load and parse the JSON file, filtering polygons based on validBarangays
+            val jsonData = loadJsonFromRaw(R.raw.barangaycamnorte)
+            Log.d("JSON", "Loaded JSON data: $jsonData")
+
+            jsonData?.let { parseAndDrawPolygons(it, validBarangays) } ?: run {
+                Log.e("JSON", "Failed to load JSON data")
+            }
+
+        }.addOnFailureListener { exception ->
+            // Handle errors if needed
+            Log.e("MapData", "Error retrieving data from Firestore: ${exception.message}")
         }
     }
+
+
+    private fun parseAndDrawPolygons(jsonData: String, validBarangays: Set<String>) {
+        Log.d("JSON", "Parsing JSON data")
+        try {
+            val jsonObject = JSONObject(jsonData)
+            val features = jsonObject.getJSONArray("features")
+            Log.d("JSON", "Number of features: ${features.length()}")
+
+            for (i in 0 until features.length()) {
+                val feature = features.getJSONObject(i)
+                val properties = feature.getJSONObject("properties")
+                val barangayName = properties.getString("NAME_3")
+
+                if (barangayName in validBarangays) {
+                    val geometry = feature.getJSONObject("geometry")
+
+                    if (geometry.getString("type") == "Polygon") {
+                        val coordinates = geometry.getJSONArray("coordinates").getJSONArray(0)
+
+                        val polygonOptions = PolygonOptions()
+
+                        for (j in 0 until coordinates.length()) {
+                            val coordinate = coordinates.getJSONArray(j)
+                            val latLng = LatLng(coordinate.getDouble(1), coordinate.getDouble(0))
+                            polygonOptions.add(latLng)
+                        }
+
+                        polygonOptions.strokeColor(Color.RED) // Customize as needed
+                        polygonOptions.fillColor(Color.argb(100, 255, 0, 0)) // Customize as needed
+                        polygonOptions.strokeWidth(3f) // Customize as needed
+
+                        gMap?.addPolygon(polygonOptions)
+                    }
+                }
+            }
+            Log.d("JSON", "Polygons successfully drawn on map")
+        } catch (e: JSONException) {
+            Log.e("JSON", "Error parsing JSON data: ${e.message}")
+        }
+    }
+
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1

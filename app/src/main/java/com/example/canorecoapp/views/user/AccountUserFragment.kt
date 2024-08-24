@@ -39,7 +39,11 @@ class AccountUserFragment : Fragment() {
             setMessage("Please wait...")
             setCancelable(false)
         }
-        loadUsersInfo()
+        showShimmerEffect()
+        Handler(Looper.getMainLooper()).postDelayed({
+            loadUsersInfo()
+        }, 600)
+
         binding.logout.setOnClickListener {
             showProgressDialog()
             auth.signOut()
@@ -59,19 +63,21 @@ class AccountUserFragment : Fragment() {
         currentUser?.let { user ->
             db.collection("users").document(user.uid).get()
                 .addOnSuccessListener { document ->
+                    hideShimmerEffect()
                     val userName = document.getString("fullName")
                     val contact = document.getString("phone")
                     val image = document.getString("image")
 
                     binding.username.text = userName
                     binding.contactNumber.text = contact
-                    // Safely load the image using Glide
                     val context = context ?: return@addOnSuccessListener
                     Glide.with(context)
                         .load(image) // Load the image URL from Firestore
                         .into(binding.imgUserProfile)
+
                 }
                 .addOnFailureListener { exception ->
+                    hideShimmerEffect()
                     Toast.makeText(
                         requireContext(),
                         "Error Loading User Data: ${exception.message}",
@@ -79,12 +85,25 @@ class AccountUserFragment : Fragment() {
                     ).show()
                 }
         } ?: run {
+            hideShimmerEffect()
             Toast.makeText(
                 requireContext(),
                 "User not authenticated",
                 Toast.LENGTH_SHORT
             ).show()
         }
+    }
+
+    private fun showShimmerEffect() {
+        binding.shimmerViewContainer.startShimmerAnimation()
+        binding.shimmerViewContainer.visibility = View.VISIBLE
+
+    }
+
+    private fun hideShimmerEffect() {
+        binding.shimmerViewContainer.stopShimmerAnimation()
+
+        binding.userInfoCard.visibility = View.VISIBLE
     }
 
     private fun showProgressDialog() {

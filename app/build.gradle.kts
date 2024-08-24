@@ -111,4 +111,6 @@ dependencies {
     implementation ("com.github.kittinunf.fuel:fuel-json:2.3.1")
     implementation ("com.paytm.appinvokesdk:appinvokesdk:1.6.12") // Updated version
 
+    implementation ("com.facebook.shimmer:shimmer:0.1.0@aar")
+
 }

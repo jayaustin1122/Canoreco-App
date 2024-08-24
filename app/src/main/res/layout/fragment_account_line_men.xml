@@ -14,6 +14,13 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/shimmer_view_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="fill_parent"
@@ -54,7 +61,7 @@
                         android:elevation="2dp"
                         android:id="@+id/imgUserProfile"
                         android:layout_gravity="center_horizontal"
-                        android:src="@drawable/logo"
+                        android:src="@color/quantum_grey"
                         tools:ignore="ContentDescription" />
 
                     <TextView
@@ -64,7 +71,7 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="8dp"
                         android:fontFamily="@font/bold"
-                        android:text="Mang Canor"
+                        android:text="------"
                         android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
                     <TextView
@@ -72,7 +79,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:text="+639613644784"
+                        android:text="-------"
                         android:textAppearance="@style/TextAppearance.AppCompat.Small" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
@@ -226,6 +233,7 @@
             </androidx.cardview.widget.CardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.facebook.shimmer.ShimmerFrameLayout>
     </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
