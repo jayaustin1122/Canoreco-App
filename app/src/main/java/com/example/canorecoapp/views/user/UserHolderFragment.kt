@@ -1,5 +1,6 @@
 package com.example.canorecoapp.views.user
 
+import HomeUserFragment
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -29,14 +30,15 @@ class UserHolderFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentUserHolderBinding.inflate(layoutInflater)
+        binding = FragmentUserHolderBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         auth = FirebaseAuth.getInstance()
-        fragmentManager = requireActivity().supportFragmentManager
+        fragmentManager = childFragmentManager
+
         val homeFragment = HomeUserFragment()
         val serviceFragment = ServicesUserFragment()
         val accountUserFragment = AccountUserFragment()
@@ -45,28 +47,29 @@ class UserHolderFragment : Fragment() {
             loadUsersInfo()
         }
 
-        val bottomNavigationView: BottomNavigationView = binding.bottomNavigation
-        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+        val bottomNavigationView: BottomNavigationView? = binding.bottomNavigationUser
+        bottomNavigationView?.setOnNavigationItemSelectedListener { item ->
             val selectedFragment: Fragment = when (item.itemId) {
+
                 R.id.navigation_Home -> homeFragment
                 R.id.navigation_services -> serviceFragment
                 R.id.navigation_account -> accountUserFragment
-
                 else -> return@setOnNavigationItemSelectedListener false
             }
             fragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, selectedFragment)
-                .commitAllowingStateLoss()
+                .replace(R.id.fragment_containerUser, selectedFragment)
+                .commit()
+
             true
         }
 
         if (savedInstanceState == null) {
             if (!homeFragment.isAdded) {
                 fragmentManager.beginTransaction()
-                    .add(R.id.fragment_container, homeFragment)
+                    .add(R.id.fragment_containerUser, homeFragment)
                     .commit()
             }
-            bottomNavigationView.selectedItemId = R.id.navigation_Home
+            bottomNavigationView?.selectedItemId = R.id.navigation_Home
         }
     }
 
@@ -78,6 +81,13 @@ class UserHolderFragment : Fragment() {
             db.collection("users").document(user.uid).get()
                 .addOnSuccessListener { document ->
                     val userName = document.getString("fullName")
+                    val image = document.getString("image")
+                    val context = context ?: return@addOnSuccessListener
+                    binding.imgProfile?.let {
+                        Glide.with(context)
+                            .load(image)
+                            .into(it)
+                    }
                     Toast.makeText(
                         requireContext(),
                         "Welcome ${userName ?: "User"}!",
@@ -101,3 +111,4 @@ class UserHolderFragment : Fragment() {
         }
     }
 }
+

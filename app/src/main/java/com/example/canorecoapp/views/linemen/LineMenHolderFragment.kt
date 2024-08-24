@@ -6,15 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.doOnAttach
 import androidx.fragment.app.FragmentManager
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentLineMenHolderBinding
 import com.example.canorecoapp.views.linemen.account.AccountLineMenFragment
 import com.example.canorecoapp.views.linemen.home.HomeLineMenFragment
 import com.example.canorecoapp.views.linemen.notifications.NotificationLineMenFragment
-import com.example.canorecoapp.views.user.AccountUserFragment
-import com.example.canorecoapp.views.user.HomeUserFragment
-import com.example.canorecoapp.views.user.ServicesUserFragment
+import com.google.android.material.bottomappbar.BottomAppBar
+
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -46,7 +46,7 @@ class LineMenHolderFragment : Fragment() {
             loadUsersInfo()
         }
 
-        val bottomNavigationView: BottomNavigationView = binding.bottomNavigation
+        val bottomNavigationView: BottomNavigationView = binding.bottomNavigationLinemen
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             val selectedFragment: Fragment = when (item.itemId) {
                 R.id.navigation_Home_linemen -> homeFragment
@@ -56,14 +56,14 @@ class LineMenHolderFragment : Fragment() {
                 else -> return@setOnNavigationItemSelectedListener false
             }
             fragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, selectedFragment)
+                .replace(R.id.fragment_containerLinemen, selectedFragment)
                 .commitAllowingStateLoss()
             true
         }
         if (savedInstanceState == null) {
             if (!homeFragment.isAdded) {
                 fragmentManager.beginTransaction()
-                    .add(R.id.fragment_container, homeFragment)
+                    .add(R.id.fragment_containerLinemen, homeFragment)
                     .commit()
             }
             bottomNavigationView.selectedItemId = R.id.navigation_Home

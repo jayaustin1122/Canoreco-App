@@ -156,7 +156,7 @@ class SignInFragment : Fragment() {
                         val access = snapshot.getBoolean("access")
 
                         when (userType) {
-                            "admin" -> {
+                            "linemen" -> {
                                 Toast.makeText(this@SignInFragment.requireContext(), "Login Successfully", Toast.LENGTH_SHORT).show()
                                 progressDialog.setMessage("Redirecting...")
                                 progressDialog.show()

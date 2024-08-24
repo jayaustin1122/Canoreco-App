@@ -1,6 +1,9 @@
 package com.example.canorecoapp.views.user
 
+import android.app.ProgressDialog
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +12,7 @@ import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.canorecoapp.R
+import com.example.canorecoapp.databinding.FragmentAccountLineMenBinding
 import com.example.canorecoapp.databinding.FragmentAccountUserBinding
 import com.example.canorecoapp.databinding.FragmentHomeUserBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -16,27 +20,35 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 
 class AccountUserFragment : Fragment() {
-    private lateinit var binding: FragmentAccountUserBinding
+    private lateinit var binding : FragmentAccountLineMenBinding
     private lateinit var auth : FirebaseAuth
+    private lateinit var progressDialog: ProgressDialog
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentAccountUserBinding.inflate(layoutInflater)
+        binding = FragmentAccountLineMenBinding.inflate(layoutInflater)
         // Inflate the layout for this fragment
         return binding.root
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         auth = FirebaseAuth.getInstance()
+        progressDialog = ProgressDialog(requireContext()).apply {
+            setMessage("Please wait...")
+            setCancelable(false)
+        }
         loadUsersInfo()
         binding.logout.setOnClickListener {
+            showProgressDialog()
             auth.signOut()
-            findNavController().apply {
-                navigate(R.id.signInFragment)
-            }
+            Handler(Looper.getMainLooper()).postDelayed({
+                hideProgressDialog()
+                findNavController().apply {
+                    navigate(R.id.signInFragment)
+                }
+            }, 3000) // 3 seconds delay
         }
     }
 
@@ -56,10 +68,8 @@ class AccountUserFragment : Fragment() {
                     // Safely load the image using Glide
                     val context = context ?: return@addOnSuccessListener
                     Glide.with(context)
-                        .load(userName)
+                        .load(image) // Load the image URL from Firestore
                         .into(binding.imgUserProfile)
-
-
                 }
                 .addOnFailureListener { exception ->
                     Toast.makeText(
@@ -75,5 +85,13 @@ class AccountUserFragment : Fragment() {
                 Toast.LENGTH_SHORT
             ).show()
         }
+    }
+
+    private fun showProgressDialog() {
+        progressDialog.show()
+    }
+
+    private fun hideProgressDialog() {
+        progressDialog.dismiss()
     }
 }
