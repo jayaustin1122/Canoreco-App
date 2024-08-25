@@ -52,6 +52,11 @@ class AccountLineMenFragment : Fragment() {
                 }
             }, 3000) // 3 seconds delay
         }
+        binding.imgUserProfile.setOnClickListener {
+            findNavController().apply {
+                navigate(R.id.testNotifFragment)
+            }
+        }
     }
 
 

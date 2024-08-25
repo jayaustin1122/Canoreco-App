@@ -14,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.annotation.ColorInt
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.canorecoapp.R
@@ -137,8 +138,19 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
             for (document in querySnapshot.documents) {
                 val lat = (document.getDouble("lat") ?: document.getLong("lat")?.toDouble()) ?: document.getString("lat")?.toDoubleOrNull()
                 val lng = (document.getDouble("lng") ?: document.getLong("lng")?.toDouble()) ?: document.getString("lng")?.toDoubleOrNull()
-                if (lat != null && lng != null) {
-                    val markerIcon = bitmapFromVector(this@HomeLineMenFragment.requireContext(), R.drawable.baseline_adjust_24)
+                val status = document.getString("status")
+
+                if (lat != null && lng != null && status != null) {
+                    // Determine the color based on the status
+                    val color = when (status.lowercase()) {
+                        "working" -> Color.BLUE
+                        "under repair" -> Color.GREEN
+                        "not working" -> Color.RED
+                        else -> Color.GRAY // Default color if status is unknown
+                    }
+
+                    // Create the marker icon with the appropriate color
+                    val markerIcon = bitmapFromVector(this@HomeLineMenFragment.requireContext(), R.drawable.baseline_adjust_24, color)
 
                     // Add a marker for each item with the custom icon
                     val marker = gMap?.addMarker(
@@ -154,13 +166,18 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
             Log.e("MapData", "Error retrieving data from Firestore: ${exception.message}")
         }
     }
-    private fun bitmapFromVector(context: Context, vectorResId: Int): BitmapDescriptor {
+
+    private fun bitmapFromVector(context: Context, vectorResId: Int, @ColorInt color: Int): BitmapDescriptor {
         val vectorDrawable = ContextCompat.getDrawable(context, vectorResId)
         vectorDrawable?.setBounds(
             0, 0,
             vectorDrawable.intrinsicWidth,
             vectorDrawable.intrinsicHeight
         )
+
+        // Apply the tint color to the drawable
+        vectorDrawable?.setTint(color)
+
         val bitmap = Bitmap.createBitmap(
             vectorDrawable!!.intrinsicWidth,
             vectorDrawable.intrinsicHeight,
@@ -170,6 +187,7 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
         vectorDrawable.draw(canvas)
         return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
+
 
     override fun onMapReady(googleMap: GoogleMap) {
         gMap = googleMap

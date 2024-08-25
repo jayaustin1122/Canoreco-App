@@ -53,6 +53,15 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_map_api_key"/>
+        <service
+            android:name="com.example.bidnshare.notification.FirebaseServiceCanoreco"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

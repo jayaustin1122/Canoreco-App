@@ -98,4 +98,9 @@
         android:name="com.example.canorecoapp.views.onboardingscreens.OnBoardingMainFragment"
         android:label="fragment_on_boarding_main"
         tools:layout="@layout/fragment_on_boarding_main" />
+    <fragment
+        android:id="@+id/testNotifFragment"
+        android:name="com.example.canorecoapp.notification.TestNotifFragment"
+        android:label="fragment_test_notif"
+        tools:layout="@layout/fragment_test_notif" />
 </navigation>
