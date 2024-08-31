@@ -82,6 +82,7 @@ class UserHolderFragment : Fragment() {
                 .addOnSuccessListener { document ->
                     val userName = document.getString("fullName")
                     val image = document.getString("image")
+                    val token = document.getString("token")
                     val context = context ?: return@addOnSuccessListener
                     binding.imgProfile?.let {
                         Glide.with(context)
@@ -91,6 +92,11 @@ class UserHolderFragment : Fragment() {
                     Toast.makeText(
                         requireContext(),
                         "Welcome ${userName ?: "User"}!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "$token",
                         Toast.LENGTH_SHORT
                     ).show()
                     isUserInfoLoaded = true // Mark user info as loaded

@@ -38,7 +38,7 @@ class TestNotifFragment : Fragment() {
         binding.btnTest.setOnClickListener {
             PushNotification(
                 NotificationData("New Data", "Sample Push NOtif"),
-                "fk4bhSHJSVKM5ZGUPPNuFa:APA91bELeSmB4RCU_3xXSi6nw8Glk4Qcw1iQWNwi_w8SfNTzZw7-HgNjodzoWNpyN1dk9hsXnyaV25zra-pN7r-uoJtrZkq5UpjjVFW6qC5HMa6OJqeeIfscHhfKRi07_WQC2BTRIHhq"
+                "fJypwSHaRN6dIFcjERCxOc:APA91bHKO43GGykAebVCQaB1Tm2rm1lFN05er784B1ZiNeba_TBw6P-pPDrXkI8yfsl04faNtlsA1V_DjIyTrFb-ZlWCYuDfYqtz4d-KQMKP-NpLFZtO2iTilIRzYM99NvWlnrRsNfs-"
             ).also {
                 sendNotification(it)
                 val fcmToken = FirebaseMessaging.getInstance().token

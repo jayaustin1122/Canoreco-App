@@ -69,7 +69,7 @@ class HomeUserFragment : Fragment() {
                     val title = document.getString("Title") ?: ""
                     val shortDesc = document.getString("Short Description") ?: ""
                     val date = document.getString("Date") ?: ""
-                    val timestamp = document.getString("timestamp") ?: ""
+                    val timestamp = document.getDouble("timestamp") ?: ""
                     val image = document.getString("Image") ?: ""
                     Log.d("HOme", ": $title, $shortDesc, $date, $image")
                     freeItems.add(News(title, shortDesc, "", image, timestamp.toString(), date, "", "", "", ""))
