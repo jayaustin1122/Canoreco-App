@@ -4,7 +4,8 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 
 class SignUpViewModel  : ViewModel() {
-    var fullname: String = ""
+    var firstName: String = ""
+    var lastName: String = ""
     var email: String = ""
     var password: String = ""
 

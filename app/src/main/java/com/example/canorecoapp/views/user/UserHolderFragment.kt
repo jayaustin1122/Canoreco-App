@@ -94,11 +94,6 @@ class UserHolderFragment : Fragment() {
                         "Welcome ${userName ?: "User"}!",
                         Toast.LENGTH_SHORT
                     ).show()
-                    Toast.makeText(
-                        requireContext(),
-                        "$token",
-                        Toast.LENGTH_SHORT
-                    ).show()
                     isUserInfoLoaded = true // Mark user info as loaded
                 }
                 .addOnFailureListener { exception ->

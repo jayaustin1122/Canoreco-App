@@ -24,6 +24,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolygonOptions
+import com.google.firebase.firestore.FirebaseFirestore
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
@@ -55,37 +56,75 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
             null
         }
     }
+    private fun showPolygonsBasedOnFirestore() {
+        val firestoreReference = FirebaseFirestore.getInstance().collection("outages")
 
-    private fun parseAndDrawPolygons(jsonData: String) {
-        Log.d("JSON", "Parsing JSON data")
+        firestoreReference.get().addOnSuccessListener { querySnapshot ->
+            val selectedLocations = mutableSetOf<String>()
+
+            for (document in querySnapshot.documents) {
+                val selectedLocationsList = document.get("selectedLocations") as? List<*>
+                selectedLocationsList?.let {
+                    selectedLocations.addAll(it.filterIsInstance<String>())
+                }
+
+                // Logging for debugging
+                Log.d("FirestoreData", "Selected Locations: $selectedLocations")
+            }
+
+            val jsonData = loadJsonFromRaw(R.raw.filtered_barangays)
+            jsonData?.let { parseAndDrawPolygons(it, selectedLocations) }
+                ?: run {
+                    Log.e("JSON", "Failed to load JSON data")
+                }
+
+        }.addOnFailureListener { exception ->
+            Log.e("MapData", "Error retrieving data from Firestore: ${exception.message}")
+        }
+    }
+
+
+
+    private fun parseAndDrawPolygons(jsonData: String, selectedLocations: Set<String>) {
         try {
             val jsonObject = JSONObject(jsonData)
             val features = jsonObject.getJSONArray("features")
-            Log.d("JSON", "Number of features: ${features.length()}")
+
+            // Log the selected locations to confirm which ones we are looking for
+            Log.d("MapData", "Selected Locations: $selectedLocations")
 
             for (i in 0 until features.length()) {
                 val feature = features.getJSONObject(i)
-                val geometry = feature.getJSONObject("geometry")
+                val properties = feature.getJSONObject("properties")
+                val barangayName = properties.getString("ID_3")
 
-                if (geometry.getString("type") == "Polygon") {
-                    val coordinates = geometry.getJSONArray("coordinates").getJSONArray(0)
+                // Log each ID_3 from the JSON file
+                Log.d("MapData", "Found ID_3: $barangayName")
 
-                    val polygonOptions = PolygonOptions()
+                // Check if the current ID_3 is in the selectedLocations
+                if (barangayName in selectedLocations) {
+                    Log.d("MapData", "Drawing polygon for ID_3: $barangayName")
+                    val geometry = feature.getJSONObject("geometry")
 
-                    for (j in 0 until coordinates.length()) {
-                        val coordinate = coordinates.getJSONArray(j)
-                        val latLng = LatLng(coordinate.getDouble(1), coordinate.getDouble(0))
-                        polygonOptions.add(latLng)
+                    if (geometry.getString("type") == "Polygon") {
+                        val coordinates = geometry.getJSONArray("coordinates").getJSONArray(0)
+
+                        val polygonOptions = PolygonOptions()
+
+                        for (j in 0 until coordinates.length()) {
+                            val coordinate = coordinates.getJSONArray(j)
+                            val latLng = LatLng(coordinate.getDouble(1), coordinate.getDouble(0))
+                            polygonOptions.add(latLng)
+                        }
+
+                        polygonOptions.strokeColor(Color.RED)
+                        polygonOptions.fillColor(Color.argb(100, 255, 0, 0)) // Customize as needed
+                        polygonOptions.strokeWidth(3f)
+
+                        gMap?.addPolygon(polygonOptions)
                     }
-
-                    polygonOptions.strokeColor(Color.RED) // Customize as needed
-                    polygonOptions.fillColor(Color.BLUE) // Customize as needed
-                    polygonOptions.strokeWidth(2f) // Customize as needed
-
-                    gMap?.addPolygon(polygonOptions)
                 }
             }
-            Log.d("JSON", "Polygons successfully drawn on map")
         } catch (e: JSONException) {
             Log.e("JSON", "Error parsing JSON data: ${e.message}")
         }
@@ -181,14 +220,8 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
         val zoomLevel = 5.0f
         gMap?.setOnMarkerClickListener(this)
         gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(sanVicenteCamarinesNorte, zoomLevel))
+        showPolygonsBasedOnFirestore()
 
-        // Directly load and parse the JSON file
-        val jsonData = loadJsonFromRaw(R.raw.barangaycamnorte)
-        Log.d("JSON", "Loaded JSON data: $jsonData")
-
-        jsonData?.let { parseAndDrawPolygons(it) } ?: run {
-            Log.e("JSON", "Failed to load JSON data")
-        }
     }
 
     companion object {

@@ -30,9 +30,7 @@ class StepFourFragment : Fragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.accountNumber.addTextChangedListener {
-            viewModel.accountNumber = it.toString()
-        }
+
 
         binding.phoneNumber.addTextChangedListener {
             viewModel.phone = it.toString()
