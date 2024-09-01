@@ -151,15 +151,14 @@ class SignUpFragment : Fragment() {
     }
     private fun validateFragmentFour() {
         val phoneNUmber = viewModel.phone
-        val accountNumber = viewModel.accountNumber
         val address = viewModel.address
+        val accountNumber = viewModel.accountNumber
         if (phoneNUmber.isEmpty()) {
             Toast.makeText(requireContext(), "Please Enter Contact Number or Valid Contact Number", Toast.LENGTH_SHORT).show()
-            return
-        } else if (accountNumber.isEmpty()) {
-            Toast.makeText(requireContext(), "Please Enter your Account Number", Toast.LENGTH_SHORT).show()
-            return
         } else if (address.isEmpty()) {
+            Toast.makeText(requireContext(), "Please Enter Your Address", Toast.LENGTH_SHORT).show()
+            return}
+        else if (accountNumber.isEmpty()) {
             Toast.makeText(requireContext(), "Please Enter Your Address", Toast.LENGTH_SHORT).show()
             return
         } else {
@@ -173,7 +172,6 @@ class SignUpFragment : Fragment() {
 
         }
     }
-
     fun nextItem(){
         val currentItem = viewPager.currentItem
         val nextItem = currentItem + 1
@@ -183,11 +181,12 @@ class SignUpFragment : Fragment() {
         }
     }
     fun validateFragmentOne(){
-        val fullname = viewModel.fullname
+        val firstName = viewModel.firstName
+        val lastName = viewModel.lastName
         val email = viewModel.email
         val password = viewModel.password
-        if (fullname.isEmpty()) {
-            Toast.makeText(requireContext(), "Please enter your fullname", Toast.LENGTH_SHORT).show()
+        if (firstName.isEmpty() && lastName.isEmpty()) {
+            Toast.makeText(requireContext(), "Please enter your First Name And Last Name", Toast.LENGTH_SHORT).show()
             return
         } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             Toast.makeText(requireContext(), "Please enter a valid email address", Toast.LENGTH_SHORT).show()
@@ -282,7 +281,8 @@ class SignUpFragment : Fragment() {
     private fun uploadToFirebase(token: String?, imageUrl: String) {
         progressDialog.setMessage("Saving Account...")
         progressDialog.show()
-        val fullname = viewModel.fullname
+        val firstName = viewModel.firstName
+        val lastName = viewModel.lastName
         val email = viewModel.email
         val password = viewModel.password
         val month = viewModel.month
@@ -298,17 +298,17 @@ class SignUpFragment : Fragment() {
             "uid" to uid,
             "email" to email,
             "password" to password,
-            "fullName" to fullname,
+            "fistName" to firstName,
+            "lastName" to lastName,
             "image" to imageUrl,
-            "currentDate" to currentDate,
-            "currentTime" to currentTime,
             "phone" to viewModel.phone,
             "userType" to "member",
             "access" to false,
             "token" to token,
             "dateOfBirth" to "$month-$day-$year",
             "timestamp" to timestamp,
-            "address" to viewModel.address
+            "address" to viewModel.address,
+            "accountNumber" to viewModel.accountNumber,
         )
         val firestore = FirebaseFirestore.getInstance()
         try {

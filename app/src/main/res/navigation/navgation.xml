@@ -36,13 +36,7 @@
         android:label="fragment_news_details"
         tools:layout="@layout/fragment_news_details" />
     <fragment
-        android:id="@+id/loginOrSignUpFragment"
-        android:name="com.example.canorecoapp.views.LoginOrSignUpFragment"
-        android:label="fragment_login_or_sign_up"
-        tools:layout="@layout/fragment_login_or_sign_up" />
-    <fragment
         android:id="@+id/homeUserFragment"
-        android:name="com.example.canorecoapp.views.user.HomeUserFragment"
         android:label="fragment_home_user"
         tools:layout="@layout/fragment_home_user" >
         <action
@@ -103,4 +97,12 @@
         android:name="com.example.canorecoapp.notification.TestNotifFragment"
         android:label="fragment_test_notif"
         tools:layout="@layout/fragment_test_notif" />
+    <fragment
+        android:id="@+id/loginEmployeeFragment"
+        android:name="com.example.canorecoapp.employee.LoginEmployeeFragment"
+        android:label="LoginEmployeeFragment" />
+    <fragment
+        android:id="@+id/signUpEmployeeFragment"
+        android:name="com.example.canorecoapp.employee.SignUpEmployeeFragment"
+        android:label="SignUpEmployeeFragment" />
 </navigation>

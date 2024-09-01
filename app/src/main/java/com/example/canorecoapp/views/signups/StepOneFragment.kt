@@ -30,8 +30,11 @@ class StepOneFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.etFullname.addTextChangedListener {
-            viewModel.fullname = it.toString()
+        binding.etFirstName.addTextChangedListener {
+            viewModel.firstName = it.toString()
+        }
+        binding.etLastName.addTextChangedListener {
+            viewModel.lastName = it.toString()
         }
 
         binding.etEmailSignUp.addTextChangedListener {

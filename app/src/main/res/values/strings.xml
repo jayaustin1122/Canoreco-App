@@ -5,9 +5,14 @@
     <string name="home">Home</string>
     <string name="sevices">Sevices</string>
     <string name="account">Account</string>
-    <string name="google_map_api_key">AIzaSyB8LLSP7qQiVbs-JmX9Uynq-CnKB-TDEo0</string>
+    <string name="google_map_api_key">AIzaSyCMJs0kMNNx9JBJs-NY0AENX0qVh85fK4o</string>
     <string name="navigation_drawer_open">open\n</string>
     <string name="navigation_drawer_close">close\n</string>
     <string name="map_id">714a7a57ec28897b</string>
     <string name="notification">Notification</string>
+    <string-array name="planets_array">
+        <item>Area 1</item>
+        <item>Area 2</item>
+        <item>Area 3</item>
+    </string-array>
 </resources>
