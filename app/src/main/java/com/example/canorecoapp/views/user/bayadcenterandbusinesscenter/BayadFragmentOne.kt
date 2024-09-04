@@ -2,6 +2,8 @@ package com.example.canorecoapp.views.user.bayadcenterandbusinesscenter
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
@@ -19,6 +21,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
@@ -84,13 +87,25 @@ class BayadFragmentOne : Fragment() , OnMapReadyCallback, GoogleMap.OnMarkerClic
         firestoreReference.get().addOnSuccessListener { querySnapshot ->
             for (document in querySnapshot.documents) {
                 val locationName = document.getString("locationName")
-                val latitude = document.getString("latitude")?.toDoubleOrNull()
-                val longitude = document.getString("longitude")?.toDoubleOrNull()
+                val latitude = document.getDouble("latitude")
+                val longitude = document.getDouble("longitude")
 
                 // Check if latitude and longitude are not null
                 if (latitude != null && longitude != null) {
                     // Add a marker for each item
-                    val marker = gMap?.addMarker(MarkerOptions().position(LatLng(latitude, longitude)).title(locationName))
+
+                    val smallMarker = Bitmap.createScaledBitmap(
+                        BitmapFactory.decodeResource(resources, R.drawable.icon_payment_center),
+                        114, 127, false
+                    )
+
+                    // Add a marker for each item
+                    val marker = gMap?.addMarker(
+                        MarkerOptions()
+                            .position(LatLng(latitude, longitude))
+                            .title(locationName)
+                            .icon(BitmapDescriptorFactory.fromBitmap(smallMarker)) // Custom marker icon
+                    )
                     marker?.tag = document.id // Save the Firestore document ID as a tag for reference
                 }
             }
@@ -99,7 +114,6 @@ class BayadFragmentOne : Fragment() , OnMapReadyCallback, GoogleMap.OnMarkerClic
             Log.e("MapData", "Error retrieving data from Firestore: ${exception.message}")
         }
     }
-
 
     private fun checkPermissionLocation() {
         // Request location permission
@@ -189,11 +203,11 @@ class BayadFragmentOne : Fragment() , OnMapReadyCallback, GoogleMap.OnMarkerClic
     }
     override fun onMapReady(googleMap: GoogleMap) {
         gMap = googleMap
-        val sanVicenteCamarinesNorte = LatLng(14.08446, 122.88797)
-        val zoomLevel = 5.0f // Adjust the zoom level as needed
+        val camarinesNorte = LatLng(14.222795, 122.689153)
+        val zoomLevel = 9.5f // Adjust the zoom level as needed
         gMap?.setOnMarkerClickListener(this)
         // Move the camera to the initial position
-        gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(sanVicenteCamarinesNorte, zoomLevel))
+        gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(camarinesNorte, zoomLevel))
 
         getCurrentLocation()
     }

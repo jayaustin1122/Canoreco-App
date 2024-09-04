@@ -5,172 +5,191 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@android:color/white"
     tools:context=".views.user.news.NewsDetailsFragment">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/primary_dark_color"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" >
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="News"
+                android:textColor="@color/text_light_color"
+                android:textSize="22sp"
+                android:fontFamily="@font/roboto_bold"/>
+
+            <ImageButton
+                android:id="@+id/backArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/back_arrow"
+                android:background="@android:color/transparent"
+                app:tint="@color/text_light_color"/>
+
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbars="vertical">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-
-    <LinearLayout
-            android:id="@+id/top_bar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="#f0f0f0"
-            android:padding="16dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <ImageView
-                android:id="@+id/back_arrow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/back_arrow" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="16dp"
-                android:text="News"
-                android:textColor="@android:color/black"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/news_title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:padding="16dp"
-            android:text="CANORECO Advisory: Emergency Power Em..."
-            android:textColor="@android:color/black"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/top_bar"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <TextView
-            android:id="@+id/news_date"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:text="March 4, 2024"
-            android:textColor="@android:color/black"
-            android:textSize="14sp"
-            app:layout_constraintTop_toBottomOf="@id/news_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <ImageView
-            android:scaleType="fitXY"
-            android:id="@+id/news_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@android:color/darker_gray"
-            app:layout_constraintTop_toBottomOf="@id/news_date"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <TextView
-            android:id="@+id/news_excerpt"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:padding="16dp"
-            android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
-            android:textColor="@android:color/black"
-            android:textSize="14sp"
-            app:layout_constraintTop_toBottomOf="@id/news_image"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_height="0dp"
+        android:scrollbars="vertical"
+        android:padding="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
+        app:layout_constraintBottom_toTopOf="@+id/bottomLinearLayout">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintTop_toBottomOf="@+id/news_excerpt">
+            android:orientation="vertical">
 
             <TextView
-                android:padding="16dp"
-                android:textColor="@android:color/black"
+                android:id="@+id/news_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Magkakaroon ng power service interruption:"/>
-            <TextView
-
-                android:textColor="@android:color/black"
-                android:paddingStart="16dp"
-                android:id="@+id/tvGawain"
-                android:paddingEnd="16dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="GAWAIN : Maintenance and Clearing activities."/>
-            <TextView
-
-                android:textColor="@android:color/black"
-                android:paddingStart="16dp"
-                android:id="@+id/tvPetsa"
-                android:paddingEnd="16dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="GAWAIN : Maintenance and Clearing activities."/>
-            <TextView
-
-                android:textColor="@android:color/black"
-                android:paddingStart="16dp"
-                android:id="@+id/tvOras"
-                android:paddingEnd="16dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="GAWAIN : Maintenance and Clearing activities."/>
-            <TextView
-
-                android:textColor="@android:color/black"
-                android:paddingStart="16dp"
-                android:id="@+id/tvLugar"
-                android:paddingEnd="16dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="GAWAIN : Maintenance and Clearing activities."/>
+                android:text="CANORECO Advisory: Emergency Power Em..."
+                android:textColor="@color/text_dark_color"
+                android:textSize="16sp"
+                android:fontFamily="@font/roboto_medium" />
 
             <TextView
-
-                android:id="@+id/tvLongDesc"
+                android:id="@+id/news_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:paddingTop="16dp"
-                android:paddingBottom="60dp"
-                android:text="GAWAIN : Maintenance and Clearing activities."
-                android:textColor="@android:color/black" />
+                android:layout_marginBottom="20dp"
+                android:text="March 4, 2024"
+                android:textColor="@color/text_dark_color"
+                android:textSize="14sp"
+                android:fontFamily="@font/roboto_regular"/>
+
+            <ImageView
+                android:id="@+id/news_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:background="@android:color/darker_gray"
+                android:scaleType="fitXY" />
+
+            <TextView
+                android:id="@+id/news_excerpt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
+                android:textColor="@color/text_dark_color"
+                android:textSize="14sp"
+                android:fontFamily="@font/roboto_regular" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="Magkakaroon ng power service interruption:"
+                    android:textColor="@color/text_dark_color"
+                    android:textSize="15sp"
+                    android:fontFamily="@font/roboto_regular" />
+
+                <TextView
+                    android:id="@+id/tvGawain"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text="GAWAIN : Maintenance and Clearing activities."
+                    android:textSize="15sp"
+                    android:textColor="@color/text_dark_color"
+                    android:fontFamily="@font/roboto_regular" />
+
+                <TextView
+                    android:id="@+id/tvPetsa"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text="PETSA    : March 9, 2024 (Sabado)"
+                    android:textSize="15sp"
+                    android:textColor="@color/text_dark_color"
+                    android:fontFamily="@font/roboto_regular" />
+
+                <TextView
+                    android:id="@+id/tvOras"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text="ORAS      : 5:00 A.M. – 9:00 A.M. (4 Oras)"
+                    android:textSize="15sp"
+                    android:textColor="@color/text_dark_color"
+                    android:fontFamily="@font/roboto_regular" />
+
+                <TextView
+                    android:id="@+id/tvLugar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="APEKTADONG LUGAR : Mga bayan ng MERCEDES, BASUD, SAN LORENZO
+                    RUIZ at SAN VICENTE; at Brgys. Dogongan, Alawihao, Lag-on, Borabod, Bagasbas,
+                    Gubat, 1, 2, 3, 4, 8, San Isidro, Cobangbang, Mambalite, Magang at Pamorangon sa DAET."
+                    android:textSize="15sp"
+                    android:textColor="@color/text_dark_color"
+                    android:fontFamily="@font/roboto_regular" />
+
+                <TextView
+                    android:id="@+id/tvLongDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Maaaring maibalik ang serbisyo ng kuryente anumang
+                    oras matapos ang nasabing gawain. Para sa kaligtasan ng mga
+                    miyembro-konsumidores, parating ituring na may kuryente ang mga
+                    linya at mga kagamitan sa lahat ng oras."
+                    android:textSize="15sp"
+                    android:textColor="@color/text_dark_color"
+                    android:fontFamily="@font/roboto_regular" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
     </ScrollView>
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/view_in_map_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="View in Map"
-        android:textColor="@android:color/white"
-        app:cornerRadius="10dp"
 
+    <LinearLayout
+        android:id="@+id/bottomLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/view_in_map_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/primary_main_color"
+            android:fontFamily="@font/roboto_medium"
+            android:text="View in Map"
+            android:textColor="@color/primary_light_color"
+            app:cornerRadius="10dp"/>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

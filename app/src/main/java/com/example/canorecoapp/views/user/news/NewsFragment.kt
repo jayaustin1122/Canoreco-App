@@ -56,10 +56,10 @@ class NewsFragment : Fragment() {
                     val title = document.getString("Title") ?: ""
                     val image = document.getString("Image") ?: ""
                     val date = document.getString("Date") ?: ""
-                    val timestamp = document.getString("timestamp") ?: ""
+                    val timestamp = document.getDouble("timestamp") ?: ""
 
                     // Create News object and add to the list
-                    val news = News(title, "","",image,timestamp,date)
+                    val news = News(title, "","",image, timestamp.toString(),date)
                     newsList.add(news)
                 }
                 // Notify the adapter that the data has changed

@@ -1,14 +1,17 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.CanorecoApp" parent="Theme.Material3.Light.NoActionBar">
+    <style name="Base.Theme.CanorecoApp" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
-
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@android:color/white</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
+
     <style name="TabTextStyle" parent="TextAppearance.Design.Tab">
         <item name="android:textSize">14sp</item>
         <item name="android:fontFamily">@font/bold</item>
     </style>
+
     <style name="Theme.CanorecoApp" parent="Base.Theme.CanorecoApp" />
 </resources>

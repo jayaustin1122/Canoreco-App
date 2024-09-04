@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
+    android:background="@color/background_color"
     tools:context=".views.user.UserHolderFragment">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -12,7 +13,6 @@
         android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -20,13 +20,13 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/g_blue2"
+            android:background="@color/primary_main_color"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/logo"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_gravity="start"
                 android:background="@android:color/transparent"
                 android:src="@drawable/logo" />
@@ -59,7 +59,7 @@
                 android:background="@android:color/transparent"
                 android:paddingEnd="10dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/notification"
+                android:src="@drawable/icon_bell_solid"
                 app:tint="@color/white" />
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
@@ -80,11 +80,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        app:itemIconSize="28dp"
-        app:itemIconTint="@color/g_blue2"
-        app:itemTextColor="@color/black"
+        app:itemIconSize="24dp"
+        app:itemIconTint="@color/primary_main_color"
+        app:itemTextColor="@color/primary_dark_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

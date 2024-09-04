@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_color"
     tools:context=".views.user.news.NewsFragment">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -12,7 +13,6 @@
         android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -20,53 +20,54 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/g_gray700"
+            android:background="@color/primary_dark_color"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" >
-            <TextView
+
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="News"
-                android:textSize="24sp"
-                android:textColor="@color/white"
                 android:layout_gravity="center"
-                android:textStyle="bold"
-                />
+                android:text="News"
+                android:textColor="@color/text_light_color"
+                android:textSize="22sp"
+                android:fontFamily="@font/roboto_bold"/>
+
             <ImageButton
                 android:id="@+id/back_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/back_arrow"
                 android:background="@android:color/transparent"
-                app:tint="@color/white"/>
+                app:tint="@color/text_light_color"/>
+
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/latest_news"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="20dp"
-        android:paddingTop="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginHorizontal="20dp"
+        android:fontFamily="@font/roboto_medium"
         android:text="Latest News and Updates"
-        android:textColor="@android:color/black"
-        android:textSize="20sp"
-        android:textStyle="bold"
+        android:textColor="@color/text_dark_color"
+        android:textSize="22sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
 
-    <View
+    <com.google.android.material.divider.MaterialDivider
         android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_margin="10dp"
-        android:background="@android:color/darker_gray"
+        android:layout_marginTop="15dp"
+        android:layout_marginHorizontal="20dp"
+        app:dividerColor="@color/stroke_light_color"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/latest_news" />
 
@@ -74,10 +75,13 @@
         android:id="@+id/recycler_news"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="15dp"
+        android:paddingHorizontal="20dp"
+        android:paddingBottom="20dp"
         tools:listitem="@layout/news_item_view"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
