@@ -53,7 +53,35 @@ class HomeUserFragment : Fragment() {
                 navigate(R.id.maintenanceListFragment)
             }
         }
+        loadUsersInfo()
 
+    }
+    private fun loadUsersInfo() {
+        val db = FirebaseFirestore.getInstance()
+        val currentUser = FirebaseAuth.getInstance().currentUser
+
+        currentUser?.let { user ->
+            db.collection("users").document(user.uid).get()
+                .addOnSuccessListener { document ->
+                    val userName = document.getString("fullName")
+                    binding.textViewUser.setText("$userName")
+
+
+                }
+                .addOnFailureListener { exception ->
+                    Toast.makeText(
+                        requireContext(),
+                        "Error Loading User Data: ${exception.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+        } ?: run {
+            Toast.makeText(
+                requireContext(),
+                "User not authenticated",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
 
@@ -69,14 +97,20 @@ class HomeUserFragment : Fragment() {
                     val title = document.getString("Title") ?: ""
                     val shortDesc = document.getString("Short Description") ?: ""
                     val date = document.getString("Date") ?: ""
+
+                    // Get the array of images from Firestore
+                    val imageList = document.get("image") as? List<String> ?: emptyList()
+                    val firstImage = imageList.getOrNull(0) ?: ""
+
+                    Log.d("Home", ": $title, $shortDesc, $date, $firstImage")
+
                     val timestamp = when (val value = document.get("timestamp")) {
-                        is Double -> value.toString()  // Convert Double to String
-                        is String -> value              // If already a String, return it
-                        else -> ""                      // Default value if neither
+                        is Double -> value.toString()
+                        is String -> value
+                        else -> ""
                     }
-                    val image = document.getString("Image") ?: ""
-                    Log.d("HOme", ": $title, $shortDesc, $date, $image")
-                    freeItems.add(News(title, shortDesc, "", image, timestamp.toString(), date, "", "", "", ""))
+                    Log.d("HOme", ": $title, $shortDesc, $date, $firstImage")
+                    freeItems.add(News(title, shortDesc, "", firstImage, timestamp, date, "", "", "", ""))
                 }
                 lifecycleScope.launchWhenResumed {
                     adapter = NewsAdapter(this@HomeUserFragment.requireContext(), findNavController(), freeItems)
@@ -102,10 +136,16 @@ class HomeUserFragment : Fragment() {
                     val title = document.getString("Title") ?: ""
                     val shortDesc = document.getString("Short Description") ?: ""
                     val date = document.getString("Date") ?: ""
-                    val image = document.getString("Image") ?: ""
-                    Log.d("HOme", ": $title, $shortDesc, $date, $image")
-                    freeItems.add(Maintenance(title, shortDesc, "", image, "", date, "", "", "", ""))
+
+                    // Get the array of images from Firestore
+                    val imageList = document.get("image") as? List<String> ?: emptyList()
+                    val firstImage = imageList.getOrNull(0) ?: "" // Get image at index 0 or default to an empty string
+
+                    Log.d("Home", ": $title, $shortDesc, $date, $firstImage")
+
+                    freeItems.add(Maintenance(title, shortDesc, "", firstImage, "", date, "", "", "", ""))
                 }
+
                 lifecycleScope.launchWhenResumed {
                     adapter2 = MaintenanceAdapter(this@HomeUserFragment.requireContext(), findNavController(), freeItems)
                     binding.rvMaintenanceActivities.setHasFixedSize(true)
@@ -118,6 +158,7 @@ class HomeUserFragment : Fragment() {
                 Log.e("Home", "Error getting documents: ", exception)
             }
     }
+
 
 
 }

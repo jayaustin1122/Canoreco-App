@@ -71,7 +71,7 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
                 Log.d("FirestoreData", "Selected Locations: $selectedLocations")
             }
 
-            val jsonData = loadJsonFromRaw(R.raw.filtered_barangays)
+            val jsonData = loadJsonFromRaw(R.raw.filtered_barangayss)
             jsonData?.let { parseAndDrawPolygons(it, selectedLocations) }
                 ?: run {
                     Log.e("JSON", "Failed to load JSON data")
@@ -115,7 +115,7 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
                         }
 
                         polygonOptions.strokeColor(Color.GRAY)
-                        polygonOptions.fillColor(Color.argb(100, 255, 0, 0)) // Customize as needed
+                        polygonOptions.fillColor(Color.GRAY) // Customize as needed
                         polygonOptions.strokeWidth(3f)
 
                         gMap?.addPolygon(polygonOptions)
