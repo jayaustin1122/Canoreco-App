@@ -18,7 +18,6 @@ import com.example.canorecoapp.databinding.FragmentHomeUserBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-
 class AccountUserFragment : Fragment() {
     private lateinit var binding : FragmentAccountLineMenBinding
     private lateinit var auth : FirebaseAuth

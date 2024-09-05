@@ -32,4 +32,18 @@
     <color name="edit_text_color">#FFD6CF</color>
     <color name="hint_text_color">#D4D4D4</color>
 
+    <color name="primary_main_color">#4e73df</color>
+    <color name="primary_dark_color">#222831</color>
+    <color name="primary_light_color">#fbfff1</color>
+
+    <color name="secondary_color">#3066be</color>
+    <color name="secondary_accent_color">#E4E21C</color>
+
+    <color name="accent_color">#090c9b</color>
+    <color name="background_color">#f6f9ff</color>
+
+    <color name="text_dark_color">#1C1B1F</color>
+    <color name="text_light_color">#E6E0E9</color>
+    <color name="stroke_light_color">#CAC4D0</color>
+    
 </resources>

@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
-    tools:context=".views.user.UserHolderFragment">
+    android:background="@color/background_color"
+    tools:context=".views.user.UserHolderFragment"
+    android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -20,7 +22,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/g_blue2"
+            android:background="@color/primary_dark_color"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
             <de.hdodenhof.circleimageview.CircleImageView
@@ -31,16 +33,6 @@
                 android:background="@android:color/transparent"
                 android:src="@drawable/logo" />
 
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="20dp"
-                android:fontFamily="@font/bold"
-                android:text="CAN-APP"
-                android:textColor="@color/white"
-                android:textSize="18sp" />
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imgProfile"
@@ -59,7 +51,7 @@
                 android:background="@android:color/transparent"
                 android:paddingEnd="10dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/notification"
+                android:src="@drawable/icon_bell_solid"
                 app:tint="@color/white" />
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
@@ -78,13 +70,13 @@
         android:id="@+id/bottom_navigationUser"
         style="@style/Widget.MaterialComponents.BottomNavigationView.Colored"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        app:itemIconSize="28dp"
-        app:itemIconTint="@color/g_blue2"
-        app:itemTextColor="@color/black"
+        android:layout_height="64dp"
+        android:background="@color/primary_dark_color"
+        app:itemPaddingTop="12dp"
+        app:itemPaddingBottom="12dp"
+        app:itemIconSize="24dp"
+        app:itemIconTint="@color/primary_main_color"
+        app:itemTextColor="@color/primary_main_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

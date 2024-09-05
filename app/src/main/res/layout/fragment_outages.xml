@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_color"
     tools:context=".views.user.OutagesFragment">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -12,7 +13,6 @@
         android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -20,90 +20,91 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/g_gray700"
+            android:background="@color/primary_dark_color"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" >
-            <TextView
+
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Outage"
-                android:textSize="24sp"
-                android:textColor="@color/white"
                 android:layout_gravity="center"
-                android:textStyle="bold"
-      />
+                android:text="Outages"
+                android:textColor="@color/text_light_color"
+                android:textSize="22sp"
+                android:fontFamily="@font/roboto_bold"/>
+
             <ImageButton
                 android:id="@+id/back_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/back_arrow"
                 android:background="@android:color/transparent"
-                app:tint="@color/white"/>
+                app:tint="@color/text_light_color"/>
+
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tab_layout"
-        android:layout_width="0dp"
-        android:layout_marginStart="15dp"
-        app:tabIndicatorHeight="0dp"
-        android:layout_marginEnd="15dp"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/tabCard"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:tabTextColor="@color/black"
+        android:layout_margin="20dp"
+        android:elevation="@dimen/cardview_compat_inset_shadow"
+        app:strokeWidth="2dp"
+        app:strokeColor="@color/secondary_accent_color"
+        app:cardCornerRadius="6dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
-        app:tabGravity="fill"
-        app:tabMode="fixed"
-        app:tabBackground="@drawable/tab_background_selector"
-        app:tabTextAppearance="@style/TabTextStyle" />
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
 
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabBackground="@color/background_color"
+            app:tabMaxWidth="0dp"
+            app:tabGravity="fill"
+            app:tabMode="fixed"
+            app:tabIndicatorGravity="stretch"
+            app:tabIndicatorColor="@color/secondary_accent_color"
+            app:tabIndicatorFullWidth="true"
+            app:tabSelectedTextColor="@color/text_dark_color"
+            app:tabTextColor="@color/text_dark_color"
+            app:tabTextAppearance="@android:style/TextAppearance.Widget.TabWidget" />
 
-    <TextView
-        android:id="@+id/choose_location_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="5dp"
-        android:fontFamily="@font/bold"
-        android:text="Choose your location"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tab_layout" />
-
-    <Spinner
-        android:id="@+id/location_spinner"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/choose_location_text" />
+    </com.google.android.material.card.MaterialCardView>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map_fragment_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toTopOf="@id/view_list_button"
+        android:paddingTop="20dp"
+        android:paddingHorizontal="20dp"
+        app:layout_constraintBottom_toTopOf="@id/bottomLinearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/location_spinner" />
+        app:layout_constraintTop_toBottomOf="@id/tabCard"/>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/view_list_button"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:id="@+id/bottomLinearLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="View List"
-        app:cornerRadius="10dp"
+        android:padding="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/view_list_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/primary_main_color"
+            android:fontFamily="@font/roboto_medium"
+            android:text="View List"
+            android:textColor="@color/primary_light_color"
+            app:cornerRadius="10dp"/>
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
