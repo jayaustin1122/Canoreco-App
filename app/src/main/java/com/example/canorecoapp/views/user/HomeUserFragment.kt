@@ -56,8 +56,6 @@ class HomeUserFragment : Fragment() {
 
     }
 
-
-
     private fun getNews() {
         val freeItems = ArrayList<News>()
         val db = FirebaseFirestore.getInstance()
@@ -66,13 +64,13 @@ class HomeUserFragment : Fragment() {
         ref.get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
-                    val title = document.getString("Title") ?: ""
+                    val title = document.getString("title") ?: ""
                     val shortDesc = document.getString("Short Description") ?: ""
-                    val date = document.getString("Date") ?: ""
-                    val timestamp = document.getDouble("timestamp") ?: ""
-                    val image = document.getString("Image") ?: ""
-                    Log.d("HOme", ": $title, $shortDesc, $date, $image")
-                    freeItems.add(News(title, shortDesc, "", image, timestamp.toString(), date, "", "", "", ""))
+                    val date = document.getString("date") ?: ""
+                    val timestamp = document.getString("timestamp") ?: ""
+                    val image = document.getString("images") ?: ""
+                    Log.d("Home", ": $title, $shortDesc, $date, $image, $timestamp")
+                    freeItems.add(News(title, shortDesc, "", image, timestamp, date, "", "", "", ""))
                 }
                 lifecycleScope.launchWhenResumed {
                     adapter = NewsAdapter(this@HomeUserFragment.requireContext(), findNavController(), freeItems)
@@ -95,11 +93,11 @@ class HomeUserFragment : Fragment() {
         ref.get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
-                    val title = document.getString("Title") ?: ""
+                    val title = document.getString("title") ?: ""
                     val shortDesc = document.getString("Short Description") ?: ""
-                    val date = document.getString("Date") ?: ""
-                    val image = document.getString("Image") ?: ""
-                    Log.d("HOme", ": $title, $shortDesc, $date, $image")
+                    val date = document.getString("date") ?: ""
+                    val image = document.getString("images") ?: ""
+                    Log.d("home", ": $title, $shortDesc, $date, $image")
                     freeItems.add(Maintenance(title, shortDesc, "", image, "", date, "", "", "", ""))
                 }
                 lifecycleScope.launchWhenResumed {
