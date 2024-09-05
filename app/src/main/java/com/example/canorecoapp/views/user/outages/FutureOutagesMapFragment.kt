@@ -56,54 +56,51 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
         }
     }
     private fun showPolygonsBasedOnFirestore() {
-        val firestoreReference = FirebaseFirestore.getInstance().collection("areas_affected")
+        val firestoreReference = FirebaseFirestore.getInstance().collection("outages")
+
         firestoreReference.get().addOnSuccessListener { querySnapshot ->
-            val validBarangays = mutableSetOf<String>()
+            val selectedLocations = mutableSetOf<String>()
 
-            Log.d("FirestoreData", "Retrieving data from Firestore")
             for (document in querySnapshot.documents) {
-                Log.d("FirestoreData", "Document ID: ${document.id}")
-
-
-                val barangayDataMap = document.data
-                barangayDataMap?.forEach { (barangayName, isAffected) ->
-                    if (barangayName is String && isAffected is Boolean && isAffected) {
-                        validBarangays.add(barangayName)
-                        Log.d("FirestoreData", "Barangay: $barangayName, Affected: $isAffected")
-                    } else {
-                        Log.w("FirestoreData", "Unexpected data format for barangay: $barangayName")
-                    }
+                val selectedLocationsList = document.get("selectedLocations") as? List<*>
+                selectedLocationsList?.let {
+                    selectedLocations.addAll(it.filterIsInstance<String>())
                 }
+
+                // Logging for debugging
+                Log.d("FirestoreData", "Selected Locations: $selectedLocations")
             }
-
-            Log.d("FirestoreData", "Valid Barangays: $validBarangays")
-
 
             val jsonData = loadJsonFromRaw(R.raw.filtered_barangays)
-            Log.d("JSON", "Loaded JSON data: $jsonData")
-
-            jsonData?.let { parseAndDrawPolygons(it, validBarangays) } ?: run {
-                Log.e("JSON", "Failed to load JSON data")
-            }
+            jsonData?.let { parseAndDrawPolygons(it, selectedLocations) }
+                ?: run {
+                    Log.e("JSON", "Failed to load JSON data")
+                }
 
         }.addOnFailureListener { exception ->
-
             Log.e("MapData", "Error retrieving data from Firestore: ${exception.message}")
         }
     }
-    private fun parseAndDrawPolygons(jsonData: String, validBarangays: Set<String>) {
-        Log.d("JSON", "Parsing JSON data")
+
+    private fun parseAndDrawPolygons(jsonData: String, selectedLocations: Set<String>) {
         try {
             val jsonObject = JSONObject(jsonData)
             val features = jsonObject.getJSONArray("features")
-            Log.d("JSON", "Number of features: ${features.length()}")
+
+            // Log the selected locations to confirm which ones we are looking for
+            Log.d("MapData", "Selected Locations: $selectedLocations")
 
             for (i in 0 until features.length()) {
                 val feature = features.getJSONObject(i)
                 val properties = feature.getJSONObject("properties")
                 val barangayName = properties.getString("ID_3")
 
-                if (barangayName in validBarangays) {
+                // Log each ID_3 from the JSON file
+                Log.d("MapData", "Found ID_3: $barangayName")
+
+                // Check if the current ID_3 is in the selectedLocations
+                if (barangayName in selectedLocations) {
+                    Log.d("MapData", "Drawing polygon for ID_3: $barangayName")
                     val geometry = feature.getJSONObject("geometry")
 
                     if (geometry.getString("type") == "Polygon") {
@@ -118,15 +115,13 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
                         }
 
                         polygonOptions.strokeColor(Color.GRAY)
-                        polygonOptions.fillColor(Color.GRAY) // Cus
-
+                        polygonOptions.fillColor(Color.argb(100, 255, 0, 0)) // Customize as needed
                         polygonOptions.strokeWidth(3f)
 
                         gMap?.addPolygon(polygonOptions)
                     }
                 }
             }
-            Log.d("JSON", "Polygons successfully drawn on map")
         } catch (e: JSONException) {
             Log.e("JSON", "Error parsing JSON data: ${e.message}")
         }
