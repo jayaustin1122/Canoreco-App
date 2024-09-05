@@ -61,7 +61,7 @@ class OutagesFragment : Fragment() {
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Current Outages"))
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Future Outages"))
 
-        // Display the first fragment by default
+
         if (savedInstanceState == null) {
             replaceFragment(CurrentOutagesMapFragment())
         }

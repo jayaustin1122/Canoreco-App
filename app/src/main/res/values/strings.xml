@@ -10,4 +10,9 @@
     <string name="navigation_drawer_close">close\n</string>
     <string name="map_id">714a7a57ec28897b</string>
     <string name="notification">Notification</string>
+    <string-array name="planets_array">
+        <item>Area 1</item>
+        <item>Area 2</item>
+        <item>Area 3</item>
+    </string-array>
 </resources>

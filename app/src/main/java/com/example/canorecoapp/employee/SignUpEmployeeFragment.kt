@@ -1,4 +1,4 @@
-package com.example.canorecoapp.views.signups
+package com.example.canorecoapp.employee
 
 import android.app.ProgressDialog
 import android.os.Bundle
@@ -15,17 +15,22 @@ import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.example.canorecoapp.R
 import com.example.canorecoapp.adapter.SignUpAdapters
-import com.example.canorecoapp.databinding.FragmentSignUpBinding
+import com.example.canorecoapp.databinding.FragmentSignUpEmployeeBinding
 import com.example.canorecoapp.utils.DateTimeUtils.Companion.getCurrentDate
 import com.example.canorecoapp.utils.DateTimeUtils.Companion.getCurrentTime
 import com.example.canorecoapp.utils.FirebaseUtils
 import com.example.canorecoapp.viewmodels.SignUpViewModel
+import com.example.canorecoapp.views.signups.StepFiveFragment
+import com.example.canorecoapp.views.signups.StepFourEmployeeFragment
+import com.example.canorecoapp.views.signups.StepFourFragment
+import com.example.canorecoapp.views.signups.StepOneFragment
+import com.example.canorecoapp.views.signups.StepThreeFragment
+import com.example.canorecoapp.views.signups.StepTwoFragment
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
@@ -38,9 +43,10 @@ import kotlinx.coroutines.withContext
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
-const val TOPIC = "/topics/myTopic2"
-class SignUpFragment : Fragment() {
-    private lateinit var binding: FragmentSignUpBinding
+
+class SignUpEmployeeFragment : Fragment() {
+
+    private lateinit var binding : FragmentSignUpEmployeeBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var firebaseUtils: FirebaseUtils
     private lateinit var viewPager: ViewPager2
@@ -56,16 +62,17 @@ class SignUpFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentSignUpBinding.inflate(layoutInflater)
+        binding = FragmentSignUpEmployeeBinding.inflate(layoutInflater)
+        // Inflate the layout for this fragment
         viewPager = binding.viewpagersignup
         stepView = binding.stepView
         return binding.root
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(requireActivity()).get(SignUpViewModel::class.java)
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         firebaseUtils = FirebaseUtils()
@@ -82,7 +89,7 @@ class SignUpFragment : Fragment() {
         adapter.addFragment(StepOneFragment())
         adapter.addFragment(StepTwoFragment())
         adapter.addFragment(StepThreeFragment())
-        adapter.addFragment(StepFourFragment())
+        adapter.addFragment(StepFourEmployeeFragment())
         adapter.addFragment(StepFiveFragment())
         stepView.go(0, true)
         viewPager.isUserInputEnabled = false
@@ -108,9 +115,9 @@ class SignUpFragment : Fragment() {
     private fun sendPhoneNumberCode() {
         val phoneNumber = viewModel.phone
         val options = PhoneAuthOptions.newBuilder(auth)
-            .setPhoneNumber(phoneNumber) // Phone number to verify
-            .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
-            .setActivity(this@SignUpFragment.requireActivity()) // Activity (for callback binding)
+            .setPhoneNumber(phoneNumber)
+            .setTimeout(60L, TimeUnit.SECONDS)
+            .setActivity(this@SignUpEmployeeFragment.requireActivity())
             .setCallbacks(callbacks)
             .build()
         PhoneAuthProvider.verifyPhoneNumber(options)
@@ -172,6 +179,7 @@ class SignUpFragment : Fragment() {
 
         }
     }
+
     fun nextItem(){
         val currentItem = viewPager.currentItem
         val nextItem = currentItem + 1
@@ -247,7 +255,7 @@ class SignUpFragment : Fragment() {
                 withContext(Dispatchers.Main) {
                     progressDialog.dismiss()
                     Toast.makeText(
-                        this@SignUpFragment.requireContext(),
+                        this@SignUpEmployeeFragment.requireContext(),
                         "Failed Creating Account or ${e.message}",
                         Toast.LENGTH_SHORT
                     ).show()
@@ -270,7 +278,7 @@ class SignUpFragment : Fragment() {
                 } else {
                     progressDialog.dismiss()
                     Toast.makeText(
-                        this@SignUpFragment.requireContext(),
+                        this@SignUpEmployeeFragment.requireContext(),
                         "Error uploading image",
                         Toast.LENGTH_SHORT
                     ).show()
@@ -302,13 +310,13 @@ class SignUpFragment : Fragment() {
             "lastName" to lastName,
             "image" to imageUrl,
             "phone" to viewModel.phone,
-            "userType" to "member",
+            "userType" to "linemen",
             "access" to false,
             "token" to token,
             "dateOfBirth" to "$month-$day-$year",
             "timestamp" to timestamp,
             "address" to viewModel.address,
-            "accountNumber" to viewModel.accountNumber,
+            "area" to viewModel.accountNumber
         )
         val firestore = FirebaseFirestore.getInstance()
         try {
@@ -319,17 +327,17 @@ class SignUpFragment : Fragment() {
                     progressDialog.dismiss()
                     if (task.isSuccessful) {
                         findNavController().apply {
-                            popBackStack(R.id.signUpFragment, false)
-                            navigate(R.id.signInFragment)
+                            popBackStack(R.id.loginEmployeeFragment, false)
+                            navigate(R.id.loginEmployeeFragment)
                         }
                         Toast.makeText(
-                            this@SignUpFragment.requireContext(),
+                            this@SignUpEmployeeFragment.requireContext(),
                             "Account Created",
                             Toast.LENGTH_SHORT
                         ).show()
                     } else {
                         Toast.makeText(
-                            this@SignUpFragment.requireContext(),
+                            this@SignUpEmployeeFragment.requireContext(),
                             task.exception?.message ?: "Error creating account",
                             Toast.LENGTH_SHORT
                         ).show()

@@ -146,23 +146,23 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
                         "working" -> Color.BLUE
                         "under repair" -> Color.GREEN
                         "not working" -> Color.RED
-                        else -> Color.GRAY // Default color if status is unknown
+                        else -> Color.GRAY
                     }
 
-                    // Create the marker icon with the appropriate color
+
                     val markerIcon = bitmapFromVector(this@HomeLineMenFragment.requireContext(), R.drawable.baseline_adjust_24, color)
 
-                    // Add a marker for each item with the custom icon
+
                     val marker = gMap?.addMarker(
                         MarkerOptions()
                             .position(LatLng(lat, lng))
                             .icon(markerIcon)
                     )
-                    marker?.tag = document.id // Save the Firestore document ID as a tag for reference
+                    marker?.tag = document.id
                 }
             }
         }.addOnFailureListener { exception ->
-            // Handle errors if needed
+
             Log.e("MapData", "Error retrieving data from Firestore: ${exception.message}")
         }
     }
@@ -175,7 +175,7 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
             vectorDrawable.intrinsicHeight
         )
 
-        // Apply the tint color to the drawable
+
         vectorDrawable?.setTint(color)
 
         val bitmap = Bitmap.createBitmap(
@@ -207,7 +207,7 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
             for (document in querySnapshot.documents) {
                 Log.d("FirestoreData", "Document ID: ${document.id}")
 
-                // Assuming each document contains a map where keys are barangay names and values are booleans
+
                 val barangayDataMap = document.data
                 barangayDataMap?.forEach { (barangayName, isAffected) ->
                     if (barangayName is String && isAffected is Boolean && isAffected) {
@@ -221,8 +221,8 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
 
             Log.d("FirestoreData", "Valid Barangays: $validBarangays")
 
-            // Load and parse the JSON file, filtering polygons based on validBarangays
-            val jsonData = loadJsonFromRaw(R.raw.barangaycamnorte)
+
+            val jsonData = loadJsonFromRaw(R.raw.filtered_barangays)
             Log.d("JSON", "Loaded JSON data: $jsonData")
 
             jsonData?.let { parseAndDrawPolygons(it, validBarangays) } ?: run {
@@ -230,7 +230,7 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
             }
 
         }.addOnFailureListener { exception ->
-            // Handle errors if needed
+
             Log.e("MapData", "Error retrieving data from Firestore: ${exception.message}")
         }
     }
@@ -246,7 +246,7 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
             for (i in 0 until features.length()) {
                 val feature = features.getJSONObject(i)
                 val properties = feature.getJSONObject("properties")
-                val barangayName = properties.getString("NAME_3")
+                val barangayName = properties.getString("ID_3")
 
                 if (barangayName in validBarangays) {
                     val geometry = feature.getJSONObject("geometry")
@@ -262,9 +262,9 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
                             polygonOptions.add(latLng)
                         }
 
-                        polygonOptions.strokeColor(Color.RED) // Customize as needed
+                        polygonOptions.strokeColor(Color.RED)
                         polygonOptions.fillColor(Color.argb(100, 255, 0, 0)) // Customize as needed
-                        polygonOptions.strokeWidth(3f) // Customize as needed
+                        polygonOptions.strokeWidth(3f)
 
                         gMap?.addPolygon(polygonOptions)
                     }
