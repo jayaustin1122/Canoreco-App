@@ -72,7 +72,7 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
                 Log.d("FirestoreData", "Selected Locations: $selectedLocations")
             }
 
-            val jsonData = loadJsonFromRaw(R.raw.filtered_barangays)
+            val jsonData = loadJsonFromRaw(R.raw.filtered_barangayss)
             jsonData?.let { parseAndDrawPolygons(it, selectedLocations) }
                 ?: run {
                     Log.e("JSON", "Failed to load JSON data")

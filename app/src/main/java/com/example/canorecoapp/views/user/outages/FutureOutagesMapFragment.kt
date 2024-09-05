@@ -79,7 +79,7 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
             Log.d("FirestoreData", "Valid Barangays: $validBarangays")
 
 
-            val jsonData = loadJsonFromRaw(R.raw.filtered_barangays)
+            val jsonData = loadJsonFromRaw(R.raw.filtered_barangayss)
             Log.d("JSON", "Loaded JSON data: $jsonData")
 
             jsonData?.let { parseAndDrawPolygons(it, validBarangays) } ?: run {
