@@ -4,20 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_color"
     tools:context=".views.SplashFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <de.hdodenhof.circleimageview.CircleImageView
+    <ImageView
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:src="@drawable/logo"
-        android:text="splash"
-        android:textSize="50sp"
+        android:src="@drawable/icon_canoreco"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.293" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

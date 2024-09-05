@@ -2,6 +2,8 @@ package com.example.canorecoapp.views.user.bayadcenterandbusinesscenter
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -17,6 +19,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
@@ -59,6 +62,7 @@ class BusinessCenterFragmentTwo : Fragment() , OnMapReadyCallback, GoogleMap.OnM
             return false
         }
     }
+
     fun showAllDataOnMaps() {
         // Get a reference to your Firestore collection
         val firestoreReference = FirebaseFirestore.getInstance().collection("business_centers")
@@ -71,12 +75,20 @@ class BusinessCenterFragmentTwo : Fragment() , OnMapReadyCallback, GoogleMap.OnM
                 val latitude = document.getDouble("latitude")
                 val longitude = document.getDouble("longitude")
                 Log.d("MapData", "Processing document: ${document.id}, locationName: $locationName, latitude: $latitude, longitude: $longitude")
+
                 if (latitude != null && longitude != null) {
+
+                    val smallMarker = Bitmap.createScaledBitmap(
+                        BitmapFactory.decodeResource(resources, R.drawable.icon_business_center),
+                        114, 92, false
+                    )
+
                     // Add a marker for each item
                     val marker = gMap?.addMarker(
                         MarkerOptions()
                             .position(LatLng(latitude, longitude))
                             .title(locationName)
+                            .icon(BitmapDescriptorFactory.fromBitmap(smallMarker)) // Custom marker icon
                     )
                     marker?.tag = document.id // Save the Firestore document ID as a tag for reference
                 }
@@ -176,11 +188,11 @@ class BusinessCenterFragmentTwo : Fragment() , OnMapReadyCallback, GoogleMap.OnM
     }
     override fun onMapReady(googleMap: GoogleMap) {
         gMap = googleMap
-        val sanVicenteCamarinesNorte = LatLng(14.08446, 122.88797)
-        val zoomLevel = 5.0f // Adjust the zoom level as needed
+        val camarinesNorte = LatLng(14.222795, 122.689153)
+        val zoomLevel = 9.5f // Adjust the zoom level as needed
         gMap?.setOnMarkerClickListener(this)
         // Move the camera to the initial position
-        gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(sanVicenteCamarinesNorte, zoomLevel))
+        gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(camarinesNorte, zoomLevel))
 
         getCurrentLocation()
     }

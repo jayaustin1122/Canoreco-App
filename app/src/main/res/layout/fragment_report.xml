@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_color"
     tools:context=".views.user.ReportFragment">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -12,7 +13,6 @@
         android:layout_height="wrap_content"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -20,19 +20,18 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/g_gray700"
+            android:background="@color/primary_dark_color"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-            <TextView
+            <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="16dp"
                 android:text="Consumer Complaints"
-                android:textColor="@color/white"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+                android:textColor="@color/text_light_color"
+                android:textSize="22sp"
+                android:fontFamily="@font/roboto_bold"/>
 
             <ImageButton
                 android:id="@+id/back_button"
@@ -40,20 +39,21 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:src="@drawable/back_arrow"
-                app:tint="@color/white" />
+                app:tint="@color/text_light_color" />
+
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:padding="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottomLinearLayout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
-        app:layout_constraintVertical_bias="0.5">
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -64,50 +64,56 @@
                 android:id="@+id/report_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginBottom="10dp"
+                android:fontFamily="@font/roboto_medium"
                 android:text="Report an Outage or Incident"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+                android:textColor="@color/text_dark_color"
+                android:textSize="22sp" />
 
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="15dp"
+                app:dividerColor="@color/stroke_light_color" />
+
+            <!-- Report Type -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/report_type_input_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp">
+                android:layout_marginBottom="10dp">
 
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
                     android:id="@+id/report_type_spinner"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="56dp"
                     android:hint="What are you reporting?"
-                    android:padding="10dp" />
+                    android:padding="15dp" />
+
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Report Concern -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/concern_input_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp">
+                android:layout_marginBottom="10dp">
 
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
                     android:id="@+id/concern_spinner"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="56dp"
                     android:hint="Particular Concern"
-                    android:padding="10dp" />
+                    android:padding="15dp" />
+
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Report Description -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/concern_description_input_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp">
+                android:layout_marginBottom="15dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/concern_description"
@@ -116,43 +122,57 @@
                     android:gravity="top|start"
                     android:hint="Tell us about your concern"
                     android:inputType="textMultiLine"
-                    android:minHeight="100dp" />
+                    android:minHeight="100dp"
+                    android:scrollbars="vertical"
+                    app:boxStrokeWidth="1dp"
+                    app:boxStrokeWidthFocused="2dp" />
+
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- File Upload -->
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/upload_instructions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="10dp"
+                android:fontFamily="@font/roboto_regular"
                 android:text="Upload photos of your concern. Files must be in PDF, PNG or JPG format and must not exceed 5MB."
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-   />
+                android:textColor="@color/text_dark_color"
+                android:textSize="16sp" />
 
             <ImageView
                 android:id="@+id/file_upload_container"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
                 android:background="@drawable/upload"
                 android:gravity="center"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-
-            </ImageView>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/submit_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:text="Submit" />
+                android:orientation="vertical"></ImageView>
 
         </LinearLayout>
+
     </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/bottomLinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/submit_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/primary_main_color"
+            android:fontFamily="@font/roboto_medium"
+            android:text="Submit"
+            android:textColor="@color/primary_light_color"
+            app:cornerRadius="10dp"/>
+
+    </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -19,7 +19,6 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-
 class AccountLineMenFragment : Fragment() {
     private lateinit var binding: FragmentAccountLineMenBinding
     private lateinit var auth: FirebaseAuth
@@ -58,9 +57,6 @@ class AccountLineMenFragment : Fragment() {
             }
         }
     }
-
-
-
 
     private fun loadUsersInfo() {
         val db = FirebaseFirestore.getInstance()

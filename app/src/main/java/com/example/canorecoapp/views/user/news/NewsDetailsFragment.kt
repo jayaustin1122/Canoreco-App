@@ -72,7 +72,6 @@ class NewsDetailsFragment : Fragment() {
                         val shortDescription = document.getString("Short Description")
                         val LongDescription = document.getString("Full Description")
 
-
                         binding.newsTitle.text = title
                         binding.newsExcerpt.text = shortDescription
                         binding.newsDate.text = date
