@@ -58,7 +58,7 @@ class NewsAdapter(private val context: Context,
         holder.itemView.setOnClickListener {
             val detailsFragment = NewsDetailsFragment()
             val bundle = Bundle()
-            bundle.putString("timeStamp", timeStamp)
+            bundle.putString("timestamp", timeStamp)
             detailsFragment.arguments = bundle
             Log.d("BundleValues", "TimeStamp: $timeStamp")
             navController.navigate(R.id.newsDetailsFragment, bundle)

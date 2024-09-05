@@ -53,13 +53,13 @@ class NewsFragment : Fragment() {
         collectionRef.get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
-                    val title = document.getString("Title") ?: ""
-                    val image = document.getString("Image") ?: ""
-                    val date = document.getString("Date") ?: ""
-                    val timestamp = document.getDouble("timestamp") ?: ""
+                    val title = document.getString("title") ?: ""
+                    val image = document.getString("images") ?: ""
+                    val date = document.getString("date") ?: ""
+                    val timestamp = document.getString("timestamp") ?: ""
 
                     // Create News object and add to the list
-                    val news = News(title, "","",image, timestamp.toString(),date)
+                    val news = News(title, "","",image, timestamp,date)
                     newsList.add(news)
                 }
                 // Notify the adapter that the data has changed

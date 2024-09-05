@@ -33,20 +33,20 @@ class NewsDetailsFragment : Fragment() {
         return binding.root
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val timestamp = arguments?.getString("timeStamp")
+        val timestamp = arguments?.getString("timestamp")
+        Log.d("Firestore", "Querying document with timestamp11: $timestamp")
         getNewsDetailsByTimestamp(timestamp)
         binding.backArrow.setOnClickListener {
             findNavController().navigateUp()
         }
-
     }
 
     private fun getNewsDetailsByTimestamp(timestamp: String?) {
         if (timestamp == null) {
             Toast.makeText(requireContext(), "Invalid timestamp!", Toast.LENGTH_SHORT).show()
+            Log.d("Firestore", "Querying document with timestamp: $timestamp")
             return
         }
 
@@ -62,15 +62,15 @@ class NewsDetailsFragment : Fragment() {
                 if (!documents.isEmpty) {
                     for (document in documents) {
                         // Retrieve all the fields in the document
-                        val title = document.getString("Title")
-                        val gawain = document.getString("Gawain")
-                        val image = document.getString("Image")
-                        val lugar = document.getString("Lugar")
-                        val date = document.getString("Date")
-                        val oras = document.getString("Oras")
-                        val petsa = document.getString("Petsa")
+                        val title = document.getString("title")
+                        val gawain = document.getString("gawain")
+                        val image = document.getString("images")
+                        val lugar = document.getString("selectedLocations")
+                        val date = document.getString("date")
+                        val oras = document.getString("startTime")
+                        val petsa = document.getString("date")
                         val shortDescription = document.getString("Short Description")
-                        val LongDescription = document.getString("Full Description")
+                        val LongDescription = document.getString("content")
 
                         binding.newsTitle.text = title
                         binding.newsExcerpt.text = shortDescription
@@ -78,6 +78,7 @@ class NewsDetailsFragment : Fragment() {
                         Glide.with(requireContext())
                             .load(image)
                             .into(binding.newsImage)
+
                         binding.tvGawain.text = Html.fromHtml("<b>GAWAIN:</b> $gawain", Html.FROM_HTML_MODE_LEGACY)
                         binding.tvPetsa.text = Html.fromHtml("<b>PETSA:</b> $petsa", Html.FROM_HTML_MODE_LEGACY)
                         binding.tvOras.text = Html.fromHtml("<b>ORAS:</b> $oras", Html.FROM_HTML_MODE_LEGACY)
