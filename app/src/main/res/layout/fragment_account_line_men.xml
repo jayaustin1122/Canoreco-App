@@ -61,7 +61,7 @@
                         android:elevation="2dp"
                         android:id="@+id/imgUserProfile"
                         android:layout_gravity="center_horizontal"
-                        android:src="@color/quantum_grey"
+                        android:src="@color/gray"
                         tools:ignore="ContentDescription" />
 
                     <TextView
@@ -71,8 +71,7 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="8dp"
                         android:fontFamily="@font/bold"
-                        android:text="-----a"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                        android:text="-----" />
 
                     <TextView
                         android:id="@+id/contact_number"
@@ -80,7 +79,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:text="-------"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+                        />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -106,7 +105,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/bold"
                         android:text="App Security"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                      />
 
                     <View
                         android:layout_width="match_parent"
@@ -122,7 +121,7 @@
                         android:focusable="true"
                         android:paddingVertical="12dp"
                         android:text="Update Profile"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                      />
 
                     <TextView
                         android:id="@+id/change_password"
@@ -132,7 +131,7 @@
                         android:focusable="true"
                         android:paddingVertical="12dp"
                         android:text="Change Password"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                       />
 
                     <TextView
                         android:id="@+id/change_mobile_number"
@@ -142,7 +141,7 @@
                         android:focusable="true"
                         android:paddingVertical="12dp"
                         android:text="Change Mobile Number"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                    />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
@@ -168,7 +167,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/bold"
                         android:text="Notifications"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                      />
 
                     <Switch
                         android:id="@+id/notifications_switch"
@@ -210,7 +209,6 @@
                         android:paddingVertical="12dp"
                         android:paddingStart="16dp"
                         android:text="Logout"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                         android:textSize="15sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"

@@ -1,3 +1,4 @@
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -5,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.annotation.OptIn
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,12 +16,11 @@ import com.example.canorecoapp.adapter.NewsAdapter
 import com.example.canorecoapp.databinding.FragmentHomeUserBinding
 import com.example.canorecoapp.models.Maintenance
 import com.example.canorecoapp.models.News
-import com.google.android.material.badge.BadgeDrawable
-import com.google.android.material.badge.BadgeUtils
-import com.google.android.material.badge.ExperimentalBadgeUtils
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class HomeUserFragment : Fragment() {
     private lateinit var binding: FragmentHomeUserBinding
@@ -64,8 +63,18 @@ class HomeUserFragment : Fragment() {
             db.collection("users").document(user.uid).get()
                 .addOnSuccessListener { document ->
                     val userName = document.getString("fullName")
+                    val image = document.getString("image")
                     binding.textViewUser.setText("$userName")
-
+                    binding.imageViewProfile?.let {
+                        Glide.with(requireContext())
+                            .load(image)
+                            .into(it)
+                    }
+                    Toast.makeText(
+                        requireContext(),
+                        "Welcome ${userName ?: "User"}!",
+                        Toast.LENGTH_SHORT
+                    ).show()
 
                 }
                 .addOnFailureListener { exception ->
@@ -93,25 +102,30 @@ class HomeUserFragment : Fragment() {
 
         ref.get()
             .addOnSuccessListener { documents ->
+                var itemCount = 0
                 for (document in documents) {
-                    val title = document.getString("Title") ?: ""
-                    val shortDesc = document.getString("Short Description") ?: ""
-                    val date = document.getString("Date") ?: ""
-
-                    // Get the array of images from Firestore
+                    if (itemCount >= 4) break
+                    val title = document.getString("title") ?: ""
+                    val shortDesc = document.getString("content") ?: ""
+                    val timestampString = document.getString("timestamp") ?: ""
+                    val formattedDate = parseAndFormatDate(timestampString)
                     val imageList = document.get("image") as? List<String> ?: emptyList()
                     val firstImage = imageList.getOrNull(0) ?: ""
 
-                    Log.d("Home", ": $title, $shortDesc, $date, $firstImage")
-
-                    val timestamp = when (val value = document.get("timestamp")) {
-                        is Double -> value.toString()
-                        is String -> value
-                        else -> ""
-                    }
-                    Log.d("HOme", ": $title, $shortDesc, $date, $firstImage")
-                    freeItems.add(News(title, shortDesc, "", firstImage, timestamp, date, "", "", "", ""))
+                    freeItems.add(News(
+                        title,
+                        shortDesc,
+                        "",
+                        firstImage,
+                        formattedDate,
+                        formattedDate,
+                        "",
+                        "",
+                        "",
+                        ""))
+                    itemCount++
                 }
+
                 lifecycleScope.launchWhenResumed {
                     adapter = NewsAdapter(this@HomeUserFragment.requireContext(), findNavController(), freeItems)
                     binding.rvLatestNews.setHasFixedSize(true)
@@ -125,25 +139,57 @@ class HomeUserFragment : Fragment() {
             }
     }
 
+
+
+
+    @SuppressLint("SimpleDateFormat")
+    fun parseAndFormatDate(timestampString: String): String {
+        return try {
+            val timestampSeconds = timestampString.toLongOrNull() ?: return ""
+            val date = Date(timestampSeconds * 1000)
+            val outputFormat = SimpleDateFormat("MMMM d, yyyy        h:mm a", Locale.getDefault())
+            outputFormat.format(date)
+        } catch (e: NumberFormatException) {
+            Log.e("Home", "Number format error: ", e)
+            ""
+        }
+    }
+
+
+
+
     private fun getMaintenances() {
         val freeItems = ArrayList<Maintenance>()
         val db = FirebaseFirestore.getInstance()
         val ref = db.collection("news")
 
-        ref.get()
+        ref.whereEqualTo("category", "Patalastas ng Power Interruption").get()
             .addOnSuccessListener { documents ->
+                var itemCount = 0
                 for (document in documents) {
-                    val title = document.getString("Title") ?: ""
-                    val shortDesc = document.getString("Short Description") ?: ""
-                    val date = document.getString("Date") ?: ""
+                    if (itemCount >= 4) break
+                    val title = document.getString("title") ?: ""
+                    val shortDesc = document.getString("content") ?: ""
+                    val timestampString = document.getString("timestamp") ?: ""
+                    val formattedDate = parseAndFormatDate(timestampString)
 
-                    // Get the array of images from Firestore
                     val imageList = document.get("image") as? List<String> ?: emptyList()
-                    val firstImage = imageList.getOrNull(0) ?: "" // Get image at index 0 or default to an empty string
+                    val firstImage = imageList.getOrNull(0) ?: ""
 
-                    Log.d("Home", ": $title, $shortDesc, $date, $firstImage")
+                    Log.d("Home", ": $title, $shortDesc, $firstImage")
 
-                    freeItems.add(Maintenance(title, shortDesc, "", firstImage, "", date, "", "", "", ""))
+                    freeItems.add(Maintenance(
+                        title,
+                        shortDesc,
+                        "",
+                        firstImage,
+                        "",
+                        formattedDate,
+                        "",
+                        "",
+                        "",
+                        ""))
+                    itemCount++
                 }
 
                 lifecycleScope.launchWhenResumed {
@@ -158,6 +204,8 @@ class HomeUserFragment : Fragment() {
                 Log.e("Home", "Error getting documents: ", exception)
             }
     }
+
+
 
 
 

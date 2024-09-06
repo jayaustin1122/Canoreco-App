@@ -19,6 +19,7 @@ import com.example.canorecoapp.models.News
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import org.bouncycastle.asn1.x500.style.RFC4519Style.title
 
 
 class NewsDetailsFragment : Fragment() {
@@ -35,61 +36,48 @@ class NewsDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val timestamp = arguments?.getString("timestamp")
-        Log.d("Firestore", "Querying document with timestamp11: $timestamp")
-        getNewsDetailsByTimestamp(timestamp)
+        val title = arguments?.getString("title")
+        Log.d("Firestore", "Querying document with timestampss: $title")
+        getNewsDetailsByTimestamp(title)
         binding.backArrow.setOnClickListener {
             findNavController().navigateUp()
         }
     }
 
-    private fun getNewsDetailsByTimestamp(timestamp: String?) {
-        if (timestamp == null) {
-            Toast.makeText(requireContext(), "Invalid timestamp!", Toast.LENGTH_SHORT).show()
-            Log.d("Firestore", "Querying document with timestamp: $timestamp")
+    private fun getNewsDetailsByTimestamp(title: String?) {
+        if (title.isNullOrEmpty()) {
+            Toast.makeText(requireContext(), "Invalid title!", Toast.LENGTH_SHORT).show()
+            Log.d("Firestore", "Invalid title provided: $title")
             return
         }
+        Log.d("Firestore", "Querying document with title: '$title'")
 
-        // Log the timestamp to ensure it's the correct value
-        Log.d("Firestore", "Querying document with timestamp: $timestamp")
 
-        // Query the "News" collection where the "timestamp" field matches the given timestamp
         val collectionRef = db.collection("news")
-        val query = collectionRef.whereEqualTo("timestamp", timestamp)
+        val query = collectionRef.whereEqualTo("title", title)
 
         query.get()
             .addOnSuccessListener { documents ->
+                Log.d("Firestore", "Documents retrieved: ${documents.size()}")
                 if (!documents.isEmpty) {
                     for (document in documents) {
-                        // Retrieve all the fields in the document
-                        val title = document.getString("title")
-                        val gawain = document.getString("gawain")
+                        val docTitle = document.getString("title")
                         val image = document.getString("images")
-                        val lugar = document.getString("selectedLocations")
-                        val date = document.getString("date")
-                        val oras = document.getString("startTime")
-                        val petsa = document.getString("date")
+                        val category = document.getString("category")
                         val shortDescription = document.getString("Short Description")
-                        val LongDescription = document.getString("content")
 
-                        binding.newsTitle.text = title
+                        if (category == "Patalastas ng Power Interruption"){
+                            binding.viewInMapButton.visibility = View.VISIBLE
+                        }
+                        binding.newsTitle.text = docTitle
                         binding.newsExcerpt.text = shortDescription
-                        binding.newsDate.text = date
                         Glide.with(requireContext())
                             .load(image)
                             .into(binding.newsImage)
-
-                        binding.tvGawain.text = Html.fromHtml("<b>GAWAIN:</b> $gawain", Html.FROM_HTML_MODE_LEGACY)
-                        binding.tvPetsa.text = Html.fromHtml("<b>PETSA:</b> $petsa", Html.FROM_HTML_MODE_LEGACY)
-                        binding.tvOras.text = Html.fromHtml("<b>ORAS:</b> $oras", Html.FROM_HTML_MODE_LEGACY)
-                        binding.tvLugar.text = Html.fromHtml("<b>APEKTADONG LUGAR:</b> $lugar", Html.FROM_HTML_MODE_LEGACY)
-
-                        binding.tvLongDesc.text = LongDescription
-
-
                     }
                 } else {
-                    Toast.makeText(requireContext(), "No document found with the given timestamp", Toast.LENGTH_SHORT).show()
+                    Log.d("Firestore", "No document found with the given title")
+                    Toast.makeText(requireContext(), "No document found with the given title", Toast.LENGTH_SHORT).show()
                 }
             }
             .addOnFailureListener { exception ->

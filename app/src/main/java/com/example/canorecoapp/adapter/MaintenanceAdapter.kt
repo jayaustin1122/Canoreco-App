@@ -11,10 +11,13 @@ import android.widget.TextView
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.NewsActivitiesItemViewsBinding
 import com.example.canorecoapp.databinding.NewsItemViewBinding
 import com.example.canorecoapp.models.Maintenance
 import com.example.canorecoapp.models.News
+import com.example.canorecoapp.views.user.news.NewsDetailsFragment
+import org.bouncycastle.asn1.x500.style.RFC4519Style.title
 
 class MaintenanceAdapter(private val context: Context,
                          private val navController: NavController,
@@ -23,7 +26,6 @@ class MaintenanceAdapter(private val context: Context,
     private  lateinit var binding: NewsActivitiesItemViewsBinding
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var title: TextView = binding.tvActivityTitle
-        var moreBtn: ImageView = binding.moreBtn
         var date: TextView = binding.tvActivityDate
         var image: ImageView = binding.imageBackground
         var shortDescription: TextView = binding.tvActivityDescription
@@ -44,7 +46,7 @@ class MaintenanceAdapter(private val context: Context,
         val newsDesc = model.shortDescription
         val image = model.image
         val date = model.date
-
+        val timeStamp = model.timestamp
         holder.title.text = newsTitle
         holder.shortDescription.text = newsDesc
         holder.date.text = date
@@ -54,17 +56,14 @@ class MaintenanceAdapter(private val context: Context,
             .into(holder.image)
 
         holder.itemView.setOnClickListener {
-//            val detailsFragment = FreeDetailsFragment()
-//            val bundle = Bundle()
-//            bundle.putString("timeStamp", timeStamp)
-//            bundle.putString("uid", uid)
-//            bundle.putString("image", imageselected)
-//            bundle.putString("text", text.toString())
-//            detailsFragment.arguments = bundle
-//            Log.d("BundleValues", "TimeStamp: $timeStamp")
-//            Log.d("BundleValues", "UID: $uid")
-//            Log.d("BundleValues", "Image: $imageselected")
-//            navController.navigate(R.id.freeDetailsFragment, bundle)
+            holder.itemView.setOnClickListener {
+                val detailsFragment = NewsDetailsFragment()
+                val bundle = Bundle()
+                bundle.putString("title",newsTitle)
+                detailsFragment.arguments = bundle
+                Log.d("BundleValues", "TimeStamp: $newsTitle")
+                navController.navigate(R.id.newsDetailsFragment, bundle)
+            }
         }
     }
 

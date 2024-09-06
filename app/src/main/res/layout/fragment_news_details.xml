@@ -187,6 +187,7 @@
             android:backgroundTint="@color/primary_main_color"
             android:fontFamily="@font/roboto_medium"
             android:text="View in Map"
+            android:visibility="gone"
             android:textColor="@color/primary_light_color"
             app:cornerRadius="10dp"/>
 
