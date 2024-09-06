@@ -105,4 +105,9 @@
         android:id="@+id/signUpEmployeeFragment"
         android:name="com.example.canorecoapp.employee.SignUpEmployeeFragment"
         android:label="SignUpEmployeeFragment" />
+    <fragment
+        android:id="@+id/viewMapsWithAreasFragment"
+        android:name="com.example.canorecoapp.views.user.news.ViewMapsWithAreasFragment"
+        android:label="fragment_view_maps_with_areas"
+        tools:layout="@layout/fragment_view_maps_with_areas" />
 </navigation>

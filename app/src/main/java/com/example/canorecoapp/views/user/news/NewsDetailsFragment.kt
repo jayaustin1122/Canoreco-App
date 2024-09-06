@@ -7,15 +7,21 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.HorizontalScrollView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.canorecoapp.R
 import com.example.canorecoapp.adapter.NewsAdapter
+import com.example.canorecoapp.adapter.NewsImagesAdapter
 import com.example.canorecoapp.databinding.FragmentNewsDetailsBinding
+import com.example.canorecoapp.models.Images
 import com.example.canorecoapp.models.News
+import com.google.android.play.integrity.internal.al
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -37,13 +43,19 @@ class NewsDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val title = arguments?.getString("title")
+
         Log.d("Firestore", "Querying document with timestampss: $title")
         getNewsDetailsByTimestamp(title)
         binding.backArrow.setOnClickListener {
             findNavController().navigateUp()
         }
     }
-
+    private fun setupRecyclerView(images: List<String>) {
+        val recyclerView = binding.imagesRV
+        recyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        recyclerView.adapter = NewsImagesAdapter(requireContext(),findNavController(),images)
+        Log.d("NewsImagesAdapter", "Loading image from URL: $images")
+    }
     private fun getNewsDetailsByTimestamp(title: String?) {
         if (title.isNullOrEmpty()) {
             Toast.makeText(requireContext(), "Invalid title!", Toast.LENGTH_SHORT).show()
@@ -51,29 +63,37 @@ class NewsDetailsFragment : Fragment() {
             return
         }
         Log.d("Firestore", "Querying document with title: '$title'")
-
-
         val collectionRef = db.collection("news")
         val query = collectionRef.whereEqualTo("title", title)
-
+        val selectedLocations = mutableSetOf<String>()
         query.get()
             .addOnSuccessListener { documents ->
-                Log.d("Firestore", "Documents retrieved: ${documents.size()}")
                 if (!documents.isEmpty) {
                     for (document in documents) {
-                        val docTitle = document.getString("title")
-                        val image = document.getString("images")
-                        val category = document.getString("category")
-                        val shortDescription = document.getString("Short Description")
 
+                        val docTitle = document.getString("title")?: ""
+                        val images = document.get("image") as? List<String> ?: emptyList()
+                        val category = document.getString("category")?: ""
+                        val content = document.getString("content")?: ""
+                        val selectedLocationsList = document.get("selectedLocations") as? List<*>
+                        selectedLocationsList?.let {
+                            selectedLocations.addAll(it.filterIsInstance<String>())
+                        }
+
+                        binding.newsExcerpt.text = "Category: $category"
+                        binding.newsTitle.text = docTitle
+                        binding.content.text = content
                         if (category == "Patalastas ng Power Interruption"){
                             binding.viewInMapButton.visibility = View.VISIBLE
                         }
-                        binding.newsTitle.text = docTitle
-                        binding.newsExcerpt.text = shortDescription
-                        Glide.with(requireContext())
-                            .load(image)
-                            .into(binding.newsImage)
+                        setupRecyclerView(images)
+                        binding.viewInMapButton.setOnClickListener {
+                            val detailsFragment = ViewMapsWithAreasFragment()
+                            val bundle = Bundle()
+                            bundle.putString("Areas", selectedLocations.joinToString(","))
+                            detailsFragment.arguments = bundle
+                            findNavController().navigate(R.id.viewMapsWithAreasFragment, bundle)
+                        }
                     }
                 } else {
                     Log.d("Firestore", "No document found with the given title")

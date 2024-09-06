@@ -65,8 +65,9 @@ class HomeUserFragment : Fragment() {
                     val userName = document.getString("fullName")
                     val image = document.getString("image")
                     binding.textViewUser.setText("$userName")
+                    val context = context ?: return@addOnSuccessListener
                     binding.imageViewProfile?.let {
-                        Glide.with(requireContext())
+                        Glide.with(context)
                             .load(image)
                             .into(it)
                     }

@@ -121,7 +121,7 @@ class ReportFragment : Fragment() {
         )
         val firestore = FirebaseFirestore.getInstance()
         try {
-            firestore.collection("Reports")
+            firestore.collection("consumer_Complaints")
                 .document(timestamp.toString())
                 .set(report)
                 .addOnCompleteListener { task ->

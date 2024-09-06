@@ -46,6 +46,7 @@ class MaintenanceAdapter(private val context: Context,
         val newsDesc = model.shortDescription
         val image = model.image
         val date = model.date
+        val category = model.category
         val timeStamp = model.timestamp
         holder.title.text = newsTitle
         holder.shortDescription.text = newsDesc
@@ -60,6 +61,7 @@ class MaintenanceAdapter(private val context: Context,
                 val detailsFragment = NewsDetailsFragment()
                 val bundle = Bundle()
                 bundle.putString("title",newsTitle)
+                bundle.putString("category",category)
                 detailsFragment.arguments = bundle
                 Log.d("BundleValues", "TimeStamp: $newsTitle")
                 navController.navigate(R.id.newsDetailsFragment, bundle)

@@ -11,9 +11,11 @@ data class Maintenance (
     val lugar : String =  "",
     val oras : String =  "",
     val petsa : String =  "",
+    val category : String =  "",
 
-) {
-    constructor() : this("",  "","","","","",  "","","","") {
+    ) {
+    constructor() : this("",  "","","","","",  "","","","","") {
         // Default constructor required for Firebase
     }
+
 }

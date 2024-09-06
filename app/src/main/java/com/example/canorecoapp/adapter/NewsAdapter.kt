@@ -46,6 +46,7 @@ class NewsAdapter(private val context: Context,
         val image = model.image
         val date = model.date
         val timeStamp = model.timestamp
+        val category = model.category
 
         holder.title.text = newsTitle
         holder.shortDescription.text = newsDesc
@@ -60,6 +61,7 @@ class NewsAdapter(private val context: Context,
                 val detailsFragment = NewsDetailsFragment()
                 val bundle = Bundle()
                 bundle.putString("title", newsTitle.toString())
+                bundle.putString("category",category)
                 detailsFragment.arguments = bundle
                 Log.d("BundleValues", "TimeStamp: $newsTitle")
                 navController.navigate(R.id.newsDetailsFragment, bundle)
