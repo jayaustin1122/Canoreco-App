@@ -97,13 +97,15 @@ class ViewMapsWithAreasFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
         return false
     }
 
-
-
     override fun onPolygonClick(polygon: Polygon) {
         Log.d("PolygonClick", "Polygon clicked")
         val barangayName = polygon.tag as? String
         if (barangayName != null) {
-            queryFirestoreForTimestamp(barangayName)
+            val addDataDialog = DetailsOutageFragment()
+            val bundle = Bundle()
+            bundle.putString("areaCode", barangayName)
+            addDataDialog.arguments = bundle
+            addDataDialog.show(childFragmentManager, "DetailsOutageFragment")
         } else {
             Log.d("PolygonClick", "Polygon tag is null")
         }
@@ -145,81 +147,6 @@ class ViewMapsWithAreasFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
             Log.e("JSON", "Error parsing JSON data: ${e.message}")
         }
     }
-
-    private fun queryFirestoreForTimestamp(barangayName: String) {
-        val firestore = FirebaseFirestore.getInstance()
-        firestore.collection("news")
-            .whereArrayContains("selectedLocations", barangayName)
-            .get()
-            .addOnSuccessListener { result ->
-                if (!result.isEmpty) {
-
-                    for (document in result) {
-                        val timestamp = document.getString("title") // Assuming the timestamp is a string
-
-                        timestamp?.let {
-                            getNews(timestamp)
-                        } ?: run {
-                            Toast.makeText(
-                                requireContext(),
-                                "Timestamp not found for $barangayName",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-                } else {
-                    // No matching documents found
-                    Toast.makeText(
-                        requireContext(),
-                        "No data found for $barangayName",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.e("Firestore", "Error fetching data: ${e.message}")
-                Toast.makeText(requireContext(), "Failed to fetch data", Toast.LENGTH_SHORT).show()
-            }
-    }
-    @SuppressLint("SimpleDateFormat")
-    public fun parseAndFormatDate(timestampString: String): String {
-        return try {
-            val timestampSeconds = timestampString.toLongOrNull() ?: return ""
-            val date = Date(timestampSeconds * 1000)
-            val outputFormat = SimpleDateFormat("MMMM d, yyyy        h:mm a", Locale.getDefault())
-            outputFormat.format(date)
-        } catch (e: NumberFormatException) {
-            Log.e("Home", "Number format error: ", e)
-            ""
-        }
-    }
-    private fun getNews(title: String?) {
-        val db = FirebaseFirestore.getInstance()
-        val ref = db.collection("news")
-
-        ref.whereEqualTo("title", title).get()
-            .addOnSuccessListener { documents ->
-
-                for (document in documents) {
-
-                    val titleDoc = document.getString("title") ?: ""
-                    val shortDesc = document.getString("content") ?: ""
-                    val timestampString = document.getString("timestamp") ?: ""
-                    val formattedDate = parseAndFormatDate(timestampString)
-
-                    val imageList = document.get("image") as? List<String> ?: emptyList()
-                    val firstImage = imageList.getOrNull(0) ?: ""
-
-                    Log.d("Home", ": $titleDoc, $shortDesc, $formattedDate")//---------------------------------------------------------------------------
-
-
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.e("Home", "Error getting documents: ", exception)
-            }
-    }
-
 
     private fun getCurrentLocation() {
         if (ActivityCompat.checkSelfPermission(
