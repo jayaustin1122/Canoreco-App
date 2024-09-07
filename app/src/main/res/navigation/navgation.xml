@@ -110,4 +110,9 @@
         android:name="com.example.canorecoapp.views.user.news.ViewMapsWithAreasFragment"
         android:label="fragment_view_maps_with_areas"
         tools:layout="@layout/fragment_view_maps_with_areas" />
+    <fragment
+        android:id="@+id/accountUserFragment"
+        android:name="com.example.canorecoapp.views.user.AccountUserFragment"
+        android:label="fragment_account_user"
+        tools:layout="@layout/fragment_account_user" />
 </navigation>
