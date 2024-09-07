@@ -1,5 +1,7 @@
 package com.example.canorecoapp.views.user.news
 
+import HomeUserFragment
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.Html
 import android.util.Log
@@ -26,11 +28,15 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import org.bouncycastle.asn1.x500.style.RFC4519Style.title
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 class NewsDetailsFragment : Fragment() {
     private lateinit var binding: FragmentNewsDetailsBinding
     private var db  = Firebase.firestore
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -75,13 +81,15 @@ class NewsDetailsFragment : Fragment() {
                         val images = document.get("image") as? List<String> ?: emptyList()
                         val category = document.getString("category")?: ""
                         val content = document.getString("content")?: ""
+                        val timestamp = document.getString("timestamp")?: ""
                         val selectedLocationsList = document.get("selectedLocations") as? List<*>
                         selectedLocationsList?.let {
                             selectedLocations.addAll(it.filterIsInstance<String>())
                         }
-
+                        val formattedDate = parseAndFormatDate(timestamp)
                         binding.newsExcerpt.text = "Category: $category"
                         binding.newsTitle.text = docTitle
+                        binding.newsDate.text = formattedDate
                         binding.content.text = content
                         if (category == "Patalastas ng Power Interruption"){
                             binding.viewInMapButton.visibility = View.VISIBLE
@@ -105,7 +113,18 @@ class NewsDetailsFragment : Fragment() {
                 Toast.makeText(requireContext(), "Failed to retrieve documents: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
     }
-
+    @SuppressLint("SimpleDateFormat")
+    public fun parseAndFormatDate(timestampString: String): String {
+        return try {
+            val timestampSeconds = timestampString.toLongOrNull() ?: return ""
+            val date = Date(timestampSeconds * 1000)
+            val outputFormat = SimpleDateFormat("MMMM d, yyyy        h:mm a", Locale.getDefault())
+            outputFormat.format(date)
+        } catch (e: NumberFormatException) {
+            Log.e("Home", "Number format error: ", e)
+            ""
+        }
+    }
 
 
 }

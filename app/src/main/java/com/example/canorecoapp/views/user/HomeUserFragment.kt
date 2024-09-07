@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class HomeUserFragment : Fragment() {
+ class HomeUserFragment : Fragment() {
     private lateinit var binding: FragmentHomeUserBinding
     private lateinit var adapter: NewsAdapter
     private lateinit var adapter2: MaintenanceAdapter
@@ -144,7 +144,7 @@ class HomeUserFragment : Fragment() {
 
 
     @SuppressLint("SimpleDateFormat")
-    fun parseAndFormatDate(timestampString: String): String {
+    public fun parseAndFormatDate(timestampString: String): String {
         return try {
             val timestampSeconds = timestampString.toLongOrNull() ?: return ""
             val date = Date(timestampSeconds * 1000)

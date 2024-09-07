@@ -1,19 +1,24 @@
 package com.example.canorecoapp.views.user.news
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.canorecoapp.R
+import com.example.canorecoapp.adapter.MaintenanceAdapter
 import com.example.canorecoapp.databinding.FragmentViewMapsWithAreasBinding
+import com.example.canorecoapp.models.Maintenance
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -23,17 +28,22 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.Polygon
 import com.google.android.gms.maps.model.PolygonOptions
+import com.google.firebase.firestore.FirebaseFirestore
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 
-class ViewMapsWithAreasFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener  {
-    private lateinit var binding : FragmentViewMapsWithAreasBinding
+class ViewMapsWithAreasFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnPolygonClickListener {
+    private lateinit var binding: FragmentViewMapsWithAreasBinding
     private var gMap: GoogleMap? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,16 +55,13 @@ class ViewMapsWithAreasFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
         return binding.root
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         getCurrentLocation()
-
-
-
-
-
+        binding.backButton.setOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -62,13 +69,14 @@ class ViewMapsWithAreasFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
         val sanVicenteCamarinesNorte = LatLng(14.08446, 122.88797)
         val zoomLevel = 5.0f
         gMap?.setOnMarkerClickListener(this)
+        gMap?.setOnPolygonClickListener(this) // Add polygon click listener
         gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(sanVicenteCamarinesNorte, zoomLevel))
+
         arguments?.let {
             val areas = it.getString("Areas")
             if (areas != null) {
                 Log.d("ViewMapsWithAreasFragment", "Areas: $areas")
                 getCurrentLocation()
-                // Split areas by commas, trim whitespace, and convert to a set
                 val selectedLocations = areas.split(",").map { it.trim() }.toSet()
                 val jsonData = loadJsonFromRaw(R.raw.filtered_barangayss)
                 jsonData?.let {
@@ -79,6 +87,140 @@ class ViewMapsWithAreasFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
             }
         }
     }
+
+    override fun onMarkerClick(marker: Marker): Boolean {
+        val dataKey = marker.tag as? String
+        if (dataKey != null) {
+            // Handle marker click (optional)
+            return true
+        }
+        return false
+    }
+
+
+
+    override fun onPolygonClick(polygon: Polygon) {
+        Log.d("PolygonClick", "Polygon clicked")
+        val barangayName = polygon.tag as? String
+        if (barangayName != null) {
+            queryFirestoreForTimestamp(barangayName)
+        } else {
+            Log.d("PolygonClick", "Polygon tag is null")
+        }
+    }
+    private fun parseAndDrawPolygons(jsonData: String, selectedLocations: Set<String>) {
+        try {
+            val jsonObject = JSONObject(jsonData)
+            val features = jsonObject.getJSONArray("features")
+
+            for (i in 0 until features.length()) {
+                val feature = features.getJSONObject(i)
+                val properties = feature.getJSONObject("properties")
+                val barangayName = properties.getString("ID_3")
+
+                if (barangayName in selectedLocations) {
+                    val geometry = feature.getJSONObject("geometry")
+
+                    if (geometry.getString("type") == "Polygon") {
+                        val coordinates = geometry.getJSONArray("coordinates").getJSONArray(0)
+
+                        val polygonOptions = PolygonOptions().clickable(true) // Ensure polygons are clickable
+                        for (j in 0 until coordinates.length()) {
+                            val coordinate = coordinates.getJSONArray(j)
+                            val latLng = LatLng(coordinate.getDouble(1), coordinate.getDouble(0))
+                            polygonOptions.add(latLng)
+                        }
+
+                        polygonOptions.strokeColor(Color.RED)
+                        polygonOptions.fillColor(Color.argb(100, 255, 0, 0))
+                        polygonOptions.strokeWidth(3f)
+
+                        val polygon = gMap?.addPolygon(polygonOptions)
+                        polygon?.tag = barangayName
+                        Log.d("PolygonTag", "Assigned tag: $barangayName to polygon")
+                    }
+                }
+            }
+        } catch (e: JSONException) {
+            Log.e("JSON", "Error parsing JSON data: ${e.message}")
+        }
+    }
+
+    private fun queryFirestoreForTimestamp(barangayName: String) {
+        val firestore = FirebaseFirestore.getInstance()
+        firestore.collection("news")
+            .whereArrayContains("selectedLocations", barangayName)
+            .get()
+            .addOnSuccessListener { result ->
+                if (!result.isEmpty) {
+
+                    for (document in result) {
+                        val timestamp = document.getString("title") // Assuming the timestamp is a string
+
+                        timestamp?.let {
+                            getNews(timestamp)
+                        } ?: run {
+                            Toast.makeText(
+                                requireContext(),
+                                "Timestamp not found for $barangayName",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                } else {
+                    // No matching documents found
+                    Toast.makeText(
+                        requireContext(),
+                        "No data found for $barangayName",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("Firestore", "Error fetching data: ${e.message}")
+                Toast.makeText(requireContext(), "Failed to fetch data", Toast.LENGTH_SHORT).show()
+            }
+    }
+    @SuppressLint("SimpleDateFormat")
+    public fun parseAndFormatDate(timestampString: String): String {
+        return try {
+            val timestampSeconds = timestampString.toLongOrNull() ?: return ""
+            val date = Date(timestampSeconds * 1000)
+            val outputFormat = SimpleDateFormat("MMMM d, yyyy        h:mm a", Locale.getDefault())
+            outputFormat.format(date)
+        } catch (e: NumberFormatException) {
+            Log.e("Home", "Number format error: ", e)
+            ""
+        }
+    }
+    private fun getNews(title: String?) {
+        val db = FirebaseFirestore.getInstance()
+        val ref = db.collection("news")
+
+        ref.whereEqualTo("title", title).get()
+            .addOnSuccessListener { documents ->
+
+                for (document in documents) {
+
+                    val titleDoc = document.getString("title") ?: ""
+                    val shortDesc = document.getString("content") ?: ""
+                    val timestampString = document.getString("timestamp") ?: ""
+                    val formattedDate = parseAndFormatDate(timestampString)
+
+                    val imageList = document.get("image") as? List<String> ?: emptyList()
+                    val firstImage = imageList.getOrNull(0) ?: ""
+
+                    Log.d("Home", ": $titleDoc, $shortDesc, $formattedDate")//---------------------------------------------------------------------------
+
+
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("Home", "Error getting documents: ", exception)
+            }
+    }
+
+
     private fun getCurrentLocation() {
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
@@ -92,65 +234,10 @@ class ViewMapsWithAreasFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
                         gMap?.addMarker(
                             MarkerOptions().position(currentLatLng).title("Current Location")
                         )
-
                         val cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentLatLng, 15.0f)
                         gMap?.animateCamera(cameraUpdate)
                     }
                 }
-        }
-    }
-    override fun onMarkerClick(marker: Marker): Boolean {
-        val dataKey = marker.tag as? String
-        if (dataKey != null) {
-            // showMarkerDetailsDialog(dataKey)
-            return true
-        } else {
-            // Handle the case when marker.tag is null
-            return false
-        }
-    }
-    private fun parseAndDrawPolygons(jsonData: String, selectedLocations: Set<String>) {
-        try {
-            val jsonObject = JSONObject(jsonData)
-            val features = jsonObject.getJSONArray("features")
-
-            // Log the selected locations to confirm which ones we are looking for
-            Log.d("MapData", "Selected Locations: $selectedLocations")
-
-            for (i in 0 until features.length()) {
-                val feature = features.getJSONObject(i)
-                val properties = feature.getJSONObject("properties")
-                val barangayName = properties.getString("ID_3")
-
-                // Log each ID_3 from the JSON file
-                Log.d("MapData", "Found ID_3: $barangayName")
-
-                // Check if the current ID_3 is in the selectedLocations
-                if (barangayName in selectedLocations) {
-                    Log.d("MapData", "Drawing polygon for ID_3: $barangayName")
-                    val geometry = feature.getJSONObject("geometry")
-
-                    if (geometry.getString("type") == "Polygon") {
-                        val coordinates = geometry.getJSONArray("coordinates").getJSONArray(0)
-
-                        val polygonOptions = PolygonOptions()
-
-                        for (j in 0 until coordinates.length()) {
-                            val coordinate = coordinates.getJSONArray(j)
-                            val latLng = LatLng(coordinate.getDouble(1), coordinate.getDouble(0))
-                            polygonOptions.add(latLng)
-                        }
-
-                        polygonOptions.strokeColor(Color.RED)
-                        polygonOptions.fillColor(Color.argb(100, 255, 0, 0))
-                        polygonOptions.strokeWidth(3f)
-
-                        gMap?.addPolygon(polygonOptions)
-                    }
-                }
-            }
-        } catch (e: JSONException) {
-            Log.e("JSON", "Error parsing JSON data: ${e.message}")
         }
     }
 
