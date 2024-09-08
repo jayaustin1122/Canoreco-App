@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".views.user.bayadcenterandbusinesscenter.DetailsCenterFragment">
+
+
+    <TextView
+        android:id="@+id/title"
+        android:paddingStart="25dp"
+        android:paddingTop="@dimen/dimen_20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_bold"
+        android:textSize="@dimen/dimen_15dp"
+        android:text="" />
+
+    <TextView
+        android:id="@+id/lat_lng"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen_10dp"
+        android:paddingStart="@dimen/dimen_20dp"
+        android:fontFamily="@font/poppins_light"
+        android:textSize="@dimen/dimen_15sp"
+        android:drawableStart="@drawable/ea"
+        android:text="" />
+    <TextView
+        android:id="@+id/address"
+        android:layout_width="wrap_content"
+        android:paddingStart="@dimen/dimen_20dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen_10dp"
+        android:fontFamily="@font/poppins_light"
+        android:drawableStart="@drawable/ic_location"
+        android:textSize="@dimen/dimen_15sp"
+        android:text="" />
+
+</LinearLayout>

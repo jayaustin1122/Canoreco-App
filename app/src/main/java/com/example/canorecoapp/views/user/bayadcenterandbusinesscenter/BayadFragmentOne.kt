@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.location.Geocoder
@@ -14,11 +15,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentBayadOneBinding
+import com.example.canorecoapp.views.user.news.DetailsOutageFragment
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -77,33 +80,19 @@ class BayadFragmentOne : Fragment() , OnMapReadyCallback, GoogleMap.OnMarkerClic
     override fun onMarkerClick(marker: Marker): Boolean {
         val dataKey = marker.tag as? String
         if (dataKey != null) {
-            //showMarkerDetailsDialog(dataKey)
+            val addDataDialog = DetailsCenterFragment()
+            val bundle = Bundle()
+            bundle.putString("marker", marker.tag.toString())
+            bundle.putString("id", "bayadCenters")
+            addDataDialog.arguments = bundle
+            addDataDialog.show(childFragmentManager, "DetailsCenterFragment")
             return true
         } else {
             // Handle the case when marker.tag is null
             return false
         }
     }
-    private fun bitmapFromVector(context: Context, vectorResId: Int, @ColorInt color: Int): BitmapDescriptor {
-        val vectorDrawable = ContextCompat.getDrawable(context, vectorResId)
-        vectorDrawable?.setBounds(
-            0, 0,
-            vectorDrawable.intrinsicWidth,
-            vectorDrawable.intrinsicHeight
-        )
 
-
-        vectorDrawable?.setTint(color)
-
-        val bitmap = Bitmap.createBitmap(
-            vectorDrawable!!.intrinsicWidth,
-            vectorDrawable.intrinsicHeight,
-            Bitmap.Config.ARGB_8888
-        )
-        val canvas = Canvas(bitmap)
-        vectorDrawable.draw(canvas)
-        return BitmapDescriptorFactory.fromBitmap(bitmap)
-    }
     fun showAllDataOnMaps() {
         // Get a reference to your Firestore collection
         val firestoreReference = FirebaseFirestore.getInstance().collection("bayad_centers")
@@ -117,15 +106,19 @@ class BayadFragmentOne : Fragment() , OnMapReadyCallback, GoogleMap.OnMarkerClic
 
                 // Check if latitude and longitude are not null
                 if (latitude != null && longitude != null) {
-                    // Add a marker for each item
-                    val markerIcon = bitmapFromVector(this@BayadFragmentOne.requireContext(), R.drawable.baseline_adjust_24,
-                        Color.RED)
+                    val smallMarker = Bitmap.createScaledBitmap(
+                        BitmapFactory.decodeResource(resources, R.drawable.icon_payment_center),
+                        114, 92, false
+                    )
 
-                    val marker = gMap?.addMarker(MarkerOptions()
-                        .position(LatLng(latitude, longitude))
-                        .title(locationName)
-                        .icon(markerIcon))
-                    marker?.tag = document.id // Save the Firestore document ID as a tag for reference
+                    // Add a marker for each item
+                    val marker = gMap?.addMarker(
+                        MarkerOptions()
+                            .position(LatLng(latitude, longitude))
+                            .title(locationName)
+                            .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                    )
+                    marker?.tag = locationName
                 }
             }
         }.addOnFailureListener { exception ->

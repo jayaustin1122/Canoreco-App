@@ -55,13 +55,19 @@ class BusinessCenterFragmentTwo : Fragment() , OnMapReadyCallback, GoogleMap.OnM
     override fun onMarkerClick(marker: Marker): Boolean {
         val dataKey = marker.tag as? String
         if (dataKey != null) {
-            //showMarkerDetailsDialog(dataKey)
+            val addDataDialog = DetailsCenterFragment()
+            val bundle = Bundle()
+            bundle.putString("marker", marker.tag.toString())
+            bundle.putString("id", "businessCenters")
+            addDataDialog.arguments = bundle
+            addDataDialog.show(childFragmentManager, "DetailsCenterFragment")
             return true
         } else {
             // Handle the case when marker.tag is null
             return false
         }
     }
+
 
     fun showAllDataOnMaps() {
         // Get a reference to your Firestore collection
@@ -90,7 +96,7 @@ class BusinessCenterFragmentTwo : Fragment() , OnMapReadyCallback, GoogleMap.OnM
                             .title(locationName)
                             .icon(BitmapDescriptorFactory.fromBitmap(smallMarker)) // Custom marker icon
                     )
-                    marker?.tag = document.id // Save the Firestore document ID as a tag for reference
+                    marker?.tag = locationName// Save the Firestore document ID as a tag for reference
                 }
             }
         }.addOnFailureListener { exception ->
