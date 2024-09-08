@@ -60,24 +60,13 @@ class NewsAdapter(private val context: Context,
             holder.itemView.setOnClickListener {
                 val detailsFragment = NewsDetailsFragment()
                 val bundle = Bundle()
-                bundle.putString("title", newsTitle.toString())
                 bundle.putString("category",category)
                 detailsFragment.arguments = bundle
-                Log.d("BundleValues", "TimeStamp: $newsTitle")
+                Log.d("newsadapter", "category $category")
                 navController.navigate(R.id.newsDetailsFragment, bundle)
             }
         }
-        holder.image.setOnClickListener {
-            holder.itemView.setOnClickListener {
-                val detailsFragment = NewsDetailsFragment()
-                val bundle = Bundle()
-                bundle.putString("title",newsTitle)
-                bundle.putString("category",category)
-                detailsFragment.arguments = bundle
-                Log.d("BundleValues", "TimeStamp: $newsTitle")
-                navController.navigate(R.id.newsDetailsFragment, bundle)
-            }
-        }
+
     }
 
 

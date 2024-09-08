@@ -21,6 +21,8 @@
 
             <TextView
                 android:id="@+id/tvTitle"
+                android:maxLines="2"
+                android:ellipsize="end"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/bold"
@@ -40,7 +42,7 @@
 
         <ImageView
             android:id="@+id/ivThumbnail"
-            android:layout_width="40dp"
+            android:layout_width="70dp"
             android:scaleType="fitXY"
             android:layout_height="match_parent"
             android:layout_gravity="center"

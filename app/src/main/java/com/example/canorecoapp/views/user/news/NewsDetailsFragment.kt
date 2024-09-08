@@ -48,10 +48,10 @@ class NewsDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val title = arguments?.getString("title")
+        val category = arguments?.getString("category")
 
-        Log.d("Firestore", "Querying document with timestampss: $title")
-        getNewsDetailsByTimestamp(title)
+        Log.d("Firestore", "Querying document with category of: $category")
+        getNewsDetailsByTimestamp(category)
         binding.backArrow.setOnClickListener {
             findNavController().navigateUp()
         }
@@ -62,30 +62,29 @@ class NewsDetailsFragment : Fragment() {
         recyclerView.adapter = NewsImagesAdapter(requireContext(),findNavController(),images)
         Log.d("NewsImagesAdapter", "Loading image from URL: $images")
     }
-    private fun getNewsDetailsByTimestamp(title: String?) {
-        if (title.isNullOrEmpty()) {
+    private fun getNewsDetailsByTimestamp(category: String?) {
+        if (category.isNullOrEmpty()) {
             Toast.makeText(requireContext(), "Invalid title!", Toast.LENGTH_SHORT).show()
-            Log.d("Firestore", "Invalid title provided: $title")
+            Log.d("Firestore", "Invalid title provided: $category")
             return
         }
-        Log.d("Firestore", "Querying document with title: '$title'")
-        val collectionRef = db.collection("outage")
-        val query = collectionRef.whereEqualTo("title", title)
+        Log.d("maintenancedetails", "Querying document with title: '$category'")
+        val collectionRef = db.collection("news")
+        val query = collectionRef.whereEqualTo("category", category)
         val selectedLocations = mutableSetOf<String>()
         query.get()
             .addOnSuccessListener { documents ->
                 if (!documents.isEmpty) {
                     for (document in documents) {
 
-                        val docTitle = document.getString("title")?: ""
+                        val docTitle = document.getString("title") ?: ""
                         val images = document.get("image") as? List<String> ?: emptyList()
-                        val category = document.getString("category")?: ""
-                        val content = document.getString("content")?: ""
-                        val gawain = document.getString("gawain")?: ""
-                        val date = document.getString("date")?: ""
+                        val content = document.getString("content") ?: ""
+                        val gawain = document.getString("gawain") ?: ""
+                        val date = document.getString("date") ?: ""
                         val startTime = document.getString("startTime") ?: ""
                         val endTime = document.getString("endTime") ?: ""
-                        val timestamp = document.getString("timestamp")?: ""
+                        val timestamp = document.getString("timestamp") ?: ""
                         val selectedLocationsList = document.get("selectedLocations") as? List<*>
                         selectedLocationsList?.let {
                             selectedLocations.addAll(it.filterIsInstance<String>())
@@ -97,18 +96,32 @@ class NewsDetailsFragment : Fragment() {
                         binding.newsDate.text = formattedDate
                         binding.tvGawain.text = Html.fromHtml("<b>GAWAIN:</b> $gawain")
                         binding.tvPetsa.text = Html.fromHtml("<b>PETSA:</b> $date")
-                        binding.tvLugar.text = Html.fromHtml("<b>APEKTADONG LUGAR:</> $selectedLocationsList")
-                        if (category == "Patalastas ng Power Interruption"){
+                        binding.tvContent.text = content
+
+                        if (category == "Patalastas ng Power Interruption") {
                             binding.viewInMapButton.visibility = View.VISIBLE
+                            binding.tvLugar.text = Html.fromHtml("<b>APEKTADONG LUGAR:</b> ${selectedLocations.joinToString(", ")}")
+
+                            binding.viewInMapButton.setOnClickListener {
+                                if (selectedLocations.isNotEmpty()) {
+                                    val detailsFragment = ViewMapsWithAreasFragment()
+                                    val bundle = Bundle()
+                                    bundle.putString("Areas", selectedLocations.joinToString(","))
+                                    detailsFragment.arguments = bundle
+                                    findNavController().navigate(R.id.viewMapsWithAreasFragment, bundle)
+                                } else {
+                                    Toast.makeText(requireContext(), "No areas to show", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        } else {
+                            binding.viewInMapButton.visibility = View.GONE
+                            binding.tvLugar.visibility = View.GONE
+                            binding.tvGawain.visibility = View.GONE
+                            binding.tvPetsa.visibility = View.GONE
+                            binding.tvOras.visibility = View.GONE
+                            binding.ss.visibility = View.GONE
                         }
                         setupRecyclerView(images)
-                        binding.viewInMapButton.setOnClickListener {
-                            val detailsFragment = ViewMapsWithAreasFragment()
-                            val bundle = Bundle()
-                            bundle.putString("Areas", selectedLocations.joinToString(","))
-                            detailsFragment.arguments = bundle
-                            findNavController().navigate(R.id.viewMapsWithAreasFragment, bundle)
-                        }
                     }
                 } else {
                     Log.d("Firestore", "No document found with the given title")
@@ -120,6 +133,7 @@ class NewsDetailsFragment : Fragment() {
                 Toast.makeText(requireContext(), "Failed to retrieve documents: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
     }
+
     @SuppressLint("SimpleDateFormat")
      private fun parseAndFormatDate(timestampString: String): String {
         return try {

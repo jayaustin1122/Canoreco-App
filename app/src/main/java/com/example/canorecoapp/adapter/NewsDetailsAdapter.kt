@@ -1,5 +1,6 @@
 package com.example.canorecoapp.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -16,6 +17,9 @@ import com.example.canorecoapp.databinding.NewsActivitiesItemViewsBinding
 import com.example.canorecoapp.databinding.NewsItemViewBinding
 import com.example.canorecoapp.models.News
 import com.example.canorecoapp.views.user.news.NewsDetailsFragment
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class NewsDetailsAdapter(private val context: Context,
                          private val navController: NavController,
@@ -44,9 +48,10 @@ class NewsDetailsAdapter(private val context: Context,
         val image = model.image
         val date = model.date
         val timeStamp = model.timestamp
-
+        val category = model.category
+        val formattedDate = parseAndFormatDate(timeStamp)
         holder.title.text = newsTitle
-        holder.date.text = date
+        holder.date.text = formattedDate
 
         Glide.with(this@NewsDetailsAdapter.context)
             .load(image)
@@ -55,11 +60,24 @@ class NewsDetailsAdapter(private val context: Context,
         holder.itemView.setOnClickListener {
             val detailsFragment = NewsDetailsFragment()
             val bundle = Bundle()
-            bundle.putString("timeStamp", timeStamp)
+            bundle.putString("category", category)
             detailsFragment.arguments = bundle
-            Log.d("BundleValues", "TimeStamp: $timeStamp")
+            Log.d("BundleValues", "TimeStamp: $category")
             navController.navigate(R.id.newsDetailsFragment, bundle)
         }
+    }
+    @SuppressLint("SimpleDateFormat")
+    private fun parseAndFormatDate(timestampString: String): String {
+        return try {
+            val timestampSeconds = timestampString.toLongOrNull() ?: return ""
+            val date = Date(timestampSeconds * 1000)
+            val outputFormat = SimpleDateFormat("MMMM d, yyyy h:mm a", Locale.getDefault())
+            outputFormat.format(date)
+        } catch (e: NumberFormatException) {
+            Log.e("Home", "Number format error: ", e)
+            ""
+        }
+
     }
 
 

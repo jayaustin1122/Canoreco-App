@@ -46,35 +46,46 @@ class NewsFragment : Fragment() {
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private fun getAllNews() {
         val collectionRef = db.collection("news")
 
-        collectionRef.get()
-            .addOnSuccessListener { documents ->
+        collectionRef.addSnapshotListener { documents, exception ->
+            if (exception != null) {
+                Log.e("NewsFragment", "Error getting documents: ", exception)
+                return@addSnapshotListener
+            }
+
+            if (documents != null) {
+                newsList.clear()
                 for (document in documents) {
                     val title = document.getString("title") ?: ""
-                    val image = document.getString("images") ?: ""
+                    val imageList = document.get("image") as? List<String> ?: emptyList()
+                    val firstImage = imageList.getOrNull(0) ?: ""
                     val date = document.getString("date") ?: ""
+                    val category = document.getString("category") ?: ""
                     val timestamp = document.getString("timestamp") ?: ""
 
                     // Create News object and add to the list
-                    val news = News(title, "","",image, timestamp,date)
+                    val news = News(title, "", "", firstImage, timestamp, date, "", "", "", "", category)
                     newsList.add(news)
                 }
-                // Notify the adapter that the data has changed
-                // Set up the adapter after retrieving data for all users
+
+                Log.d("NewsFragment", "Fetched ${newsList.size} news items")
+
+                // Notify the adapter of changes
                 lifecycleScope.launchWhenResumed {
-                    newsAdapter = NewsDetailsAdapter(this@NewsFragment.requireContext(),findNavController(), newsList)
-                    binding.recyclerNews.setHasFixedSize(true)
-                    val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-                    binding.recyclerNews.layoutManager = layoutManager
-                    binding.recyclerNews.adapter = newsAdapter
+                        newsAdapter = NewsDetailsAdapter(this@NewsFragment.requireContext(), findNavController(), newsList)
+                        binding.recyclerNews.setHasFixedSize(true)
+                        val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                        binding.recyclerNews.layoutManager = layoutManager
+                        binding.recyclerNews.adapter = newsAdapter
+
                 }
-                newsAdapter.notifyDataSetChanged()
+            } else {
+                Log.d("NewsFragment", "No documents found")
             }
-            .addOnFailureListener { exception ->
-                Log.e("NewsFragment", "Error getting documents: ", exception)
-            }
+        }
     }
+
+
 }

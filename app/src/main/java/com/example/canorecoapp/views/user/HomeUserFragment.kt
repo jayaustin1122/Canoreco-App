@@ -106,6 +106,7 @@ import java.util.Locale
                     val title = document.getString("title") ?: ""
                     val shortDesc = document.getString("content") ?: ""
                     val timestampString = document.getString("timestamp") ?: ""
+                    val category = document.getString("category") ?: ""
                     val formattedDate = parseAndFormatDate(timestampString)
                     val imageList = document.get("image") as? List<String> ?: emptyList()
                     val firstImage = imageList.getOrNull(0) ?: ""
@@ -120,7 +121,8 @@ import java.util.Locale
                         "",
                         "",
                         "",
-                        ""))
+                        "",
+                        category))
                     itemCount++
                 }
 
@@ -168,6 +170,7 @@ import java.util.Locale
                     if (itemCount >= 4) break
                     val title = document.getString("title") ?: ""
                     val shortDesc = document.getString("content") ?: ""
+                    val category = document.getString("category") ?: ""
                     val timestampString = document.getString("timestamp") ?: ""
                     val formattedDate = parseAndFormatDate(timestampString)
 
@@ -186,7 +189,8 @@ import java.util.Locale
                         "",
                         "",
                         "",
-                        ""))
+                        "",
+                        category))
                     itemCount++
                 }
                 ProgressDialogUtils.dismissProgressDialog()
