@@ -89,12 +89,8 @@ class UserHolderFragment : Fragment() {
                             .load(image)
                             .into(it)
                     }
-                    Toast.makeText(
-                        requireContext(),
-                        "Welcome ${userName ?: "User"}!",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    isUserInfoLoaded = true // Mark user info as loaded
+
+                    isUserInfoLoaded = true
                 }
                 .addOnFailureListener { exception ->
                     Toast.makeText(

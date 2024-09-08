@@ -31,7 +31,7 @@ class BayadCentersFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.backButton.setOnClickListener {
-            findNavController().navigateUp()
+            findNavController().navigate(R.id.userHolderFragment)
         }
         // Set up the tabs
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Bayad Centers"))
