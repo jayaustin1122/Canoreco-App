@@ -16,6 +16,7 @@ import com.example.canorecoapp.adapter.NewsAdapter
 import com.example.canorecoapp.databinding.FragmentHomeUserBinding
 import com.example.canorecoapp.models.Maintenance
 import com.example.canorecoapp.models.News
+import com.example.canorecoapp.utils.ProgressDialogUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
@@ -37,6 +38,7 @@ import java.util.Locale
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        ProgressDialogUtils.showProgressDialog(requireContext(),"PLease Wait...")
         getNews()
         getMaintenances()
 
@@ -71,11 +73,6 @@ import java.util.Locale
                             .load(image)
                             .into(it)
                     }
-                    Toast.makeText(
-                        requireContext(),
-                        "Welcome ${userName ?: "User"}!",
-                        Toast.LENGTH_SHORT
-                    ).show()
 
                 }
                 .addOnFailureListener { exception ->
@@ -192,7 +189,7 @@ import java.util.Locale
                         ""))
                     itemCount++
                 }
-
+                ProgressDialogUtils.dismissProgressDialog()
                 lifecycleScope.launchWhenResumed {
                     adapter2 = MaintenanceAdapter(this@HomeUserFragment.requireContext(), findNavController(), freeItems)
                     binding.rvMaintenanceActivities.setHasFixedSize(true)

@@ -112,5 +112,6 @@ dependencies {
     implementation ("com.paytm.appinvokesdk:appinvokesdk:1.6.12") // Updated version
 
     implementation ("com.facebook.shimmer:shimmer:0.1.0@aar")
-    implementation ("com.github.f0ris.sweetalert:library:1.5.6")
+    implementation ("com.github.f0ris.sweetalert:library:1.6.2")
+
 }

@@ -102,11 +102,8 @@ class ReportFragment : Fragment() {
         val reportText = binding.reportTypeSpinner.text.toString().trim()
         val concernText = binding.concernSpinner.text.toString().trim()
         val concernDiscriptionText = binding.concernDescription.text.toString().trim()
-
-        val currentDate = DateTimeUtils.getCurrentDate()
-        val currentTime = DateTimeUtils.getCurrentTime()
         val uid = auth.uid
-        val timestamp = System.currentTimeMillis()
+        val timestamp = System.currentTimeMillis() /1000
 
         val report: HashMap<String, Any?> = hashMapOf(
             "uid" to uid,
@@ -114,14 +111,13 @@ class ReportFragment : Fragment() {
             "concen" to concernText,
             "concernDescription" to concernDiscriptionText,
             "image" to imageUrl,
-            "currentDate" to currentDate,
-            "currentTime" to currentTime,
             "timestamp" to timestamp
+
 
         )
         val firestore = FirebaseFirestore.getInstance()
         try {
-            firestore.collection("consumer_Complaints")
+            firestore.collection("consumer_complaints")
                 .document(timestamp.toString())
                 .set(report)
                 .addOnCompleteListener { task ->

@@ -174,6 +174,10 @@ class SignInFragment : Fragment() {
                                     dialog.setContentView(dialogBinding.root)
                                     dialog.show()
                                     auth.signOut()
+                                    findNavController().apply {
+                                        popBackStack(R.id.splashFragment, false)
+                                        navigate(R.id.signInFragment)
+                                    }
                                 } else {
                                     Toast.makeText(this@SignInFragment.requireContext(), "Login Successfully", Toast.LENGTH_SHORT).show()
                                     progressDialog.setMessage("Redirecting...")

@@ -132,40 +132,6 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
                 }
         }
     }
-    private fun showAllDevicesLocations() {
-        val firestoreReference = FirebaseFirestore.getInstance().collection("devicelocation")
-        firestoreReference.get().addOnSuccessListener { querySnapshot ->
-            for (document in querySnapshot.documents) {
-                val lat = (document.getDouble("lat") ?: document.getLong("lat")?.toDouble()) ?: document.getString("lat")?.toDoubleOrNull()
-                val lng = (document.getDouble("lng") ?: document.getLong("lng")?.toDouble()) ?: document.getString("lng")?.toDoubleOrNull()
-                val status = document.getString("status")
-
-                if (lat != null && lng != null && status != null) {
-                    // Determine the color based on the status
-                    val color = when (status.lowercase()) {
-                        "working" -> Color.BLUE
-                        "under repair" -> Color.GREEN
-                        "not working" -> Color.RED
-                        else -> Color.GRAY
-                    }
-
-
-                    val markerIcon = bitmapFromVector(this@HomeLineMenFragment.requireContext(), R.drawable.baseline_adjust_24, color)
-
-
-                    val marker = gMap?.addMarker(
-                        MarkerOptions()
-                            .position(LatLng(lat, lng))
-                            .icon(markerIcon)
-                    )
-                    marker?.tag = document.id
-                }
-            }
-        }.addOnFailureListener { exception ->
-
-            Log.e("MapData", "Error retrieving data from Firestore: ${exception.message}")
-        }
-    }
 
     private fun bitmapFromVector(context: Context, vectorResId: Int, @ColorInt color: Int): BitmapDescriptor {
         val vectorDrawable = ContextCompat.getDrawable(context, vectorResId)
@@ -195,45 +161,8 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
         val zoomLevel = 5.0f
         gMap?.setOnMarkerClickListener(this)
         gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(sanVicenteCamarinesNorte, zoomLevel))
-        showAllDevicesLocations()
-        showPolygonsBasedOnFirestore()
     }
-    private fun showPolygonsBasedOnFirestore() {
-        val firestoreReference = FirebaseFirestore.getInstance().collection("areas_affected")
-        firestoreReference.get().addOnSuccessListener { querySnapshot ->
-            val validBarangays = mutableSetOf<String>()
 
-            Log.d("FirestoreData", "Retrieving data from Firestore")
-            for (document in querySnapshot.documents) {
-                Log.d("FirestoreData", "Document ID: ${document.id}")
-
-
-                val barangayDataMap = document.data
-                barangayDataMap?.forEach { (barangayName, isAffected) ->
-                    if (barangayName is String && isAffected is Boolean && isAffected) {
-                        validBarangays.add(barangayName)
-                        Log.d("FirestoreData", "Barangay: $barangayName, Affected: $isAffected")
-                    } else {
-                        Log.w("FirestoreData", "Unexpected data format for barangay: $barangayName")
-                    }
-                }
-            }
-
-            Log.d("FirestoreData", "Valid Barangays: $validBarangays")
-
-
-            val jsonData = loadJsonFromRaw(R.raw.filtered_barangayss)
-            Log.d("JSON", "Loaded JSON data: $jsonData")
-
-            jsonData?.let { parseAndDrawPolygons(it, validBarangays) } ?: run {
-                Log.e("JSON", "Failed to load JSON data")
-            }
-
-        }.addOnFailureListener { exception ->
-
-            Log.e("MapData", "Error retrieving data from Firestore: ${exception.message}")
-        }
-    }
 
 
     private fun parseAndDrawPolygons(jsonData: String, validBarangays: Set<String>) {

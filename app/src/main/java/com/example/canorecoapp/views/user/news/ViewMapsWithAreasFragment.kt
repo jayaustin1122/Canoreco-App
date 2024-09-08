@@ -19,12 +19,15 @@ import com.example.canorecoapp.R
 import com.example.canorecoapp.adapter.MaintenanceAdapter
 import com.example.canorecoapp.databinding.FragmentViewMapsWithAreasBinding
 import com.example.canorecoapp.models.Maintenance
+import com.example.canorecoapp.utils.ProgressDialogUtils
+import com.example.canorecoapp.utils.ProgressDialogUtils.dismissProgressDialog
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
@@ -57,8 +60,7 @@ class ViewMapsWithAreasFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        getCurrentLocation()
+        ProgressDialogUtils.showProgressDialog(requireContext(),"Loading...")
         binding.backButton.setOnClickListener {
             findNavController().navigateUp()
         }
@@ -69,7 +71,7 @@ class ViewMapsWithAreasFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
         val sanVicenteCamarinesNorte = LatLng(14.08446, 122.88797)
         val zoomLevel = 5.0f
         gMap?.setOnMarkerClickListener(this)
-        gMap?.setOnPolygonClickListener(this) // Add polygon click listener
+        gMap?.setOnPolygonClickListener(this)
         gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(sanVicenteCamarinesNorte, zoomLevel))
 
         arguments?.let {
@@ -91,11 +93,19 @@ class ViewMapsWithAreasFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
     override fun onMarkerClick(marker: Marker): Boolean {
         val dataKey = marker.tag as? String
         if (dataKey != null) {
-            // Handle marker click (optional)
+            val addDataDialog = DetailsOutageFragment()
+            val bundle = Bundle()
+            bundle.putString("areaCode", marker.tag.toString())
+            bundle.putString("from", "current")
+            addDataDialog.arguments = bundle
+            addDataDialog.show(childFragmentManager, "DetailsOutageFragment")
             return true
+        } else {
+            // Handle the case when marker.tag is null
+            return false
         }
-        return false
     }
+
 
     override fun onPolygonClick(polygon: Polygon) {
         Log.d("PolygonClick", "Polygon clicked")
@@ -125,14 +135,15 @@ class ViewMapsWithAreasFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
 
                     if (geometry.getString("type") == "Polygon") {
                         val coordinates = geometry.getJSONArray("coordinates").getJSONArray(0)
-
+                        val latLngList = mutableListOf<LatLng>()
                         val polygonOptions = PolygonOptions().clickable(true) // Ensure polygons are clickable
                         for (j in 0 until coordinates.length()) {
                             val coordinate = coordinates.getJSONArray(j)
                             val latLng = LatLng(coordinate.getDouble(1), coordinate.getDouble(0))
+                            latLngList.add(latLng)
                             polygonOptions.add(latLng)
                         }
-
+                        val centroid = calculateCentroid(latLngList)
                         polygonOptions.strokeColor(Color.RED)
                         polygonOptions.fillColor(Color.argb(100, 255, 0, 0))
                         polygonOptions.strokeWidth(3f)
@@ -140,13 +151,46 @@ class ViewMapsWithAreasFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
                         val polygon = gMap?.addPolygon(polygonOptions)
                         polygon?.tag = barangayName
                         Log.d("PolygonTag", "Assigned tag: $barangayName to polygon")
+                        val markerOptions = MarkerOptions()
+                            .position(centroid)
+                            .title(barangayName)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                        val marker = gMap?.addMarker(markerOptions)
+                        marker?.tag = barangayName
+                        Log.d("MarkerTag", "Assigned tag: $barangayName to marker")
+
                     }
                 }
             }
+            dismissProgressDialog()
+            getCurrentLocation()
         } catch (e: JSONException) {
             Log.e("JSON", "Error parsing JSON data: ${e.message}")
         }
     }
+    private fun calculateCentroid(latLngList: List<LatLng>): LatLng {
+        var area = 0.0
+        var centroidLat = 0.0
+        var centroidLng = 0.0
+        val numPoints = latLngList.size
+
+        for (i in 0 until numPoints) {
+            val current = latLngList[i]
+            val next = latLngList[(i + 1) % numPoints]
+
+            val tempArea = current.longitude * next.latitude - next.longitude * current.latitude
+            area += tempArea
+            centroidLat += (current.latitude + next.latitude) * tempArea
+            centroidLng += (current.longitude + next.longitude) * tempArea
+        }
+
+        area /= 2.0
+        centroidLat /= (6.0 * area)
+        centroidLng /= (6.0 * area)
+
+        return LatLng(centroidLat, centroidLng)
+    }
+
 
     private fun getCurrentLocation() {
         if (ActivityCompat.checkSelfPermission(

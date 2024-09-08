@@ -69,7 +69,7 @@ class NewsDetailsFragment : Fragment() {
             return
         }
         Log.d("Firestore", "Querying document with title: '$title'")
-        val collectionRef = db.collection("news")
+        val collectionRef = db.collection("outage")
         val query = collectionRef.whereEqualTo("title", title)
         val selectedLocations = mutableSetOf<String>()
         query.get()
@@ -81,16 +81,23 @@ class NewsDetailsFragment : Fragment() {
                         val images = document.get("image") as? List<String> ?: emptyList()
                         val category = document.getString("category")?: ""
                         val content = document.getString("content")?: ""
+                        val gawain = document.getString("gawain")?: ""
+                        val date = document.getString("date")?: ""
+                        val startTime = document.getString("startTime") ?: ""
+                        val endTime = document.getString("endTime") ?: ""
                         val timestamp = document.getString("timestamp")?: ""
                         val selectedLocationsList = document.get("selectedLocations") as? List<*>
                         selectedLocationsList?.let {
                             selectedLocations.addAll(it.filterIsInstance<String>())
                         }
                         val formattedDate = parseAndFormatDate(timestamp)
-                        binding.newsExcerpt.text = "Category: $category"
+                        val formattedTime = formatTimeRange(startTime, endTime)
+                        binding.tvOras.text = Html.fromHtml("<b>ORAS:</b> $formattedTime.")
                         binding.newsTitle.text = docTitle
                         binding.newsDate.text = formattedDate
-                        binding.content.text = content
+                        binding.tvGawain.text = Html.fromHtml("<b>GAWAIN:</b> $gawain")
+                        binding.tvPetsa.text = Html.fromHtml("<b>PETSA:</b> $date")
+                        binding.tvLugar.text = Html.fromHtml("<b>APEKTADONG LUGAR:</> $selectedLocationsList")
                         if (category == "Patalastas ng Power Interruption"){
                             binding.viewInMapButton.visibility = View.VISIBLE
                         }
@@ -114,7 +121,7 @@ class NewsDetailsFragment : Fragment() {
             }
     }
     @SuppressLint("SimpleDateFormat")
-    public fun parseAndFormatDate(timestampString: String): String {
+     private fun parseAndFormatDate(timestampString: String): String {
         return try {
             val timestampSeconds = timestampString.toLongOrNull() ?: return ""
             val date = Date(timestampSeconds * 1000)
@@ -124,7 +131,28 @@ class NewsDetailsFragment : Fragment() {
             Log.e("Home", "Number format error: ", e)
             ""
         }
-    }
 
+    }
+    private fun formatTimeRange(startTime: String, endTime: String): String {
+        return try {
+            val inputFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+            val outputFormat = SimpleDateFormat("h:mm a", Locale.getDefault())
+            val startDate = inputFormat.parse(startTime)
+            val endDate = inputFormat.parse(endTime)
+            if (startDate != null && endDate != null) {
+                val formattedStart = outputFormat.format(startDate)
+                val formattedEnd = outputFormat.format(endDate)
+                val differenceInMillis = endDate.time - startDate.time
+                val differenceInMinutes = differenceInMillis / (1000 * 60)
+                val hours = differenceInMinutes / 60
+                val minutes = differenceInMinutes % 60
+                "$formattedStart - $formattedEnd ($hours hrs $minutes mins)"
+            } else {
+                "$startTime - $endTime"
+            }
+        } catch (e: Exception) {
+            "$startTime - $endTime"
+        }
+    }
 
 }

@@ -78,16 +78,7 @@
                 android:textSize="14sp"
                 android:fontFamily="@font/roboto_regular"/>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/imagesRV"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
-                android:orientation="horizontal"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:listitem="@layout/news_images" />
-
-
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/imagesRV" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="15dp" android:orientation="horizontal" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" tools:listitem="@layout/news_images" />
             <TextView
                 android:id="@+id/news_excerpt"
                 android:layout_width="match_parent"
@@ -105,13 +96,66 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/content"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
-                    android:text="Content"
+                    android:text="Magkakaroon ng power service interruption:"
                     android:textColor="@color/text_dark_color"
                     android:textSize="15sp"
+                    android:fontFamily="@font/roboto_regular" />
+
+                <TextView
+                    android:id="@+id/tvGawain"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text="GAWAIN : Maintenance and Clearing activities."
+                    android:textSize="15sp"
+                    android:textColor="@color/text_dark_color"
+                    android:fontFamily="@font/roboto_regular" />
+
+                <TextView
+                    android:id="@+id/tvPetsa"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text="PETSA    : March 9, 2024 (Sabado)"
+                    android:textSize="15sp"
+                    android:textColor="@color/text_dark_color"
+                    android:fontFamily="@font/roboto_regular" />
+
+                <TextView
+                    android:id="@+id/tvOras"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text="ORAS      : 5:00 A.M. – 9:00 A.M. (4 Oras)"
+                    android:textSize="15sp"
+                    android:textColor="@color/text_dark_color"
+                    android:fontFamily="@font/roboto_regular" />
+
+                <TextView
+                    android:id="@+id/tvLugar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="APEKTADONG LUGAR : Mga bayan ng MERCEDES, BASUD, SAN LORENZO
+                    RUIZ at SAN VICENTE; at Brgys. Dogongan, Alawihao, Lag-on, Borabod, Bagasbas,
+                    Gubat, 1, 2, 3, 4, 8, San Isidro, Cobangbang, Mambalite, Magang at Pamorangon sa DAET."
+                    android:textSize="15sp"
+                    android:textColor="@color/text_dark_color"
+                    android:fontFamily="@font/roboto_regular" />
+
+                <TextView
+                    android:id="@+id/tvLongDesc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Maaaring maibalik ang serbisyo ng kuryente anumang
+                    oras matapos ang nasabing gawain. Para sa kaligtasan ng mga
+                    miyembro-konsumidores, parating ituring na may kuryente ang mga
+                    linya at mga kagamitan sa lahat ng oras."
+                    android:textSize="15sp"
+                    android:textColor="@color/text_dark_color"
                     android:fontFamily="@font/roboto_regular" />
 
             </LinearLayout>
@@ -136,7 +180,6 @@
             android:backgroundTint="@color/primary_main_color"
             android:fontFamily="@font/roboto_medium"
             android:text="View in Map"
-            android:visibility="gone"
             android:textColor="@color/primary_light_color"
             app:cornerRadius="10dp"/>
 

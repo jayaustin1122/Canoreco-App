@@ -32,10 +32,12 @@ class DetailsOutageFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         val areaCode = arguments?.getString("areaCode")
         queryFirestoreForTimestamp(areaCode!!)
+
+
     }
     private fun queryFirestoreForTimestamp(barangayName: String) {
         val firestore = FirebaseFirestore.getInstance()
-        firestore.collection("news")
+        firestore.collection("outages")
             .whereArrayContains("selectedLocations", barangayName)
             .get()
             .addOnSuccessListener { result ->
@@ -82,6 +84,8 @@ class DetailsOutageFragment : BottomSheetDialogFragment() {
                     val date = document.getString("date") ?: ""
                     val steps = listOf("Outage Detected", "Outage Under Repair", "Power Restored")
                     binding.stepView.setSteps(steps)
+                    val formattedDate = parseAndFormatDatse(timestampString)
+                    binding.tvUpdated.text = "Updated As of: $formattedDate"
                     when (status) {
                         "Outage Detected" -> {
                             binding.stepView.go(0, true)
@@ -128,11 +132,11 @@ class DetailsOutageFragment : BottomSheetDialogFragment() {
     }
 
     @SuppressLint("SimpleDateFormat")
-    public fun parseAndFormatDate(timestampString: String): String {
+     private fun parseAndFormatDatse(timestampString: String): String {
         return try {
             val timestampSeconds = timestampString.toLongOrNull() ?: return ""
             val date = Date(timestampSeconds * 1000)
-            val outputFormat = SimpleDateFormat("MMMM d, yyyy        h:mm a", Locale.getDefault())
+            val outputFormat = SimpleDateFormat("MMMM d, yyyy h:mm a", Locale.getDefault())
             outputFormat.format(date)
         } catch (e: NumberFormatException) {
             Log.e("Home", "Number format error: ", e)

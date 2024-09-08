@@ -291,7 +291,7 @@ class SignUpFragment : Fragment() {
         val currentDate = getCurrentDate()
         val currentTime = getCurrentTime()
         val uid = auth.uid
-        val timestamp = System.currentTimeMillis()
+        val timestamp = System.currentTimeMillis()/1000
 
 
         val user: HashMap<String, Any?> = hashMapOf(
