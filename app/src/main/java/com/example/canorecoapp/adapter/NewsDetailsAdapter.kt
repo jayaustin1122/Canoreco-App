@@ -52,17 +52,19 @@ class NewsDetailsAdapter(private val context: Context,
         val formattedDate = parseAndFormatDate(timeStamp)
         holder.title.text = newsTitle
         holder.date.text = formattedDate
-
+        val from = "News"
         Glide.with(this@NewsDetailsAdapter.context)
             .load(image)
             .into(holder.image)
 
         holder.itemView.setOnClickListener {
             val detailsFragment = NewsDetailsFragment()
-            val bundle = Bundle()
-            bundle.putString("category", category)
+            val bundle = Bundle().apply {
+                putString("category", category)
+                putString("from", from)
+            }
             detailsFragment.arguments = bundle
-            Log.d("BundleValues", "TimeStamp: $category")
+            Log.d("maintenanceList", "Category: $category")
             navController.navigate(R.id.newsDetailsFragment, bundle)
         }
     }

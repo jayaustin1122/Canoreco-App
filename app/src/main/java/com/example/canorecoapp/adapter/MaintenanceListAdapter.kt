@@ -43,7 +43,8 @@ class MaintenanceListAdapter(private val context: Context,
         val image = model.image
         val date = model.date
         val timeStamp = model.timestamp
-
+        val category = model.category
+        val from = "Maintenance"
         holder.title.text = newsTitle
         holder.date.text = date
 
@@ -53,10 +54,12 @@ class MaintenanceListAdapter(private val context: Context,
 
         holder.itemView.setOnClickListener {
             val detailsFragment = NewsDetailsFragment()
-            val bundle = Bundle()
-            bundle.putString("timeStamp", timeStamp)
+            val bundle = Bundle().apply {
+                putString("category", category)
+                putString("from", from)
+            }
             detailsFragment.arguments = bundle
-            Log.d("BundleValues", "TimeStamp: $timeStamp")
+            Log.d("maintenanceList", "Category: $category $from")
             navController.navigate(R.id.newsDetailsFragment, bundle)
         }
     }

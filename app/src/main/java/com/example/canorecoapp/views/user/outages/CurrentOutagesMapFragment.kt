@@ -1,10 +1,8 @@
 package com.example.canorecoapp.views.user.outages
 
 import android.Manifest
-import android.app.ProgressDialog
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.location.Geocoder
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,7 +11,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.findNavController
 import com.example.canorecoapp.R
@@ -38,7 +36,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.getValue
 import com.google.firebase.firestore.FirebaseFirestore
 import org.json.JSONException
 import org.json.JSONObject
@@ -111,7 +108,7 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
                 val endTime = document.getString("endTime") ?: ""
                 val selectedLocationsList = document.get("selectedLocations") as? List<*>
                 val isDateMatch = date == currentDate
-                val isTimeInRange = startTime <= currentTime && currentTime <= endTime
+                val isTimeInRange = startTime >= currentTime && currentTime <= endTime
 
                 if (isDateMatch && isTimeInRange) {
                     selectedLocationsList?.let {
@@ -119,11 +116,11 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
                     }
                 }
 
-                Log.d("FirestoreData", "Selected Locations: $selectedLocations")
+                Log.d("FirestoreData", "Selected Locationss: $selectedLocations")
             }
 
             val jsonData = loadJsonFromRaw(R.raw.filtered_barangayss)
-            jsonData?.let { parseAndDrawPolygons(it, selectedLocations) }
+            jsonData?.let { parseAndDrawPolygons(it, selectedLocations, "devices") }
                 ?: run {
                     Log.e("JSON", "Failed to load JSON data")
                 }
@@ -140,7 +137,8 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
             val addDataDialog = DetailsOutageFragment()
             val bundle = Bundle()
             bundle.putString("areaCode", barangayName)
-            bundle.putString("from", "current")
+            bundle.putString("from", "Current")
+            Log.d("PolygonClick", "$barangayName")
             addDataDialog.arguments = bundle
             addDataDialog.show(childFragmentManager, "DetailsOutageFragment")
         } else {
@@ -168,7 +166,7 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
                     if (locationsToRemove.isNotEmpty()) {
                         resetFragmentWithProgress()
                     } else {
-                        parseAndDrawPolygons(jsonData, locationsToAdd)
+                        parseAndDrawPolygons(jsonData, locationsToAdd,"devices")
                         previousLocations.clear()
                         previousLocations.addAll(currentLocations)
                     }
@@ -184,7 +182,7 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
     }
 
 
-    private fun parseAndDrawPolygons(jsonData: String, selectedLocations: Set<String>) {
+    private fun parseAndDrawPolygons(jsonData: String, selectedLocations: Set<String>, devices: String) {
         try {
             val jsonObject = JSONObject(jsonData)
             val features = jsonObject.getJSONArray("features")
@@ -229,13 +227,13 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
                             .title(barangayName)
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
                         val marker = gMap?.addMarker(markerOptions)
-                        marker?.tag = barangayName
+                        marker?.tag = "$barangayName, $devices"
                         Log.d("MarkerTag", "Assigned tag: $barangayName to marker")
                     }
                 }
             }
             dismissProgressDialog()
-            getCurrentLocation()
+           // getCurrentLocation()
         } catch (e: JSONException) {
             Log.e("JSON", "Error parsing JSON data: ${e.message}")
         }
@@ -275,19 +273,29 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
 
 
     override fun onMarkerClick(marker: Marker): Boolean {
-        val dataKey = marker.tag as? String
-        if (dataKey != null) {
+        val tagData = marker.tag as? String
+
+        if (tagData != null) {
+            val dataParts = tagData.split(", ")
+            val barangayName = dataParts.getOrNull(0) ?: "Unknown"
+            val devices = dataParts.getOrNull(1) ?: "Unknown"
+
             val addDataDialog = DetailsOutageFragment()
-            val bundle = Bundle()
-            bundle.putString("areaCode", marker.tag.toString())
+            val bundle = Bundle().apply {
+                putString("from", devices)
+                putString("areaCode", barangayName)
+            }
+            Log.d("PolygonClick", "$barangayName")
             addDataDialog.arguments = bundle
             addDataDialog.show(childFragmentManager, "DetailsOutageFragment")
+
             return true
         } else {
-            // Handle the case when marker.tag is null
+            Log.e("MarkerClick", "Marker tag is null")
             return false
         }
     }
+
 
 
 

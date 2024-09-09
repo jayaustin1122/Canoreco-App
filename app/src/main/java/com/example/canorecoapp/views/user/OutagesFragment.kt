@@ -48,14 +48,7 @@ class OutagesFragment : Fragment() {
             findNavController().navigateUp()
         }
         binding.viewListButton.setOnClickListener {
-            val coordinates = listOf(
-                mapOf("lat" to 14.08446, "lng" to 122.88797),
-                mapOf("lat" to 14.08500, "lng" to 122.88800),
-                mapOf("lat" to 14.08400, "lng" to 122.88900)
-            )
-
-            addBarangayBoundary("Daet", coordinates, true)
-
+            findNavController().navigate(R.id.listOfFutureAndCurrentOutagesFragment)
         }
         // Set up the tabs
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Current Outages"))
@@ -90,21 +83,5 @@ class OutagesFragment : Fragment() {
             .replace(R.id.map_fragment_container, fragment)
             .commit()
     }
-    fun addBarangayBoundary(name: String, coordinates: List<Map<String, Double>>, isAffected: Boolean) {
-        val firestore = FirebaseFirestore.getInstance()
-        val barangayData = hashMapOf(
-            "name" to name,
-            "coordinates" to coordinates,
-            "isAffected" to isAffected
-        )
 
-        firestore.collection("barangay_boundaries")
-            .add(barangayData)
-            .addOnSuccessListener {
-                Log.d("Firestore", "DocumentSnapshot successfully written!")
-            }
-            .addOnFailureListener { e ->
-                Log.w("Firestore", "Error writing document", e)
-            }
-    }
 }

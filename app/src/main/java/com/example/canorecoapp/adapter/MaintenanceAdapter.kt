@@ -57,14 +57,13 @@ class MaintenanceAdapter(private val context: Context,
             .into(holder.image)
 
         holder.itemView.setOnClickListener {
-            holder.itemView.setOnClickListener {
-                val detailsFragment = NewsDetailsFragment()
-                val bundle = Bundle()
-                bundle.putString("category",category)
-                detailsFragment.arguments = bundle
-                Log.d("maintenenance adapter", "TimeStamp: $category")
-                navController.navigate(R.id.newsDetailsFragment, bundle)
+            val detailsFragment = NewsDetailsFragment()
+            val bundle = Bundle().apply {
+                putString("category", category)
+                putString("from", "Maintenance")
             }
+            detailsFragment.arguments = bundle
+            navController.navigate(R.id.newsDetailsFragment, bundle)
         }
 
     }

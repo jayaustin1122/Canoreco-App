@@ -92,11 +92,13 @@ class ViewMapsWithAreasFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
 
     override fun onMarkerClick(marker: Marker): Boolean {
         val dataKey = marker.tag as? String
+        val from = arguments?.getString("from")
         if (dataKey != null) {
             val addDataDialog = DetailsOutageFragment()
             val bundle = Bundle()
             bundle.putString("areaCode", marker.tag.toString())
-            bundle.putString("from", "current")
+            bundle.putString("from", from)
+            Log.e("from", "$from")
             addDataDialog.arguments = bundle
             addDataDialog.show(childFragmentManager, "DetailsOutageFragment")
             return true
@@ -110,10 +112,13 @@ class ViewMapsWithAreasFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
     override fun onPolygonClick(polygon: Polygon) {
         Log.d("PolygonClick", "Polygon clicked")
         val barangayName = polygon.tag as? String
+        val from = arguments?.getString("from")
         if (barangayName != null) {
             val addDataDialog = DetailsOutageFragment()
             val bundle = Bundle()
             bundle.putString("areaCode", barangayName)
+            bundle.putString("from", from)
+            Log.e("from", "$from")
             addDataDialog.arguments = bundle
             addDataDialog.show(childFragmentManager, "DetailsOutageFragment")
         } else {

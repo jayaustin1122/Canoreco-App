@@ -49,22 +49,23 @@ class MaintenanceListFragment : Fragment() {
     }
 
     private fun getListOfMaintenance() {
-        val collectionRef = db.collection("maintenance")
-
-        collectionRef.get()
+        val collectionRef = db.collection("news")
+        collectionRef.whereEqualTo("category", "Patalastas ng Power Interruption").get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {
-                    val title = document.getString("Title") ?: ""
-                    val image = document.getString("Image") ?: ""
-                    val date = document.getString("Date") ?: ""
+                    val title = document.getString("title") ?: ""
+                    val imageList = document.get("image") as? List<String> ?: emptyList()
+                    val firstImage = imageList.getOrNull(0) ?: ""
+                    val date = document.getString("date") ?: ""
                     val timestamp = document.getString("timestamp") ?: ""
+                    val content = document.getString("content") ?: ""
+                    val category = document.getString("category") ?: ""
 
                     // Create News object and add to the list
-                    val maintenance = Maintenance(title, "","",image,timestamp,date)
+                    val maintenance = Maintenance(title, "","",firstImage,timestamp,date,"","","","",category)
                     newsList.add(maintenance)
                 }
-                // Notify the adapter that the data has changed
-                // Set up the adapter after retrieving data for all users
+
                 lifecycleScope.launchWhenResumed {
                     newsAdapter = MaintenanceListAdapter(this@MaintenanceListFragment.requireContext(),findNavController(), newsList)
                     binding.recyclerNews.setHasFixedSize(true)

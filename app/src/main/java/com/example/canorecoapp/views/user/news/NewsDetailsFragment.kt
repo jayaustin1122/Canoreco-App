@@ -1,6 +1,5 @@
 package com.example.canorecoapp.views.user.news
 
-import HomeUserFragment
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.text.Html
@@ -9,25 +8,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.HorizontalScrollView
 import android.widget.Toast
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
 import com.example.canorecoapp.R
-import com.example.canorecoapp.adapter.NewsAdapter
 import com.example.canorecoapp.adapter.NewsImagesAdapter
 import com.example.canorecoapp.databinding.FragmentNewsDetailsBinding
-import com.example.canorecoapp.models.Images
-import com.example.canorecoapp.models.News
-import com.google.android.play.integrity.internal.al
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import org.bouncycastle.asn1.x500.style.RFC4519Style.title
+import org.json.JSONException
+import org.json.JSONObject
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -49,9 +40,10 @@ class NewsDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val category = arguments?.getString("category")
+        val from = arguments?.getString("from")
 
-        Log.d("Firestore", "Querying document with category of: $category")
-        getNewsDetailsByTimestamp(category)
+        Log.d("Firestoress", "Querying document with category of: $from")
+        getNewsDetailsByTimestamp(category,from)
         binding.backArrow.setOnClickListener {
             findNavController().navigateUp()
         }
@@ -62,7 +54,7 @@ class NewsDetailsFragment : Fragment() {
         recyclerView.adapter = NewsImagesAdapter(requireContext(),findNavController(),images)
         Log.d("NewsImagesAdapter", "Loading image from URL: $images")
     }
-    private fun getNewsDetailsByTimestamp(category: String?) {
+    private fun getNewsDetailsByTimestamp(category: String?, from: String?) {
         if (category.isNullOrEmpty()) {
             Toast.makeText(requireContext(), "Invalid title!", Toast.LENGTH_SHORT).show()
             Log.d("Firestore", "Invalid title provided: $category")
@@ -76,7 +68,7 @@ class NewsDetailsFragment : Fragment() {
             .addOnSuccessListener { documents ->
                 if (!documents.isEmpty) {
                     for (document in documents) {
-
+                        val from = arguments?.getString("from")
                         val docTitle = document.getString("title") ?: ""
                         val images = document.get("image") as? List<String> ?: emptyList()
                         val content = document.getString("content") ?: ""
@@ -100,13 +92,15 @@ class NewsDetailsFragment : Fragment() {
 
                         if (category == "Patalastas ng Power Interruption") {
                             binding.viewInMapButton.visibility = View.VISIBLE
-                            binding.tvLugar.text = Html.fromHtml("<b>APEKTADONG LUGAR:</b> ${selectedLocations.joinToString(", ")}")
-
+                                //  binding.tvLugar.text = Html.fromHtml("<b>APEKTADONG LUGAR:</b> ${selectedLocations.joinToString(", ")}")
+                            retrieveLocationName(selectedLocations)
                             binding.viewInMapButton.setOnClickListener {
                                 if (selectedLocations.isNotEmpty()) {
                                     val detailsFragment = ViewMapsWithAreasFragment()
                                     val bundle = Bundle()
                                     bundle.putString("Areas", selectedLocations.joinToString(","))
+                                    bundle.putString("from", from)
+                                    Log.e("from", "$from")
                                     detailsFragment.arguments = bundle
                                     findNavController().navigate(R.id.viewMapsWithAreasFragment, bundle)
                                 } else {
@@ -133,6 +127,40 @@ class NewsDetailsFragment : Fragment() {
                 Toast.makeText(requireContext(), "Failed to retrieve documents: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
     }
+    private fun loadJsonFromRaw(resourceId: Int): String? {
+        return try {
+            val inputStream =this@NewsDetailsFragment.requireContext().resources.openRawResource(resourceId)
+            inputStream.bufferedReader().use { it.readText() }
+        } catch (e: IOException) {
+            Log.e("JSON", "Error reading JSON file from raw resources: ${e.message}")
+            null
+        }
+    }
+    private fun retrieveLocationName(selectedLocations: Set<String>) {
+        try {
+            val jsonData = loadJsonFromRaw(R.raw.filtered_barangayss)
+            val jsonObject = JSONObject(jsonData)
+            val features = jsonObject.getJSONArray("features")
+            val names = mutableListOf<String>()
+
+            for (i in 0 until features.length()) {
+                val feature = features.getJSONObject(i)
+                val properties = feature.getJSONObject("properties")
+                val barangayId = properties.getString("ID_3")
+                val barangayName = properties.getString("NAME_3")
+
+                if (barangayId in selectedLocations) {
+                    names.add(barangayName)
+                }
+            }
+
+            binding.tvLugar.text = Html.fromHtml("<b>APEKTADONG LUGAR:</b> ${names.joinToString(", ")}")
+        } catch (e: JSONException) {
+            Log.e("JSON", "Error parsing JSON data: ${e.message}")
+        }
+    }
+
+
 
     @SuppressLint("SimpleDateFormat")
      private fun parseAndFormatDate(timestampString: String): String {
