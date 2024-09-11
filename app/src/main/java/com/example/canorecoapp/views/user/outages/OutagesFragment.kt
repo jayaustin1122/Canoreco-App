@@ -1,4 +1,4 @@
-package com.example.canorecoapp.views.user
+package com.example.canorecoapp.views.user.outages
 
 import android.Manifest
 import android.content.pm.PackageManager

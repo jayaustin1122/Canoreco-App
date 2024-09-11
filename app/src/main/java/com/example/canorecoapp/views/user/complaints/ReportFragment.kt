@@ -1,4 +1,4 @@
-package com.example.canorecoapp.views.user
+package com.example.canorecoapp.views.user.complaints
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -19,9 +19,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
-import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentReportBinding
-import com.example.canorecoapp.utils.DateTimeUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -111,7 +109,8 @@ class ReportFragment : Fragment() {
             "concen" to concernText,
             "concernDescription" to concernDiscriptionText,
             "image" to imageUrl,
-            "timestamp" to timestamp
+            "timestamp" to timestamp,
+            "status" to "Pending"
 
 
         )

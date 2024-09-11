@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,6 +26,7 @@ class MaintenanceListFragment : Fragment() {
     private lateinit var newsList: ArrayList<Maintenance>
     private lateinit var newsAdapter: MaintenanceListAdapter
     private var db  = Firebase.firestore
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,6 +48,21 @@ class MaintenanceListFragment : Fragment() {
                 navigateUp()
             }
         }
+        binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let {
+                    newsAdapter.filter.filter(query)
+                }
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let {
+                    newsAdapter.filter.filter(newText)
+                }
+                return false
+            }
+        })
     }
 
     private fun getListOfMaintenance() {
@@ -69,7 +86,7 @@ class MaintenanceListFragment : Fragment() {
                 lifecycleScope.launchWhenResumed {
                     newsAdapter = MaintenanceListAdapter(this@MaintenanceListFragment.requireContext(),findNavController(), newsList)
                     binding.recyclerNews.setHasFixedSize(true)
-                    val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                    val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
                     binding.recyclerNews.layoutManager = layoutManager
                     binding.recyclerNews.adapter = newsAdapter
                 }

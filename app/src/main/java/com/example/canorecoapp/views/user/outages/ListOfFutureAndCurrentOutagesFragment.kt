@@ -1,4 +1,4 @@
-package com.example.canorecoapp.views.user.news
+package com.example.canorecoapp.views.user.outages
 
 import android.os.Bundle
 import android.util.Log
@@ -44,6 +44,9 @@ class ListOfFutureAndCurrentOutagesFragment : Fragment() {
                 return false
             }
         })
+        binding.backButton.setOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 
     private fun retrieveAllOutagesData() {

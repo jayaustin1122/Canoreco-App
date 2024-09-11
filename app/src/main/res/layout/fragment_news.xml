@@ -45,12 +45,38 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="10dp"
+        android:elevation="4dp"
+        app:cardCornerRadius="16dp"
+        app:cardBackgroundColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
+
+        <SearchView
+            android:id="@+id/search"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@android:color/transparent"
+            android:iconifiedByDefault="false"
+            android:queryHint="Search..."
+            android:queryBackground="@android:color/transparent"
+            app:queryBackground="@android:color/transparent"
+            android:padding="10dp"
+            android:layout_marginHorizontal="8dp" />
+    </androidx.cardview.widget.CardView>
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/latest_news"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
         android:fontFamily="@font/roboto_medium"
         android:text="Latest News and Updates"
         android:textColor="@color/text_dark_color"
@@ -58,7 +84,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/card" />
 
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/view"

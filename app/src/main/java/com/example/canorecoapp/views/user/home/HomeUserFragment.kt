@@ -1,3 +1,5 @@
+package com.example.canorecoapp.views.user.home
+
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log

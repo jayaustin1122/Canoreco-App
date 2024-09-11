@@ -1,4 +1,4 @@
-package com.example.canorecoapp.views.user
+package com.example.canorecoapp.views.user.service
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentServicesUserBinding
-import com.example.canorecoapp.databinding.FragmentUserHolderBinding
 
 class ServicesUserFragment : Fragment() {
     private lateinit var binding: FragmentServicesUserBinding

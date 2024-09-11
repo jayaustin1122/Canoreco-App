@@ -7,6 +7,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.navigation.NavController
@@ -15,6 +17,7 @@ import com.bumptech.glide.Glide
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.NewsActivitiesItemViewsBinding
 import com.example.canorecoapp.databinding.NewsItemViewBinding
+import com.example.canorecoapp.models.Maintenance
 import com.example.canorecoapp.models.News
 import com.example.canorecoapp.views.user.news.NewsDetailsFragment
 import java.text.SimpleDateFormat
@@ -24,8 +27,9 @@ import java.util.Locale
 class NewsDetailsAdapter(private val context: Context,
                          private val navController: NavController,
                          private var newsArrayList: List<News>
-                ): RecyclerView.Adapter<NewsDetailsAdapter.ViewHolder>() {
+                ): RecyclerView.Adapter<NewsDetailsAdapter.ViewHolder>(), Filterable {
     private  lateinit var binding: NewsItemViewBinding
+    private var filteredList = newsArrayList
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var title: TextView = binding.tvTitle
         var date: TextView = binding.tvDate
@@ -38,7 +42,7 @@ class NewsDetailsAdapter(private val context: Context,
     }
 
     override fun getItemCount(): Int {
-        return newsArrayList.size
+        return filteredList.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -81,6 +85,29 @@ class NewsDetailsAdapter(private val context: Context,
         }
 
     }
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val charString = constraint?.toString() ?: ""
+                val results = FilterResults()
 
+                results.values = if (charString.isEmpty()) {
+                    newsArrayList
+                } else {
+                    val filtered = newsArrayList.filter {
+                        it.title.contains(charString, ignoreCase = true) ||
+                                it.shortDescription.contains(charString, ignoreCase = true)
+                    }
+                    filtered
+                }
+                return results
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                filteredList = results?.values as List<News>
+                notifyDataSetChanged()
+            }
+        }
+    }
 
 }

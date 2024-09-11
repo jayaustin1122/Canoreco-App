@@ -1,4 +1,4 @@
-package com.example.canorecoapp.views.user
+package com.example.canorecoapp.views.user.service
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

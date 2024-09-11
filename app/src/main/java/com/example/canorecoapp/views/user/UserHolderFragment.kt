@@ -1,7 +1,6 @@
 package com.example.canorecoapp.views.user
 
-import HomeUserFragment
-import android.annotation.SuppressLint
+import com.example.canorecoapp.views.user.home.HomeUserFragment
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,12 +11,10 @@ import androidx.fragment.app.FragmentManager
 import com.bumptech.glide.Glide
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentUserHolderBinding
+import com.example.canorecoapp.views.user.account.AccountUserFragment
+import com.example.canorecoapp.views.user.service.ServicesUserFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
 
 class UserHolderFragment : Fragment() {

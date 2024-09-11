@@ -1,6 +1,5 @@
-package com.example.canorecoapp.views.user
+package com.example.canorecoapp.views.user.account
 
-import android.app.ProgressDialog
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,8 +13,6 @@ import cn.pedant.SweetAlert.SweetAlertDialog
 import com.bumptech.glide.Glide
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentAccountLineMenBinding
-import com.example.canorecoapp.databinding.FragmentAccountUserBinding
-import com.example.canorecoapp.databinding.FragmentHomeUserBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 

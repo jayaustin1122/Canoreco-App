@@ -76,11 +76,16 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
     }
 
     private fun loadJsonFromRaw(resourceId: Int): String? {
-        return try {
-            val inputStream = requireContext().resources.openRawResource(resourceId)
-            inputStream.bufferedReader().use { it.readText() }
-        } catch (e: IOException) {
-            Log.e("JSON", "Error reading JSON file from raw resources: ${e.message}")
+        return if (isAdded) {
+            try {
+                val inputStream = requireContext().resources.openRawResource(resourceId)
+                inputStream.bufferedReader().use { it.readText() }
+            } catch (e: IOException) {
+                Log.e("JSON", "Error reading JSON file from raw resources: ${e.message}")
+                null
+            }
+        } else {
+            Log.e("JSON", "Fragment not attached to context.")
             null
         }
     }

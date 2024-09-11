@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navgation"
-    app:startDestination="@id/outagesFragment">
+    app:startDestination="@id/splashFragment">
 
     <fragment
         android:id="@+id/splashFragment"
@@ -50,12 +50,12 @@
         tools:layout="@layout/fragment_news" />
     <fragment
         android:id="@+id/outagesFragment"
-        android:name="com.example.canorecoapp.views.user.OutagesFragment"
+        android:name="com.example.canorecoapp.views.user.outages.OutagesFragment"
         android:label="fragment_outages"
         tools:layout="@layout/fragment_outages" />
     <fragment
         android:id="@+id/billingInformationFragment"
-        android:name="com.example.canorecoapp.views.user.BillingInformationFragment"
+        android:name="com.example.canorecoapp.views.user.billing.BillingInformationFragment"
         tools:layout="@layout/fragment_billing_information"
         android:label="BillingInformationFragment" >
         <action
@@ -64,17 +64,17 @@
     </fragment>
     <fragment
         android:id="@+id/reportFragment"
-        android:name="com.example.canorecoapp.views.user.ReportFragment"
+        android:name="com.example.canorecoapp.views.user.complaints.ReportFragment"
         android:label="fragment_report"
         tools:layout="@layout/fragment_report" />
     <fragment
         android:id="@+id/bayadCentersFragment"
-        android:name="com.example.canorecoapp.views.user.BayadCentersFragment"
+        android:name="com.example.canorecoapp.views.user.bayadcenterandbusinesscenter.BayadCentersFragment"
         android:label="fragment_bayad_centers"
         tools:layout="@layout/fragment_bayad_centers" />
     <fragment
         android:id="@+id/servicesFragment"
-        android:name="com.example.canorecoapp.views.user.ServicesFragment"
+        android:name="com.example.canorecoapp.views.user.service.ServicesFragment"
         android:label="fragment_services"
         tools:layout="@layout/fragment_services" />
     <fragment
@@ -84,7 +84,7 @@
         tools:layout="@layout/fragment_maintenance_list" />
     <fragment
         android:id="@+id/servicesUserFragment"
-        android:name="com.example.canorecoapp.views.user.ServicesUserFragment"
+        android:name="com.example.canorecoapp.views.user.service.ServicesUserFragment"
         android:label="fragment_services_user"
         tools:layout="@layout/fragment_services_user" />
     <fragment
@@ -112,12 +112,12 @@
         tools:layout="@layout/fragment_view_maps_with_areas" />
     <fragment
         android:id="@+id/accountUserFragment"
-        android:name="com.example.canorecoapp.views.user.AccountUserFragment"
+        android:name="com.example.canorecoapp.views.user.account.AccountUserFragment"
         android:label="fragment_account_user"
         tools:layout="@layout/fragment_account_user" />
     <fragment
         android:id="@+id/listOfFutureAndCurrentOutagesFragment"
-        android:name="com.example.canorecoapp.views.user.news.ListOfFutureAndCurrentOutagesFragment"
+        android:name="com.example.canorecoapp.views.user.outages.ListOfFutureAndCurrentOutagesFragment"
         android:label="fragment_list_of_future_and_current_outages"
         tools:layout="@layout/fragment_list_of_future_and_current_outages" />
 </navigation>
