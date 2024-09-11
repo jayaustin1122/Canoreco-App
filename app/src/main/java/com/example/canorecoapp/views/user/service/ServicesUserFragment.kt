@@ -47,6 +47,11 @@ class ServicesUserFragment : Fragment() {
                 navigate(R.id.bayadCentersFragment)
             }
         }
+        binding.track.setOnClickListener {
+            findNavController().apply {
+                navigate(R.id.listOfMyComplaintsFragment)
+            }
+        }
     }
 
 }

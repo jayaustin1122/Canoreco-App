@@ -110,13 +110,13 @@ class ReportFragment : Fragment() {
             "concernDescription" to concernDiscriptionText,
             "image" to imageUrl,
             "timestamp" to timestamp,
-            "status" to "Pending"
+            "status" to "Sent"
 
 
         )
         val firestore = FirebaseFirestore.getInstance()
         try {
-            firestore.collection("consumer_complaints")
+            firestore.collection("users/$uid/my_complaints")
                 .document(timestamp.toString())
                 .set(report)
                 .addOnCompleteListener { task ->

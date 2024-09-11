@@ -20,7 +20,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 
-class ListOfOutagesAdapter(
+class   ListOfOutagesAdapter(
     private val context: Context,
     private val navController: NavController,
     private var selectedLocations: List<String>
