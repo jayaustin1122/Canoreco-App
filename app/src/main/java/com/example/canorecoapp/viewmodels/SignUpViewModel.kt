@@ -8,13 +8,12 @@ class SignUpViewModel  : ViewModel() {
     var lastName: String = ""
     var email: String = ""
     var password: String = ""
-
     var address: String = ""
     var phone: String = ""
     var month : String = ""
     var day : String = ""
     var year : String = ""
-    var accountNumber : String = ""
+    var meterNumber : String = ""
 
     var image: Uri? = null
 

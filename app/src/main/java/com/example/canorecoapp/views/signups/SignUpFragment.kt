@@ -161,15 +161,13 @@ class SignUpFragment : Fragment() {
     private fun validateFragmentFour() {
         val phoneNUmber = viewModel.phone
         val address = viewModel.address
-        val accountNumber = viewModel.accountNumber
+        val accountNumber = viewModel.meterNumber
         if (phoneNUmber.isEmpty()) {
             Toast.makeText(requireContext(), "Please Enter Contact Number or Valid Contact Number", Toast.LENGTH_SHORT).show()
         } else if (address.isEmpty()) {
             Toast.makeText(requireContext(), "Please Enter Your Address", Toast.LENGTH_SHORT).show()
-            return}
-//        else if (accountNumber.isEmpty()) {
-//            Toast.makeText(requireContext(), "Please Enter Your Address", Toast.LENGTH_SHORT).show()
-//            return
+            return
+        }
         else {
             sendPhoneNumberCode()
             progressDialog.dismiss()
@@ -249,11 +247,6 @@ class SignUpFragment : Fragment() {
                 val fcmToken = FirebaseMessaging.getInstance().token.await()
 
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        this@SignUpFragment.requireContext(),
-                        "Account created. Verification email sent. Please check your inbox.",
-                        Toast.LENGTH_SHORT
-                    ).show()
                     uploadImage(fcmToken)
                 }
             } catch (e: Exception) {
@@ -321,7 +314,7 @@ class SignUpFragment : Fragment() {
             "dateOfBirth" to "$month-$day-$year",
             "timestamp" to timestamp,
             "address" to viewModel.address,
-            "accountNumber" to viewModel.accountNumber,
+            "accountNumber" to viewModel.meterNumber,
         )
         val firestore = FirebaseFirestore.getInstance()
         try {
@@ -336,11 +329,6 @@ class SignUpFragment : Fragment() {
                             popBackStack(R.id.signUpFragment, false)
                             navigate(R.id.signInFragment)
                         }
-                        Toast.makeText(
-                            this@SignUpFragment.requireContext(),
-                            "Account Created",
-                            Toast.LENGTH_SHORT
-                        ).show()
                     } else {
                         Toast.makeText(
                             this@SignUpFragment.requireContext(),
@@ -361,14 +349,12 @@ class SignUpFragment : Fragment() {
     private fun verifyEmail(user: FirebaseUser?) {
         if (user == null) {
             Log.e("EmailVerification", "User is not logged in. Cannot send verification email.")
-            Toast.makeText(requireContext(), "User is not logged in. Cannot send verification email.", Toast.LENGTH_SHORT).show()
             return
         }
         user.sendEmailVerification()
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Log.d("EmailVerification", "Verification email sent to ${user.email}")
-                    Toast.makeText(requireContext(), "Verification email sent. Please check your inbox.", Toast.LENGTH_SHORT).show()
                     showVerificationDialog(user)
                 } else {
                     Log.e("EmailVerification", "Failed to send verification email to ${user.email}. Task failed.")
