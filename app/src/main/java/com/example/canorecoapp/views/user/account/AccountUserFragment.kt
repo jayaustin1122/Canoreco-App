@@ -51,7 +51,7 @@ class AccountUserFragment : Fragment() {
                     findNavController().navigate(R.id.signInFragment)
                     progressDialog.dismiss()
                 }
-            }, 1000) // Adjust the delay as needed
+            }, 1000)
         }
 
 

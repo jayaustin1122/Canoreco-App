@@ -163,7 +163,6 @@ class SignUpFragment : Fragment() {
             return
         } else {
             sendPhoneNumberCode()
-            //nextItem()
             progressDialog.dismiss()
             createUserAccount()
             progressDialog.setMessage("Creating Account...")

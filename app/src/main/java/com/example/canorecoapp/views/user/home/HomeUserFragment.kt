@@ -1,16 +1,22 @@
 package com.example.canorecoapp.views.user.home
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.bumptech.glide.Glide
 import com.example.canorecoapp.R
 import com.example.canorecoapp.adapter.MaintenanceAdapter
@@ -22,6 +28,8 @@ import com.example.canorecoapp.utils.ProgressDialogUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -30,7 +38,7 @@ import java.util.Locale
     private lateinit var binding: FragmentHomeUserBinding
     private lateinit var adapter: NewsAdapter
     private lateinit var adapter2: MaintenanceAdapter
-
+     private lateinit var auth: FirebaseAuth
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,6 +50,9 @@ import java.util.Locale
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         ProgressDialogUtils.showProgressDialog(requireContext(),"PLease Wait...")
+        auth = FirebaseAuth.getInstance()
+        verifyEmail()
+        loadUsersInfo()
         getNews()
         getMaintenances()
 
@@ -57,7 +68,7 @@ import java.util.Locale
                 navigate(R.id.maintenanceListFragment)
             }
         }
-        loadUsersInfo()
+
 
     }
     private fun loadUsersInfo() {
@@ -69,6 +80,9 @@ import java.util.Locale
                 .addOnSuccessListener { document ->
                     val userName = document.getString("fullName")
                     val image = document.getString("image")
+                    val verification = document.getBoolean("verification")
+
+
                     binding.textViewUser.setText("$userName")
                     val context = context ?: return@addOnSuccessListener
                     binding.imageViewProfile?.let {
@@ -140,7 +154,85 @@ import java.util.Locale
                  Log.e("Home", "Error getting documents: ", exception)
              }
      }
+     private fun verifyEmail() {
+         val user = auth.currentUser
+         if (user == null) {
+             Log.e("EmailVerification", "User is not logged in. Cannot send verification email.")
+             Toast.makeText(requireContext(), "User is not logged in. Cannot send verification email.", Toast.LENGTH_SHORT).show()
+             return
+         }
+         user.sendEmailVerification()
+             .addOnCompleteListener { task ->
+                 if (task.isSuccessful) {
+                     Log.d("EmailVerification", "Verification email sent to ${user.email}")
+                     Toast.makeText(requireContext(), "Verification email sent. Please check your inbox.", Toast.LENGTH_SHORT).show()
+                     showVerificationDialog()
+                 } else {
+                     Log.e("EmailVerification", "Failed to send verification email to ${user.email}. Task failed.")
+                     Toast.makeText(requireContext(), "Error sending verification email", Toast.LENGTH_SHORT).show()
+                 }
+             }
+             .addOnFailureListener { exception ->
+                 Log.e("EmailVerification", "Error sending verification email: ${exception.message}")
+                 Toast.makeText(requireContext(), exception.message, Toast.LENGTH_SHORT).show()
+             }
+     }
 
+
+     @SuppressLint("MissingInflatedId")
+     private fun showVerificationDialog() {
+         val dialogBuilder = AlertDialog.Builder(requireContext())
+         val inflater = layoutInflater
+         val dialogView = inflater.inflate(R.layout.dialog_verification, null)
+         dialogBuilder.setView(dialogView)
+         val btnContinue = dialogView.findViewById<Button>(R.id.btnContinue)
+         val btnResend = dialogView.findViewById<Button>(R.id.btnResend)
+         val logout = dialogView.findViewById<TextView>(R.id.tvLogOut)
+         val dialog = dialogBuilder.create()
+         dialog.setCancelable(false)
+         dialog.show()
+
+         btnContinue.isEnabled = false
+         btnResend.setOnClickListener {
+             verifyEmail()
+         }
+         logout.setOnClickListener {
+             val progressDialog = SweetAlertDialog(requireContext(), SweetAlertDialog.PROGRESS_TYPE)
+             progressDialog.titleText = "Logging out..."
+             progressDialog.show()
+
+             auth.signOut()
+             Handler(Looper.getMainLooper()).postDelayed({
+                 progressDialog.changeAlertType(SweetAlertDialog.SUCCESS_TYPE)
+                 progressDialog.titleText = "Logged Out!"
+                 progressDialog.confirmText = "OK"
+                 progressDialog.setConfirmClickListener {
+                     findNavController().navigate(R.id.signInFragment)
+                     progressDialog.dismiss()
+                 }
+             }, 1000)
+         }
+
+         lifecycleScope.launch {
+             while (auth.currentUser?.isEmailVerified == false) {
+                 auth.currentUser?.reload()?.addOnCompleteListener { task ->
+                     if (task.isSuccessful && auth.currentUser?.isEmailVerified == true) {
+                         btnContinue.isEnabled = true
+                     }
+                 }
+                 delay(5000)
+             }
+             dialog.dismiss()
+         }
+
+         btnContinue.setOnClickListener {
+             if (auth.currentUser?.isEmailVerified == true) {
+                 dialog.dismiss()
+             } else {
+                 Toast.makeText(requireContext(), "Please verify your email before proceeding.", Toast.LENGTH_SHORT).show()
+             }
+         }
+     }
 
 
 
