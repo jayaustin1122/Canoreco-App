@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.canorecoapp.R
 import com.example.canorecoapp.adapter.NewsImagesAdapter
 import com.example.canorecoapp.databinding.FragmentNewsDetailsBinding
+import com.example.canorecoapp.utils.ProgressDialogUtils
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import org.json.JSONException
@@ -39,11 +40,12 @@ class NewsDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val category = arguments?.getString("category")
+        val title = arguments?.getString("title")
         val from = arguments?.getString("from")
-
+        ProgressDialogUtils.showProgressDialog(requireContext(),"PLease Wait...")
         Log.d("Firestoress", "Querying document with category of: $from")
-        getNewsDetailsByTimestamp(category,from)
+
+        getNewsDetailsByTimestamp(title,from)
         binding.backArrow.setOnClickListener {
             findNavController().navigateUp()
         }
@@ -54,15 +56,15 @@ class NewsDetailsFragment : Fragment() {
         recyclerView.adapter = NewsImagesAdapter(requireContext(),findNavController(),images)
         Log.d("NewsImagesAdapter", "Loading image from URL: $images")
     }
-    private fun getNewsDetailsByTimestamp(category: String?, from: String?) {
-        if (category.isNullOrEmpty()) {
+    private fun getNewsDetailsByTimestamp(title: String?, from: String?) {
+        if (title.isNullOrEmpty()) {
             Toast.makeText(requireContext(), "Invalid title!", Toast.LENGTH_SHORT).show()
-            Log.d("Firestore", "Invalid title provided: $category")
+            Log.d("Firestore", "Invalid title provided: $title")
             return
         }
-        Log.d("maintenancedetails", "Querying document with title: '$category'")
+        Log.d("maintenancedetails", "Querying document with title: '$title'")
         val collectionRef = db.collection("news")
-        val query = collectionRef.whereEqualTo("category", category)
+        val query = collectionRef.whereEqualTo("title", title)
         val selectedLocations = mutableSetOf<String>()
         query.get()
             .addOnSuccessListener { documents ->
@@ -75,6 +77,7 @@ class NewsDetailsFragment : Fragment() {
                         val gawain = document.getString("gawain") ?: ""
                         val date = document.getString("date") ?: ""
                         val startTime = document.getString("startTime") ?: ""
+                        val category = document.getString("category") ?: ""
                         val endTime = document.getString("endTime") ?: ""
                         val timestamp = document.getString("timestamp") ?: ""
                         val selectedLocationsList = document.get("selectedLocations") as? List<*>
@@ -116,6 +119,7 @@ class NewsDetailsFragment : Fragment() {
                             binding.ss.visibility = View.GONE
                         }
                         setupRecyclerView(images)
+                        ProgressDialogUtils.dismissProgressDialog()
                     }
                 } else {
                     Log.d("Firestore", "No document found with the given title")

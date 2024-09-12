@@ -59,7 +59,7 @@ class MaintenanceAdapter(private val context: Context,
         holder.itemView.setOnClickListener {
             val detailsFragment = NewsDetailsFragment()
             val bundle = Bundle().apply {
-                putString("category", category)
+                putString("title", newsTitle)
                 putString("from", "Maintenance")
             }
             detailsFragment.arguments = bundle

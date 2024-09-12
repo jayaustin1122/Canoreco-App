@@ -21,6 +21,7 @@ import com.example.canorecoapp.models.News
 import com.example.canorecoapp.utils.ProgressDialogUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -95,56 +96,56 @@ import java.util.Locale
 
 
 
-    private fun getNews() {
-        val freeItems = ArrayList<News>()
-        val db = FirebaseFirestore.getInstance()
-        val ref = db.collection("news")
+     private fun getNews() {
+         val freeItems = ArrayList<News>()
+         val db = FirebaseFirestore.getInstance()
+         val ref = db.collection("news")
+             .orderBy("timestamp", Query.Direction.DESCENDING)
+             .limit(4)
 
-        ref.get()
-            .addOnSuccessListener { documents ->
-                var itemCount = 0
-                for (document in documents) {
-                    if (itemCount >= 4) break
-                    val title = document.getString("title") ?: ""
-                    val shortDesc = document.getString("content") ?: ""
-                    val timestampString = document.getString("timestamp") ?: ""
-                    val category = document.getString("category") ?: ""
-                    val formattedDate = parseAndFormatDate(timestampString)
-                    val imageList = document.get("image") as? List<String> ?: emptyList()
-                    val firstImage = imageList.getOrNull(0) ?: ""
+         ref.get()
+             .addOnSuccessListener { documents ->
+                 for (document in documents) {
+                     val title = document.getString("title") ?: ""
+                     val shortDesc = document.getString("content") ?: ""
+                     val timestampString = document.getString("timestamp") ?: ""
+                     val category = document.getString("category") ?: ""
+                     val formattedDate = parseAndFormatDate(timestampString)
+                     val imageList = document.get("image") as? List<String> ?: emptyList()
+                     val firstImage = imageList.getOrNull(0) ?: ""
 
-                    freeItems.add(News(
-                        title,
-                        shortDesc,
-                        "",
-                        firstImage,
-                        formattedDate,
-                        formattedDate,
-                        "",
-                        "",
-                        "",
-                        "",
-                        category))
-                    itemCount++
-                }
+                     freeItems.add(News(
+                         title,
+                         shortDesc,
+                         "",
+                         firstImage,
+                         formattedDate,
+                         formattedDate,
+                         "",
+                         "",
+                         "",
+                         "",
+                         category))
+                 }
 
-                lifecycleScope.launchWhenResumed {
-                    adapter = NewsAdapter(this@HomeUserFragment.requireContext(), findNavController(), freeItems)
-                    binding.rvLatestNews.setHasFixedSize(true)
-                    val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-                    binding.rvLatestNews.layoutManager = layoutManager
-                    binding.rvLatestNews.adapter = adapter
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.e("Home", "Error getting documents: ", exception)
-            }
-    }
-
+                 lifecycleScope.launchWhenResumed {
+                     adapter = NewsAdapter(this@HomeUserFragment.requireContext(), findNavController(), freeItems)
+                     binding.rvLatestNews.setHasFixedSize(true)
+                     val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                     binding.rvLatestNews.layoutManager = layoutManager
+                     binding.rvLatestNews.adapter = adapter
+                 }
+             }
+             .addOnFailureListener { exception ->
+                 Log.e("Home", "Error getting documents: ", exception)
+             }
+     }
 
 
 
-    @SuppressLint("SimpleDateFormat")
+
+
+     @SuppressLint("SimpleDateFormat")
     public fun parseAndFormatDate(timestampString: String): String {
         return try {
             val timestampSeconds = timestampString.toLongOrNull() ?: return ""
@@ -165,7 +166,8 @@ import java.util.Locale
         val db = FirebaseFirestore.getInstance()
         val ref = db.collection("news")
 
-        ref.whereEqualTo("category", "Patalastas ng Power Interruption").get()
+        ref.whereEqualTo("category", "Patalastas ng Power Interruption")
+            .get()
             .addOnSuccessListener { documents ->
                 var itemCount = 0
                 for (document in documents) {
