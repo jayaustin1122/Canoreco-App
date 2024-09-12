@@ -119,10 +119,12 @@ class StepTwoFragment : Fragment() {
                 binding.imageView2.setImageURI(selectedImage)
                 viewModel.setImage2(selectedImage)
                 Log.d("TwoSignupFragment", "Image selected: $selectedImage")
+                binding.btnUpload.visibility = View.GONE
             } else if (requestCode == IMAGE_PICK_CAMERA_CODE) {
                 binding.imageView2.setImageURI(selectedImage)
                 viewModel.setImage2(selectedImage)
                 Log.d("TwoSignupFragment", "Image selected: $selectedImage")
+                binding.btnUpload.visibility = View.GONE
             }
         }
     }
