@@ -65,6 +65,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:text="Ben T. Lador"
+                        android:elevation="@dimen/dimen_10dp"
                         android:textSize="16sp"
                         android:textColor="@color/text_dark_color"
                         android:fontFamily="@font/roboto_black"

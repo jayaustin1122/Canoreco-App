@@ -23,14 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Resend Email" />
-    <TextView
-        android:id="@+id/tvLogOut"
-        android:layout_width="wrap_content"
-        android:textColor="@color/g_blue2"
-        android:fontFamily="@font/roboto_bold"
-        android:layout_gravity="end"
-        android:layout_height="wrap_content"
-        android:text="Logout?" />
+
 
 
 </LinearLayout>

@@ -51,7 +51,7 @@ import java.util.Locale
         super.onViewCreated(view, savedInstanceState)
         ProgressDialogUtils.showProgressDialog(requireContext(),"PLease Wait...")
         auth = FirebaseAuth.getInstance()
-        verifyEmail()
+
         loadUsersInfo()
         getNews()
         getMaintenances()
@@ -71,42 +71,48 @@ import java.util.Locale
 
 
     }
-    private fun loadUsersInfo() {
-        val db = FirebaseFirestore.getInstance()
-        val currentUser = FirebaseAuth.getInstance().currentUser
+     private fun loadUsersInfo() {
+         val db = FirebaseFirestore.getInstance()
+         val currentUser = FirebaseAuth.getInstance().currentUser
 
-        currentUser?.let { user ->
-            db.collection("users").document(user.uid).get()
-                .addOnSuccessListener { document ->
-                    val userName = document.getString("fullName")
-                    val image = document.getString("image")
-                    val verification = document.getBoolean("verification")
+         currentUser?.let { user ->
+             db.collection("users").document(user.uid).get()
+                 .addOnSuccessListener { document ->
+                     // Log all data users inside this current usersssssssssssss
+                     Log.d("UserInfo", "Document data: ${document.data}")
 
+                     val userName = document.getString("fistName")
+                     val image = document.getString("image")
 
-                    binding.textViewUser.setText("$userName")
-                    val context = context ?: return@addOnSuccessListener
-                    binding.imageViewProfile?.let {
-                        Glide.with(context)
-                            .load(image)
-                            .into(it)
-                    }
+                     if (userName.isNullOrEmpty()) {
+                         Log.w("UserInfo", "First name is null or empty")
+                     }
 
-                }
-                .addOnFailureListener { exception ->
-                    Toast.makeText(
-                        requireContext(),
-                        "Error Loading User Data: ${exception.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-        } ?: run {
-            Toast.makeText(
-                requireContext(),
-                "User not authenticated",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
+                     binding.textViewUser.text = userName
+                     val context = context ?: return@addOnSuccessListener
+                     binding.imageViewProfile?.let {
+                         Glide.with(context)
+                             .load(image)
+                             .into(it)
+                     }
+
+                 }
+                 .addOnFailureListener { exception ->
+                     Toast.makeText(
+                         requireContext(),
+                         "Error Loading User Data: ${exception.message}",
+                         Toast.LENGTH_SHORT
+                     ).show()
+                 }
+         } ?: run {
+             Toast.makeText(
+                 requireContext(),
+                 "User not authenticated",
+                 Toast.LENGTH_SHORT
+             ).show()
+         }
+     }
+
 
 
 
@@ -153,85 +159,6 @@ import java.util.Locale
              .addOnFailureListener { exception ->
                  Log.e("Home", "Error getting documents: ", exception)
              }
-     }
-     private fun verifyEmail() {
-         val user = auth.currentUser
-         if (user == null) {
-             Log.e("EmailVerification", "User is not logged in. Cannot send verification email.")
-             Toast.makeText(requireContext(), "User is not logged in. Cannot send verification email.", Toast.LENGTH_SHORT).show()
-             return
-         }
-         user.sendEmailVerification()
-             .addOnCompleteListener { task ->
-                 if (task.isSuccessful) {
-                     Log.d("EmailVerification", "Verification email sent to ${user.email}")
-                     Toast.makeText(requireContext(), "Verification email sent. Please check your inbox.", Toast.LENGTH_SHORT).show()
-                     showVerificationDialog()
-                 } else {
-                     Log.e("EmailVerification", "Failed to send verification email to ${user.email}. Task failed.")
-                     Toast.makeText(requireContext(), "Error sending verification email", Toast.LENGTH_SHORT).show()
-                 }
-             }
-             .addOnFailureListener { exception ->
-                 Log.e("EmailVerification", "Error sending verification email: ${exception.message}")
-                 Toast.makeText(requireContext(), exception.message, Toast.LENGTH_SHORT).show()
-             }
-     }
-
-
-     @SuppressLint("MissingInflatedId")
-     private fun showVerificationDialog() {
-         val dialogBuilder = AlertDialog.Builder(requireContext())
-         val inflater = layoutInflater
-         val dialogView = inflater.inflate(R.layout.dialog_verification, null)
-         dialogBuilder.setView(dialogView)
-         val btnContinue = dialogView.findViewById<Button>(R.id.btnContinue)
-         val btnResend = dialogView.findViewById<Button>(R.id.btnResend)
-         val logout = dialogView.findViewById<TextView>(R.id.tvLogOut)
-         val dialog = dialogBuilder.create()
-         dialog.setCancelable(false)
-         dialog.show()
-
-         btnContinue.isEnabled = false
-         btnResend.setOnClickListener {
-             verifyEmail()
-         }
-         logout.setOnClickListener {
-             val progressDialog = SweetAlertDialog(requireContext(), SweetAlertDialog.PROGRESS_TYPE)
-             progressDialog.titleText = "Logging out..."
-             progressDialog.show()
-
-             auth.signOut()
-             Handler(Looper.getMainLooper()).postDelayed({
-                 progressDialog.changeAlertType(SweetAlertDialog.SUCCESS_TYPE)
-                 progressDialog.titleText = "Logged Out!"
-                 progressDialog.confirmText = "OK"
-                 progressDialog.setConfirmClickListener {
-                     findNavController().navigate(R.id.signInFragment)
-                     progressDialog.dismiss()
-                 }
-             }, 1000)
-         }
-
-         lifecycleScope.launch {
-             while (auth.currentUser?.isEmailVerified == false) {
-                 auth.currentUser?.reload()?.addOnCompleteListener { task ->
-                     if (task.isSuccessful && auth.currentUser?.isEmailVerified == true) {
-                         btnContinue.isEnabled = true
-                     }
-                 }
-                 delay(5000)
-             }
-             dialog.dismiss()
-         }
-
-         btnContinue.setOnClickListener {
-             if (auth.currentUser?.isEmailVerified == true) {
-                 dialog.dismiss()
-             } else {
-                 Toast.makeText(requireContext(), "Please verify your email before proceeding.", Toast.LENGTH_SHORT).show()
-             }
-         }
      }
 
 

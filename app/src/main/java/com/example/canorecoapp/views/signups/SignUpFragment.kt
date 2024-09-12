@@ -1,18 +1,26 @@
 package com.example.canorecoapp.views.signups
 
+import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.util.Patterns
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.canorecoapp.R
 import com.example.canorecoapp.adapter.SignUpAdapters
 import com.example.canorecoapp.databinding.FragmentSignUpBinding
@@ -22,16 +30,17 @@ import com.example.canorecoapp.utils.FirebaseUtils
 import com.example.canorecoapp.viewmodels.SignUpViewModel
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import com.shuhart.stepview.StepView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -158,10 +167,10 @@ class SignUpFragment : Fragment() {
         } else if (address.isEmpty()) {
             Toast.makeText(requireContext(), "Please Enter Your Address", Toast.LENGTH_SHORT).show()
             return}
-        else if (accountNumber.isEmpty()) {
-            Toast.makeText(requireContext(), "Please Enter Your Address", Toast.LENGTH_SHORT).show()
-            return
-        } else {
+//        else if (accountNumber.isEmpty()) {
+//            Toast.makeText(requireContext(), "Please Enter Your Address", Toast.LENGTH_SHORT).show()
+//            return
+        else {
             sendPhoneNumberCode()
             progressDialog.dismiss()
             createUserAccount()
@@ -235,11 +244,16 @@ class SignUpFragment : Fragment() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val authResult = auth.createUserWithEmailAndPassword(email, password).await()
-
-                // Get the FCM token
+                val user = auth.currentUser
+                verifyEmail(user)
                 val fcmToken = FirebaseMessaging.getInstance().token.await()
 
                 withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@SignUpFragment.requireContext(),
+                        "Account created. Verification email sent. Please check your inbox.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     uploadImage(fcmToken)
                 }
             } catch (e: Exception) {
@@ -297,7 +311,7 @@ class SignUpFragment : Fragment() {
             "uid" to uid,
             "email" to email,
             "password" to password,
-            "fistName" to firstName,
+            "firstName" to firstName,
             "lastName" to lastName,
             "image" to imageUrl,
             "phone" to viewModel.phone,
@@ -315,6 +329,7 @@ class SignUpFragment : Fragment() {
                 .document(uid!!)
                 .set(user)
                 .addOnCompleteListener { task ->
+
                     progressDialog.dismiss()
                     if (task.isSuccessful) {
                         findNavController().apply {
@@ -341,6 +356,68 @@ class SignUpFragment : Fragment() {
                 "Error uploading data: ${e.message}",
                 Toast.LENGTH_SHORT
             ).show()
+        }
+    }
+    private fun verifyEmail(user: FirebaseUser?) {
+        if (user == null) {
+            Log.e("EmailVerification", "User is not logged in. Cannot send verification email.")
+            Toast.makeText(requireContext(), "User is not logged in. Cannot send verification email.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        user.sendEmailVerification()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("EmailVerification", "Verification email sent to ${user.email}")
+                    Toast.makeText(requireContext(), "Verification email sent. Please check your inbox.", Toast.LENGTH_SHORT).show()
+                    showVerificationDialog(user)
+                } else {
+                    Log.e("EmailVerification", "Failed to send verification email to ${user.email}. Task failed.")
+                    Toast.makeText(requireContext(), "Error sending verification email", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("EmailVerification", "Error sending verification email: ${exception.message}")
+                Toast.makeText(requireContext(), exception.message, Toast.LENGTH_SHORT).show()
+            }
+    }
+
+
+    @SuppressLint("MissingInflatedId")
+    private fun showVerificationDialog(user: FirebaseUser) {
+        val dialogBuilder = AlertDialog.Builder(requireContext())
+        val inflater = layoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_verification, null)
+        dialogBuilder.setView(dialogView)
+        val btnContinue = dialogView.findViewById<Button>(R.id.btnContinue)
+        val btnResend = dialogView.findViewById<Button>(R.id.btnResend)
+
+        val dialog = dialogBuilder.create()
+        dialog.setCancelable(false)
+        dialog.show()
+
+        btnContinue.isEnabled = false
+        btnResend.setOnClickListener {
+            verifyEmail(user)
+        }
+
+        lifecycleScope.launch {
+            while (auth.currentUser?.isEmailVerified == false) {
+                auth.currentUser?.reload()?.addOnCompleteListener { task ->
+                    if (task.isSuccessful && auth.currentUser?.isEmailVerified == true) {
+                        btnContinue.isEnabled = true
+                    }
+                }
+                delay(5000)
+            }
+            dialog.dismiss()
+        }
+
+        btnContinue.setOnClickListener {
+            if (auth.currentUser?.isEmailVerified == true) {
+                dialog.dismiss()
+            } else {
+                Toast.makeText(requireContext(), "Please verify your email before proceeding.", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
