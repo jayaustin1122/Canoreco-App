@@ -129,4 +129,8 @@
         android:name="com.example.canorecoapp.views.signups.StepFourFragment"
         android:label="fragment_step_four"
         tools:layout="@layout/fragment_step_four" />
+    <fragment
+        android:id="@+id/forgotPasswordFragment"
+        android:name="com.example.canorecoapp.views.ForgotPasswordFragment"
+        android:label="ForgotPasswordFragment" />
 </navigation>

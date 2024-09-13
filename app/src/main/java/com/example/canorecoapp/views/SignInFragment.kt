@@ -60,7 +60,7 @@ class SignInFragment : Fragment() {
         }
         binding.tvForgotPasswordLogin.setOnClickListener {
             findNavController().apply {
-                navigate(R.id.tvForgotPasswordLogin)
+                navigate(R.id.forgotPasswordFragment)
             }
         }
         binding.register.setOnClickListener {
