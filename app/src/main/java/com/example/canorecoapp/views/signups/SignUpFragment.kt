@@ -329,6 +329,7 @@ class SignUpFragment : Fragment() {
                             popBackStack(R.id.signUpFragment, false)
                             navigate(R.id.signInFragment)
                         }
+                        auth.signOut()
                     } else {
                         Toast.makeText(
                             this@SignUpFragment.requireContext(),
