@@ -12,6 +12,7 @@ import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentLineMenHolderBinding
 import com.example.canorecoapp.views.linemen.account.AccountLineMenFragment
 import com.example.canorecoapp.views.linemen.home.HomeLineMenFragment
+import com.example.canorecoapp.views.linemen.home.LinemenCurrentFurtureFragment
 import com.example.canorecoapp.views.linemen.notifications.NotificationLineMenFragment
 import com.google.android.material.bottomappbar.BottomAppBar
 
@@ -38,7 +39,7 @@ class LineMenHolderFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         auth = FirebaseAuth.getInstance()
         fragmentManager = requireActivity().supportFragmentManager
-        val homeFragment = HomeLineMenFragment()
+        val homeFragment = LinemenCurrentFurtureFragment()
         val serviceFragment = NotificationLineMenFragment()
         val accountUserFragment = AccountLineMenFragment()
 
