@@ -1,3 +1,4 @@
+
 package com.example.canorecoapp.views.linemen.home
 
 import android.Manifest
@@ -31,6 +32,10 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolygonOptions
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import org.json.JSONException
 import org.json.JSONObject
@@ -132,6 +137,44 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
                 }
         }
     }
+    private fun showAllDevicesLocations() {
+        val databaseReference = FirebaseDatabase.getInstance().getReference("devices")
+        databaseReference.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                gMap?.clear()
+
+                for (deviceSnapshot in dataSnapshot.children) {
+                    val lat = deviceSnapshot.child("latitude").getValue(Double::class.java)
+                    val lng = deviceSnapshot.child("longitude").getValue(Double::class.java)
+                    val status = deviceSnapshot.child("status").getValue(String::class.java)
+
+                    if (lat != null && lng != null && status != null) {
+                        val color = when (status.lowercase()) {
+                            "working" -> Color.BLUE
+                            "under repair" -> Color.GREEN
+                            "damaged", "not working" -> Color.RED
+                            else -> Color.GRAY
+                        }
+
+                        val markerIcon = bitmapFromVector(this@HomeLineMenFragment.requireContext(), R.drawable.baseline_adjust_24, color)
+
+                        val marker = gMap?.addMarker(
+                            MarkerOptions()
+                                .position(LatLng(lat, lng))
+                                .icon(markerIcon)
+                        )
+                        marker?.tag = deviceSnapshot.child("id").getValue(String::class.java)
+                    }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e("MapData", "Database error: ${databaseError.message}")
+            }
+        })
+    }
+
+
 
     private fun bitmapFromVector(context: Context, vectorResId: Int, @ColorInt color: Int): BitmapDescriptor {
         val vectorDrawable = ContextCompat.getDrawable(context, vectorResId)
@@ -161,49 +204,12 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
         val zoomLevel = 5.0f
         gMap?.setOnMarkerClickListener(this)
         gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(sanVicenteCamarinesNorte, zoomLevel))
+        showAllDevicesLocations()
+
     }
 
 
 
-    private fun parseAndDrawPolygons(jsonData: String, validBarangays: Set<String>) {
-        Log.d("JSON", "Parsing JSON data")
-        try {
-            val jsonObject = JSONObject(jsonData)
-            val features = jsonObject.getJSONArray("features")
-            Log.d("JSON", "Number of features: ${features.length()}")
-
-            for (i in 0 until features.length()) {
-                val feature = features.getJSONObject(i)
-                val properties = feature.getJSONObject("properties")
-                val barangayName = properties.getString("ID_3")
-
-                if (barangayName in validBarangays) {
-                    val geometry = feature.getJSONObject("geometry")
-
-                    if (geometry.getString("type") == "Polygon") {
-                        val coordinates = geometry.getJSONArray("coordinates").getJSONArray(0)
-
-                        val polygonOptions = PolygonOptions()
-
-                        for (j in 0 until coordinates.length()) {
-                            val coordinate = coordinates.getJSONArray(j)
-                            val latLng = LatLng(coordinate.getDouble(1), coordinate.getDouble(0))
-                            polygonOptions.add(latLng)
-                        }
-
-                        polygonOptions.strokeColor(Color.RED)
-                        polygonOptions.fillColor(Color.argb(100, 255, 0, 0)) // Customize as needed
-                        polygonOptions.strokeWidth(3f)
-
-                        gMap?.addPolygon(polygonOptions)
-                    }
-                }
-            }
-            Log.d("JSON", "Polygons successfully drawn on map")
-        } catch (e: JSONException) {
-            Log.e("JSON", "Error parsing JSON data: ${e.message}")
-        }
-    }
 
 
     companion object {

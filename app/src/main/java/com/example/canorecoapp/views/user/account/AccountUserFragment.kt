@@ -60,7 +60,7 @@ class AccountUserFragment : Fragment() {
             loadUsersInfo()
         }, 600)
 
-        binding.logout.setOnClickListener {
+        binding.logoutCard.setOnClickListener {
             val progressDialog = SweetAlertDialog(requireContext(), SweetAlertDialog.PROGRESS_TYPE)
             progressDialog.titleText = "Logging out..."
             progressDialog.show()
@@ -231,13 +231,14 @@ class AccountUserFragment : Fragment() {
             db.collection("users").document(user.uid).get()
                 .addOnSuccessListener { document ->
                     hideShimmerEffect()
-                    val userName = document.getString("fullName")
+                    val userName = document.getString("firstName")
+                    val lastName = document.getString("lastName")
                     val contact = document.getString("phone")
                     val image = document.getString("image")
                     val email = document.getString("email")
                     val password = document.getString("password")
 
-                    binding.username.text = userName
+                    binding.username.text = "$userName $lastName"
                     binding.contactNumber.text = contact
                     val context = context ?: return@addOnSuccessListener
                     Glide.with(context)
@@ -357,7 +358,6 @@ class AccountUserFragment : Fragment() {
 
     private fun hideShimmerEffect() {
         binding.shimmerViewContainer.stopShimmerAnimation()
-
         binding.userInfoCard.visibility = View.VISIBLE
     }
 

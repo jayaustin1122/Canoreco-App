@@ -71,6 +71,15 @@ import java.util.Locale
 
 
     }
+     private fun showShimmerEffect() {
+         binding.shimmerViewContainer.startShimmerAnimation()
+         binding.shimmerViewContainer.visibility = View.VISIBLE
+
+     }
+
+     private fun hideShimmerEffect() {
+         binding.shimmerViewContainer.stopShimmerAnimation()
+     }
      private fun loadUsersInfo() {
          val db = FirebaseFirestore.getInstance()
          val currentUser = FirebaseAuth.getInstance().currentUser
@@ -81,7 +90,7 @@ import java.util.Locale
                      // Log all data users inside this current usersssssssssssss
                      Log.d("UserInfo", "Document data: ${document.data}")
 
-                     val userName = document.getString("fistName")
+                     val userName = document.getString("firstName")
                      val image = document.getString("image")
 
                      if (userName.isNullOrEmpty()) {
@@ -95,6 +104,7 @@ import java.util.Locale
                              .load(image)
                              .into(it)
                      }
+                     hideShimmerEffect()
 
                  }
                  .addOnFailureListener { exception ->

@@ -313,7 +313,7 @@ class SignUpFragment : Fragment() {
             "token" to token,
             "dateOfBirth" to "$month-$day-$year",
             "timestamp" to timestamp,
-            "address" to viewModel.address,
+            "address" to "${viewModel.barangay}, ${viewModel.address}",
             "accountNumber" to viewModel.meterNumber,
         )
         val firestore = FirebaseFirestore.getInstance()

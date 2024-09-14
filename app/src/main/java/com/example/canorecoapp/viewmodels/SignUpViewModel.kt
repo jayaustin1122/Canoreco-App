@@ -9,6 +9,7 @@ class SignUpViewModel  : ViewModel() {
     var email: String = ""
     var password: String = ""
     var address: String = ""
+    var barangay: String = ""
     var phone: String = ""
     var month : String = ""
     var day : String = ""

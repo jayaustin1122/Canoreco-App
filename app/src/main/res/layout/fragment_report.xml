@@ -50,6 +50,7 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:padding="20dp"
+        android:scrollbars="none"
         app:layout_constraintBottom_toTopOf="@+id/bottomLinearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -143,11 +144,70 @@
             <ImageView
                 android:id="@+id/file_upload_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="200dp"
                 android:layout_marginBottom="20dp"
+                android:scaleType="fitXY"
                 android:background="@drawable/upload"
                 android:gravity="center"
-                android:orientation="vertical"></ImageView>
+                android:orientation="vertical"/>
+            <com.google.android.material.textview.MaterialTextView
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:fontFamily="@font/roboto_regular"
+                android:text="Where is your concern located?"
+                android:textColor="@color/text_dark_color"
+                android:textSize="16sp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/mucipality_type_input_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_marginBottom="10dp">
+
+                <AutoCompleteTextView
+
+                    android:id="@+id/tvMucipality"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:hint="Municipality"
+                    android:padding="15dp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/brgy_type_input_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_marginBottom="10dp">
+
+                <AutoCompleteTextView
+
+                    android:id="@+id/tvBrgy"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:hint="Barangay"
+                    android:padding="15dp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/street_type_input_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp">
+
+                <AutoCompleteTextView
+
+                    android:id="@+id/tvStreet"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:hint="Street (Optional)"
+                    android:padding="15dp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
 
