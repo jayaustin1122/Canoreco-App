@@ -133,4 +133,9 @@
         android:id="@+id/forgotPasswordFragment"
         android:name="com.example.canorecoapp.views.ForgotPasswordFragment"
         android:label="ForgotPasswordFragment" />
+    <fragment
+        android:id="@+id/notifFragment"
+        android:name="com.example.canorecoapp.views.user.notif.NotifFragment"
+        android:label="fragment_notif"
+        tools:layout="@layout/fragment_notif" />
 </navigation>

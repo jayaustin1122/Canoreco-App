@@ -16,6 +16,8 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.example.canorecoapp.MainActivity
 import com.example.canorecoapp.R
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import kotlin.random.Random
@@ -50,7 +52,7 @@ class FirebaseServiceCanoreco : FirebaseMessagingService() {
         val intent = Intent(this, MainActivity::class.java)
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notificationID = Random.nextInt()
-
+        saveNotificationToFirestore(title, text)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel(notificationManager)
         }
@@ -68,7 +70,30 @@ class FirebaseServiceCanoreco : FirebaseMessagingService() {
 
         notificationManager.notify(notificationID, notification)
     }
+    private fun saveNotificationToFirestore(title: String, text: String) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+        if (uid != null) {
+            val db = FirebaseFirestore.getInstance()
+            val notificationData = hashMapOf(
+                "title" to title,
+                "text" to text,
+                "timestamp" to System.currentTimeMillis(),
+                "status" to "unread"
+            )
+            db.collection("users")
+                .document(uid)
+                .collection("notifications")
+                .document(System.currentTimeMillis().toString())
+                .set(notificationData)
+                .addOnSuccessListener {
 
+                }
+                .addOnFailureListener { e ->
+
+                    e.printStackTrace()
+                }
+        }
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotificationChannel(notificationManager: NotificationManager) {
