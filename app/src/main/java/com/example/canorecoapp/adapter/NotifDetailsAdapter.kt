@@ -35,6 +35,8 @@ class NotifDetailsAdapter(private val context: Context,
         var title: TextView = binding.tvTitle
         var date: TextView = binding.tvDate
         var image: ImageView = binding.ivThumbnail
+        var indicator: ImageView = binding.indicator
+        var logo: ImageView = binding.logo
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -51,11 +53,17 @@ class NotifDetailsAdapter(private val context: Context,
         val newsTitle = model.title
         val text = model.text
         val timeStamp = model.timestamp
+        val status = model.status
         val formattedDate = parseAndFormatDate(timeStamp)
         holder.title.text = newsTitle
         holder.date.text = formattedDate
         holder.image.visibility = View.GONE
-
+        holder.logo.visibility = View.VISIBLE
+        if(!status){
+            holder.indicator.visibility = View.VISIBLE
+        }else{
+            holder.indicator.visibility = View.GONE
+        }
         holder.itemView.setOnClickListener {
             Log.d("adapteradapter", "$formattedDate")
         }
