@@ -1,4 +1,4 @@
-package com.example.canorecoapp.employee
+package com.example.canorecoapp.views.linemen.employee
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog

@@ -159,7 +159,7 @@ class UserHolderFragment : Fragment() {
             notificationsListener = notificationsRef.addSnapshotListener { snapshot, exception ->
                 if (exception != null) {
                     Toast.makeText(
-                        this@UserHolderFragment.requireContext(), // Use this for Activity context
+                        this@UserHolderFragment.requireContext(),
                         "Error Loading Notifications: ${exception.message}",
                         Toast.LENGTH_SHORT
                     ).show()
@@ -172,7 +172,7 @@ class UserHolderFragment : Fragment() {
                         val status = document.get("status")
                         val notificationStatus = when (status) {
                             is Boolean -> status
-                            else -> false // Default value if the type is incorrect or null
+                            else -> false
                         }
                         if (!notificationStatus) {
                             notificationCount++
@@ -192,7 +192,7 @@ class UserHolderFragment : Fragment() {
             }
         } ?: run {
             Toast.makeText(
-                this@UserHolderFragment.requireContext(), // Use this for Activity context
+                this@UserHolderFragment.requireContext(),
                 "User not authenticated",
                 Toast.LENGTH_SHORT
             ).show()

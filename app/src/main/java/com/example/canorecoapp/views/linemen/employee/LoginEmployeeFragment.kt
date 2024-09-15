@@ -1,4 +1,4 @@
-package com.example.canorecoapp.employee
+package com.example.canorecoapp.views.linemen.employee
 
 import android.app.Dialog
 import android.app.ProgressDialog

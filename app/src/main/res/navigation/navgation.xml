@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navgation"
-    app:startDestination="@id/signUpEmployeeFragment">
+    app:startDestination="@id/splashFragment">
 
     <fragment
         android:id="@+id/splashFragment"
@@ -94,11 +94,11 @@
         tools:layout="@layout/fragment_on_boarding_main" />
     <fragment
         android:id="@+id/loginEmployeeFragment"
-        android:name="com.example.canorecoapp.employee.LoginEmployeeFragment"
+        android:name="com.example.canorecoapp.views.linemen.employee.LoginEmployeeFragment"
         android:label="LoginEmployeeFragment" />
     <fragment
         android:id="@+id/signUpEmployeeFragment"
-        android:name="com.example.canorecoapp.employee.SignUpEmployeeFragment"
+        android:name="com.example.canorecoapp.views.linemen.employee.SignUpEmployeeFragment"
         android:label="SignUpEmployeeFragment" />
     <fragment
         android:id="@+id/viewMapsWithAreasFragment"
