@@ -71,7 +71,7 @@ class UserHolderFragment : Fragment() {
                     true
                 }
                 R.id.imgProfiled -> {
-                    Toast.makeText(requireContext(), "Image Clicked", Toast.LENGTH_SHORT).show()
+                    saveNotificationToFirestore("ss","ss")
                     true
                 }
                 else -> false
@@ -113,12 +113,37 @@ class UserHolderFragment : Fragment() {
 
 
     }
+    private fun saveNotificationToFirestore(title: String, text: String) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+        if (uid != null) {
+            val db = FirebaseFirestore.getInstance()
+            val notificationData = hashMapOf(
+                "title" to title,
+                "text" to text,
+                "timestamp" to System.currentTimeMillis(),
+                "status" to false
+            )
+            db.collection("users")
+                .document(uid)
+                .collection("notifications")
+                .document(System.currentTimeMillis().toString())
+                .set(notificationData)
+                .addOnSuccessListener {
+
+                }
+                .addOnFailureListener { e ->
+
+                    e.printStackTrace()
+                }
+        }
+    }
 
 
 
 
 
     private var notificationsListener: ListenerRegistration? = null
+
     @OptIn(ExperimentalBadgeUtils::class)
     private fun loadNotificationBadge() {
         val db = FirebaseFirestore.getInstance()
@@ -134,7 +159,7 @@ class UserHolderFragment : Fragment() {
             notificationsListener = notificationsRef.addSnapshotListener { snapshot, exception ->
                 if (exception != null) {
                     Toast.makeText(
-                        requireContext(),
+                        this@UserHolderFragment.requireContext(), // Use this for Activity context
                         "Error Loading Notifications: ${exception.message}",
                         Toast.LENGTH_SHORT
                     ).show()
@@ -144,13 +169,17 @@ class UserHolderFragment : Fragment() {
                 snapshot?.let { querySnapshot ->
                     var notificationCount = 0
                     for (document in querySnapshot.documents) {
-                        val notificationStatus = document.getBoolean("status") ?: true
+                        val status = document.get("status")
+                        val notificationStatus = when (status) {
+                            is Boolean -> status
+                            else -> false // Default value if the type is incorrect or null
+                        }
                         if (!notificationStatus) {
                             notificationCount++
                         }
                     }
                     if (notificationCount > 0) {
-                        val badge: BadgeDrawable = BadgeDrawable.create(requireContext())
+                        val badge: BadgeDrawable = BadgeDrawable.create(this@UserHolderFragment.requireContext())
                         badge.isVisible = true
                         badge.number = notificationCount
                         val toolbar = binding.toolbar
@@ -163,13 +192,12 @@ class UserHolderFragment : Fragment() {
             }
         } ?: run {
             Toast.makeText(
-                requireContext(),
+                this@UserHolderFragment.requireContext(), // Use this for Activity context
                 "User not authenticated",
                 Toast.LENGTH_SHORT
             ).show()
         }
     }
-
     override fun onDestroyView() {
         super.onDestroyView()
         notificationsListener?.remove()

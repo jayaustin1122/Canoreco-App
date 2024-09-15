@@ -87,7 +87,6 @@ dependencies {
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
     //Retrofit
-    implementation ("com.squareup.retrofit2:retrofit:2.6.2")
     implementation ("com.squareup.retrofit2:converter-gson:2.6.0")
 
     implementation ("pub.devrel:easypermissions:3.0.0")
@@ -113,7 +112,8 @@ dependencies {
 
     implementation ("com.facebook.shimmer:shimmer:0.1.0@aar")
     implementation ("com.github.f0ris.sweetalert:library:1.6.2")
-
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
     // Dots Indicator
     implementation("com.tbuonomo:dotsindicator:5.0")
 }
