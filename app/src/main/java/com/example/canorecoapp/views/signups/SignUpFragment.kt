@@ -365,14 +365,21 @@ class SignUpFragment : Fragment() {
 
         lifecycleScope.launch {
             while (auth.currentUser?.isEmailVerified == false) {
-                auth.currentUser?.reload()?.addOnCompleteListener { task ->
-                    if (task.isSuccessful && auth.currentUser?.isEmailVerified == true) {
-                        btnContinue.isEnabled = true
+                try {
+                    auth.currentUser?.reload()?.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            if (auth.currentUser?.isEmailVerified == true) {
+                                btnContinue.isEnabled = true
+                            }
+                        } else {
+                            Log.e("VerificationDialog", "Failed to reload user", task.exception)
+                        }
                     }
+                } catch (e: Exception) {
+                    Log.e("VerificationDialog", "Error during email verification", e)
                 }
                 delay(5000)
             }
-
         }
 
         btnContinue.setOnClickListener {

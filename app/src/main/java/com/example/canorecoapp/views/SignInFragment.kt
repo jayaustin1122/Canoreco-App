@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContentProviderCompat.requireContext
@@ -206,13 +207,12 @@ class SignInFragment : Fragment() {
     }
     @SuppressLint("MissingInflatedId")
     private fun showVerificationDialog(user: FirebaseUser) {
-        val context = requireContext()
-        val dialogBuilder = AlertDialog.Builder(context)
+        val dialogBuilder = AlertDialog.Builder(requireContext())
         val inflater = layoutInflater
         val dialogView = inflater.inflate(R.layout.dialog_verification, null)
         dialogBuilder.setView(dialogView)
         val btnContinue = dialogView.findViewById<Button>(R.id.btnContinue)
-        val btnResend = dialogView.findViewById<Button>(R.id.btnResend)
+        val btnResend = dialogView.findViewById<TextView>(R.id.btnResend)
 
         val dialog = dialogBuilder.create()
         dialog.setCancelable(false)
@@ -225,14 +225,21 @@ class SignInFragment : Fragment() {
 
         lifecycleScope.launch {
             while (auth.currentUser?.isEmailVerified == false) {
-                auth.currentUser?.reload()?.addOnCompleteListener { task ->
-                    if (task.isSuccessful && auth.currentUser?.isEmailVerified == true) {
-                        btnContinue.isEnabled = true
+                try {
+                    auth.currentUser?.reload()?.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            if (auth.currentUser?.isEmailVerified == true) {
+                                btnContinue.isEnabled = true
+                            }
+                        } else {
+                            Log.e("VerificationDialog", "Failed to reload user", task.exception)
+                        }
                     }
+                } catch (e: Exception) {
+                    Log.e("VerificationDialog", "Error during email verification", e)
                 }
                 delay(5000)
             }
-
         }
 
         btnContinue.setOnClickListener {
