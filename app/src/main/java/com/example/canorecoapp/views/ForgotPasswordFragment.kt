@@ -47,7 +47,7 @@ class ForgotPasswordFragment : Fragment() {
                 findNavController().navigateUp()
             }
         }
-        binding.btnForgotPasswordBack.setOnClickListener {
+        binding.backButton.setOnClickListener {
             findNavController().navigateUp()
             }
     }
