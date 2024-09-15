@@ -50,10 +50,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:elevation="4dp"
-        app:cardCornerRadius="16dp"
-        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="50dp"
+        app:cardBackgroundColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
@@ -66,9 +66,8 @@
             android:iconifiedByDefault="false"
             android:queryHint="Search..."
             android:queryBackground="@android:color/transparent"
-            app:queryBackground="@android:color/transparent"
-            android:padding="10dp"
-            android:layout_marginHorizontal="8dp" />
+            app:queryBackground="@android:color/transparent"/>
+
     </androidx.cardview.widget.CardView>
 
     <com.google.android.material.textview.MaterialTextView
@@ -107,7 +106,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/latest_news"
+        app:layout_constraintTop_toBottomOf="@+id/view"
         tools:listitem="@layout/news_item_view" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

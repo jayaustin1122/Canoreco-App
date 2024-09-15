@@ -1,34 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
     android:padding="@dimen/dimen_20dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".views.onboardingscreens.OnboardingOneFragment">
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonSkip"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@android:color/transparent"
-        android:fontFamily="@font/roboto_black"
-        android:text="Skip"
-        android:textColor="@color/text_dark_color"
-        app:cornerRadius="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    tools:context=".views.onboardingscreens.OnBoardingThreeFragment">
 
     <ImageView
         android:id="@+id/imageView6"
         android:layout_width="match_parent"
         android:layout_height="350dp"
-        android:layout_marginTop="@dimen/dimen_20dp"
-        android:src="@drawable/img_onboarding_one"
+        android:layout_marginTop="75dp"
+        android:src="@drawable/img_onboarding_three"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/buttonSkip" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/titleTextView"
@@ -36,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dimen_15dp"
         android:gravity="center"
-        android:text="Welcome to Canoreco App!"
+        android:text="We are Here to Help!"
         android:textSize="24sp"
         android:textColor="@color/text_dark_color"
         android:fontFamily="@font/roboto_black"
@@ -50,7 +38,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dimen_20dp"
         android:gravity="center"
-        android:text="Keep track of electricity outages in real-time and Stay updated with live power restoration schedules"
+        android:text="Easily report issues or file complaints online.
+Track the status of your concerns in one convenient app"
         android:textSize="17sp"
         android:textColor="#353535"
         android:fontFamily="@font/roboto_regular"
@@ -70,7 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/primary_main_color"
-            android:text="Next"
+            android:text="Get Started"
             android:textColor="@color/primary_light_color"
             android:fontFamily="@font/roboto_medium"
             app:cornerRadius="10dp"

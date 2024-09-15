@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/white"
+    android:background="@color/background_color"
     android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -44,16 +44,15 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-
     <androidx.cardview.widget.CardView
         android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:elevation="4dp"
-        app:cardCornerRadius="16dp"
-        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="50dp"
+        app:cardBackgroundColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
@@ -66,10 +65,10 @@
             android:iconifiedByDefault="false"
             android:queryHint="Search..."
             android:queryBackground="@android:color/transparent"
-            app:queryBackground="@android:color/transparent"
-            android:padding="10dp"
-            android:layout_marginHorizontal="8dp" />
+            app:queryBackground="@android:color/transparent"/>
+
     </androidx.cardview.widget.CardView>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvListOutages"
         android:layout_width="0dp"
