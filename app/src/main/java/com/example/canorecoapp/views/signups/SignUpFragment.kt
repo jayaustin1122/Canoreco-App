@@ -106,6 +106,9 @@ class SignUpFragment : Fragment() {
                 2 -> validateFragmentThree()
             }
         }
+        binding.backButton.setOnClickListener {
+            findNavController().navigateUp()
+        }
 
     }
 

@@ -17,6 +17,7 @@ class SignUpViewModel  : ViewModel() {
     var year : String = ""
     var meterNumber : String = ""
     var street : String = ""
+    var area : String = ""
 
 
     var image: Uri? = null

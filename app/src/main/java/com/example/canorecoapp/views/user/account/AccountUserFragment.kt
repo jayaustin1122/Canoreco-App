@@ -70,6 +70,7 @@ class AccountUserFragment : Fragment() {
                 progressDialog.changeAlertType(SweetAlertDialog.SUCCESS_TYPE)
                 progressDialog.titleText = "Logged Out!"
                 progressDialog.confirmText = "OK"
+                progressDialog.setCanceledOnTouchOutside(false)
                 progressDialog.setConfirmClickListener {
                     findNavController().navigate(R.id.signInFragment)
                     progressDialog.dismiss()
@@ -219,7 +220,6 @@ class AccountUserFragment : Fragment() {
                     ).show()
                 }
             }
-
         }
 
 
@@ -348,9 +348,4 @@ class AccountUserFragment : Fragment() {
             ).show()
         }
     }
-
-
-
-
-
 }
