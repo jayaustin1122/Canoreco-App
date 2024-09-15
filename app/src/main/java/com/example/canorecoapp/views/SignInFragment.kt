@@ -1,22 +1,29 @@
 package com.example.canorecoapp.views
 
+import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.Dialog
 import android.app.ProgressDialog
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.util.Patterns
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.widget.Button
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.DialogReviewBinding
 import com.example.canorecoapp.databinding.FragmentSignInBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -25,6 +32,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -154,10 +162,13 @@ class SignInFragment : Fragment() {
                     if (snapshot != null && snapshot.exists()) {
                         val userType = snapshot.getString("userType")
                         val access = snapshot.getBoolean("access")
-
                         when (userType) {
                             "linemen" -> {
-                                Toast.makeText(this@SignInFragment.requireContext(), "Login Successfully", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this@SignInFragment.requireContext(),
+                                    "Login Successfully",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 progressDialog.setMessage("Redirecting...")
                                 progressDialog.show()
                                 findNavController().apply {
@@ -167,32 +178,20 @@ class SignInFragment : Fragment() {
                                 progressDialog.dismiss()
                             }
                             "member" -> {
-                                if (access == false) {
-                                    val dialogBinding = DialogReviewBinding.inflate(layoutInflater)
-                                    val dialog = Dialog(this@SignInFragment.requireContext())
-                                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-                                    dialog.setContentView(dialogBinding.root)
-                                    dialog.show()
-                                    auth.signOut()
-                                    findNavController().apply {
-                                        popBackStack(R.id.splashFragment, false)
-                                        navigate(R.id.signInFragment)
-                                    }
-                                } else {
-                                    Toast.makeText(this@SignInFragment.requireContext(), "Login Successfully", Toast.LENGTH_SHORT).show()
-                                    progressDialog.setMessage("Redirecting...")
-                                    progressDialog.show()
+                                if (auth.currentUser?.isEmailVerified == true) {
                                     findNavController().apply {
                                         popBackStack(R.id.splashFragment, false)
                                         navigate(R.id.userHolderFragment)
                                     }
-                                    progressDialog.dismiss()
+                                } else if (auth.currentUser?.isEmailVerified == false) {
+                                    verifyEmail(firebaseUser)
                                 }
                             }
-                            else -> {
-                                Toast.makeText(this@SignInFragment.requireContext(), "There seems to be an issue with your account. Please contact the admin for assistance.", Toast.LENGTH_SHORT).show()
+
+                            else-> {
+
                             }
-                        }
+                            }
                     } else {
                         Toast.makeText(this@SignInFragment.requireContext(), "User not found.", Toast.LENGTH_SHORT).show()
                     }
@@ -204,6 +203,65 @@ class SignInFragment : Fragment() {
             progressDialog.dismiss()
             Toast.makeText(this@SignInFragment.requireContext(), "User not authenticated.", Toast.LENGTH_SHORT).show()
         }
+    }
+    @SuppressLint("MissingInflatedId")
+    private fun showVerificationDialog(user: FirebaseUser) {
+        val context = requireContext()
+        val dialogBuilder = AlertDialog.Builder(context)
+        val inflater = layoutInflater
+        val dialogView = inflater.inflate(R.layout.dialog_verification, null)
+        dialogBuilder.setView(dialogView)
+        val btnContinue = dialogView.findViewById<Button>(R.id.btnContinue)
+        val btnResend = dialogView.findViewById<Button>(R.id.btnResend)
+
+        val dialog = dialogBuilder.create()
+        dialog.setCancelable(false)
+        dialog.show()
+
+        btnContinue.isEnabled = false
+        btnResend.setOnClickListener {
+            verifyEmail(user)
+        }
+
+        lifecycleScope.launch {
+            while (auth.currentUser?.isEmailVerified == false) {
+                auth.currentUser?.reload()?.addOnCompleteListener { task ->
+                    if (task.isSuccessful && auth.currentUser?.isEmailVerified == true) {
+                        btnContinue.isEnabled = true
+                    }
+                }
+                delay(5000)
+            }
+
+        }
+
+        btnContinue.setOnClickListener {
+            if (auth.currentUser?.isEmailVerified == true) {
+                dialog.dismiss()
+            } else {
+                Toast.makeText(requireContext(), "Please verify your email before proceeding.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+    private fun verifyEmail(user: FirebaseUser?) {
+        if (user == null) {
+            Log.e("EmailVerification", "User is not logged in. Cannot send verification email.")
+            return
+        }
+        user.sendEmailVerification()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("EmailVerification", "Verification email sent to ${user.email}")
+                    showVerificationDialog(user)
+                } else {
+                    Log.e("EmailVerification", "Failed to send verification email to ${user.email}. Task failed.")
+
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("EmailVerification", "Error sending verification email: ${exception.message}")
+
+            }
     }
 
 }

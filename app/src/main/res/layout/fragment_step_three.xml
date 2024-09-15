@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="370dp"
+    android:paddingBottom="@dimen/dimen_10dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".views.signups.StepThreeFragment">
 
@@ -39,6 +40,7 @@
         android:backgroundTint="@color/g_blue2"
         android:fontFamily="@font/medium"
         app:cornerRadius="10dp"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView2" />

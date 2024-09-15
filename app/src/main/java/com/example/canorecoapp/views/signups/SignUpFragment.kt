@@ -130,12 +130,11 @@ class SignUpFragment : Fragment() {
                 val progressBar: ProgressBar = view?.findViewById(R.id.otpProgressBar) ?: return@addOnCompleteListener
                 progressBar.visibility = View.GONE
                 if (task.isSuccessful) {
-                    // Sign in success
                     Toast.makeText(requireContext(), "Verification successful", Toast.LENGTH_SHORT).show()
-                    // Proceed to create the account or navigate to the next fragment
+
 
                 } else {
-                    // Sign in failed
+
                     Toast.makeText(requireContext(), "Verification failed", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -309,7 +308,7 @@ class SignUpFragment : Fragment() {
             "image" to imageUrl,
             "phone" to viewModel.phone,
             "userType" to "member",
-            "access" to false,
+            "access" to true,
             "token" to token,
             "dateOfBirth" to "$month-$day-$year",
             "timestamp" to timestamp,
@@ -396,7 +395,7 @@ class SignUpFragment : Fragment() {
                 }
                 delay(5000)
             }
-            dialog.dismiss()
+
         }
 
         btnContinue.setOnClickListener {
