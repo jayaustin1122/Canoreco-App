@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentStepThreeBinding
@@ -28,27 +29,22 @@ class StepThreeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.btnDatePicker.setOnClickListener {
-            showDatePickerDialog()
+
+        binding.etEmailSignUp.addTextChangedListener {
+            viewModel.email = it.toString()
+        }
+
+        binding.etPasswordSignUp.addTextChangedListener {
+            viewModel.password = it.toString()
+        }
+        binding.etConfirmPasswordSignUp.addTextChangedListener {
+            viewModel.confirmPass = it.toString()
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(requireActivity()).get(SignUpViewModel::class.java)
     }
-    private fun showDatePickerDialog() {
-        val datePicker = MaterialDatePicker.Builder.datePicker()
-            .setTitleText("Select Date")
-            .build()
-        datePicker.addOnPositiveButtonClickListener { selection ->
-            val calendar = Calendar.getInstance().apply {
-                timeInMillis = selection
-            }
-            viewModel.year = calendar.get(Calendar.YEAR).toString()
-            viewModel.month = (calendar.get(Calendar.MONTH) + 1).toString()
-            viewModel.day = calendar.get(Calendar.DAY_OF_MONTH).toString()
-        }
-        datePicker.show(parentFragmentManager, "MaterialDatePicker")
-    }
+
 
 }

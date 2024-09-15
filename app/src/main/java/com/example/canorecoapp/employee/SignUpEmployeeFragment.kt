@@ -20,9 +20,7 @@ import com.example.canorecoapp.utils.DateTimeUtils.Companion.getCurrentDate
 import com.example.canorecoapp.utils.DateTimeUtils.Companion.getCurrentTime
 import com.example.canorecoapp.utils.FirebaseUtils
 import com.example.canorecoapp.viewmodels.SignUpViewModel
-import com.example.canorecoapp.views.signups.StepFiveFragment
 import com.example.canorecoapp.views.signups.StepFourEmployeeFragment
-import com.example.canorecoapp.views.signups.StepFourFragment
 import com.example.canorecoapp.views.signups.StepOneFragment
 import com.example.canorecoapp.views.signups.StepThreeFragment
 import com.example.canorecoapp.views.signups.StepTwoFragment
@@ -89,8 +87,6 @@ class SignUpEmployeeFragment : Fragment() {
         adapter.addFragment(StepOneFragment())
         adapter.addFragment(StepTwoFragment())
         adapter.addFragment(StepThreeFragment())
-        adapter.addFragment(StepFourEmployeeFragment())
-        adapter.addFragment(StepFiveFragment())
         stepView.go(0, true)
         viewPager.isUserInputEnabled = false
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
@@ -112,50 +108,8 @@ class SignUpEmployeeFragment : Fragment() {
 
     }
 
-    private fun sendPhoneNumberCode() {
-        val phoneNumber = viewModel.phone
-        val options = PhoneAuthOptions.newBuilder(auth)
-            .setPhoneNumber(phoneNumber)
-            .setTimeout(60L, TimeUnit.SECONDS)
-            .setActivity(this@SignUpEmployeeFragment.requireActivity())
-            .setCallbacks(callbacks)
-            .build()
-        PhoneAuthProvider.verifyPhoneNumber(options)
-    }
-    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
-        auth.signInWithCredential(credential)
-            .addOnCompleteListener(requireActivity()) { task ->
-                val progressBar: ProgressBar = view?.findViewById(R.id.otpProgressBar) ?: return@addOnCompleteListener
-                progressBar.visibility = View.GONE
-                if (task.isSuccessful) {
-                    // Sign in success
-                    Toast.makeText(requireContext(), "Verification successful", Toast.LENGTH_SHORT).show()
-                    // Proceed to create the account or navigate to the next fragment
 
-                } else {
-                    // Sign in failed
-                    Toast.makeText(requireContext(), "Verification failed", Toast.LENGTH_SHORT).show()
-                }
-            }
-    }
 
-    private val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-        override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-            signInWithPhoneAuthCredential(credential)
-        }
-
-        override fun onVerificationFailed(e: FirebaseException) {
-            Toast.makeText(requireContext(), "Verification failed: ${e.message}", Toast.LENGTH_SHORT).show()
-        }
-
-        override fun onCodeSent(
-            verificationId: String,
-            token: PhoneAuthProvider.ForceResendingToken
-        ) {
-            storedVerificationId = verificationId
-            resendToken = token
-        }
-    }
     private fun validateFragmentFour() {
         val phoneNUmber = viewModel.phone
         val address = viewModel.address
@@ -169,8 +123,6 @@ class SignUpEmployeeFragment : Fragment() {
             Toast.makeText(requireContext(), "Please Enter Your Address", Toast.LENGTH_SHORT).show()
             return
         } else {
-            sendPhoneNumberCode()
-            //nextItem()
             progressDialog.dismiss()
             createUserAccount()
             progressDialog.setMessage("Creating Account...")

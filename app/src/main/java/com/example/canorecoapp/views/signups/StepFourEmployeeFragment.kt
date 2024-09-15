@@ -4,13 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Spinner
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.canorecoapp.R
-import com.example.canorecoapp.databinding.FragmentStepFourBinding
 import com.example.canorecoapp.databinding.FragmentStepFourEmployeeBinding
 import com.example.canorecoapp.viewmodels.SignUpViewModel
 
