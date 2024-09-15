@@ -72,13 +72,20 @@
                 android:id="@+id/news_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="@dimen/dimen_15dp"
                 android:text="March 4, 2024"
                 android:textColor="@color/text_dark_color"
                 android:textSize="14sp"
                 android:fontFamily="@font/roboto_regular"/>
 
-            <androidx.recyclerview.widget.RecyclerView android:id="@+id/imagesRV" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="15dp" android:orientation="horizontal" app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" tools:listitem="@layout/news_images" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/imagesRV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dimen_15dp"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/news_images" />
 
             <LinearLayout
                 android:layout_width="match_parent"

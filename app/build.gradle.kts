@@ -114,4 +114,6 @@ dependencies {
     implementation ("com.facebook.shimmer:shimmer:0.1.0@aar")
     implementation ("com.github.f0ris.sweetalert:library:1.6.2")
 
+    // Dots Indicator
+    implementation("com.tbuonomo:dotsindicator:5.0")
 }

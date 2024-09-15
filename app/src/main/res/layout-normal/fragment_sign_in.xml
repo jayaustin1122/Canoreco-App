@@ -48,7 +48,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginStart="20dp"
         android:fontFamily="@font/roboto_medium"
-        android:text="User ID"
+        android:text="Email"
         android:textColor="@color/text_dark_color"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
