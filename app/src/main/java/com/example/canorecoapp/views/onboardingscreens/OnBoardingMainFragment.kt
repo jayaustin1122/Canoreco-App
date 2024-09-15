@@ -26,7 +26,8 @@ class OnBoardingMainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val fragmentList = arrayListOf<Fragment>(
             OnboardingOneFragment(),
-            OnBoardingTworagment()
+            OnBoardingTworagment(),
+            OnBoardingThreeFragment()
         )
         val adapter = OnBoardingAdapter(
             fragmentList,

@@ -32,10 +32,10 @@ class OnboardingOneFragment : Fragment() {
         progressDialog.setTitle("Please wait")
         progressDialog.setCanceledOnTouchOutside(false)
         val viewPager  = activity?.findViewById<ViewPager2>(R.id.viewPager)
-        binding.btnGetStarted.setOnClickListener {
+        binding.buttonNext.setOnClickListener {
             viewPager?.currentItem = 1
         }
-        binding.btnSkip.setOnClickListener {
+        binding.buttonSkip.setOnClickListener {
             findNavController().navigate(R.id.signInFragment)
             onBoardingFinish()
         }

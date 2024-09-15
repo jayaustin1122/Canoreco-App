@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
+import androidx.viewpager2.widget.ViewPager2
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentOnBoardingTworagmentBinding
 
@@ -29,7 +30,11 @@ class OnBoardingTworagment : Fragment() {
         progressDialog = ProgressDialog(this.requireContext())
         progressDialog.setTitle("Please wait")
         progressDialog.setCanceledOnTouchOutside(false)
-        binding.btnGetStarted.setOnClickListener {
+        val viewPager  = activity?.findViewById<ViewPager2>(R.id.viewPager)
+        binding.buttonNext.setOnClickListener {
+            viewPager?.currentItem = 2
+        }
+        binding.buttonSkip.setOnClickListener {
             findNavController().navigate(R.id.signInFragment)
             onBoardingFinish()
         }

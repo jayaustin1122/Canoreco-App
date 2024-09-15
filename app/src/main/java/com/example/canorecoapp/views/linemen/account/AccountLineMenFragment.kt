@@ -58,7 +58,6 @@ class AccountLineMenFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
         fireStore = FirebaseFirestore.getInstance()
         selectedImage = Uri.EMPTY
-        showShimmerEffect()
         Handler(Looper.getMainLooper()).postDelayed({
             loadUsersInfo()
         }, 600)
@@ -246,7 +245,7 @@ class AccountLineMenFragment : Fragment() {
         currentUser?.let { user ->
             db.collection("users").document(user.uid).get()
                 .addOnSuccessListener { document ->
-                    hideShimmerEffect()
+
                     val userName = document.getString("firstName")
                     val lastName = document.getString("lastName")
                     val contact = document.getString("phone")
@@ -269,7 +268,7 @@ class AccountLineMenFragment : Fragment() {
                     }
                 }
                 .addOnFailureListener { exception ->
-                    hideShimmerEffect()
+
                     Toast.makeText(
                         requireContext(),
                         "Error Loading User Data: ${exception.message}",
@@ -277,7 +276,7 @@ class AccountLineMenFragment : Fragment() {
                     ).show()
                 }
         } ?: run {
-            hideShimmerEffect()
+
             Toast.makeText(
                 requireContext(),
                 "User not authenticated",
@@ -367,14 +366,5 @@ class AccountLineMenFragment : Fragment() {
     }
 
 
-    private fun showShimmerEffect() {
-        binding.shimmerViewContainer.startShimmerAnimation()
-        binding.shimmerViewContainer.visibility = View.VISIBLE
 
-    }
-
-    private fun hideShimmerEffect() {
-        binding.shimmerViewContainer.stopShimmerAnimation()
-        binding.userInfoCard.visibility = View.VISIBLE
-    }
 }
