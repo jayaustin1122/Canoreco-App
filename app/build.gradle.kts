@@ -116,4 +116,6 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
     // Dots Indicator
     implementation("com.tbuonomo:dotsindicator:5.0")
+
+    implementation ("androidx.work:work-runtime-ktx:2.8.1")
 }

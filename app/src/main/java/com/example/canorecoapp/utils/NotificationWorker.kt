@@ -1,32 +1,31 @@
-package com.example.canorecoapp
+package com.example.canorecoapp.utils
 
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.Service
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
-import android.os.IBinder
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.work.Worker
+import androidx.work.WorkerParameters
+import com.example.canorecoapp.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 
-class NotificationService : Service() {
-    private lateinit var db: FirebaseFirestore
-    private lateinit var auth: FirebaseAuth
+class NotificationWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
+
+    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private var notificationsListener: ListenerRegistration? = null
 
-    override fun onCreate() {
-        super.onCreate()
-        db = FirebaseFirestore.getInstance()
-        auth = FirebaseAuth.getInstance()
+    override fun doWork(): Result {
         startListeningForNotifications()
+        return Result.success()
     }
 
     private fun startListeningForNotifications() {
@@ -66,36 +65,31 @@ class NotificationService : Service() {
                 enableVibration(true)
                 vibrationPattern = longArrayOf(0, 500, 1000)
             }
-            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(notificationChannel)
         }
 
-        val notificationBuilder = NotificationCompat.Builder(this, channelId)
+        val notificationBuilder = NotificationCompat.Builder(applicationContext, channelId)
             .setSmallIcon(R.drawable.logo)
             .setContentTitle(title)
             .setContentText(timestamp)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setVibrate(longArrayOf(0, 500, 1000))
 
-        with(NotificationManagerCompat.from(this)) {
+        with(NotificationManagerCompat.from(applicationContext)) {
             if (ActivityCompat.checkSelfPermission(
-                    this@NotificationService,
+                    applicationContext,
                     Manifest.permission.POST_NOTIFICATIONS
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-
                 return
             }
             notify(1, notificationBuilder.build())
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStopped() {
+        super.onStopped()
         notificationsListener?.remove()
-    }
-
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
     }
 }
