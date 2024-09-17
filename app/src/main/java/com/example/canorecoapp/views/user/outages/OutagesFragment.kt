@@ -47,9 +47,7 @@ class OutagesFragment : Fragment() {
         binding.backButton.setOnClickListener {
             findNavController().navigateUp()
         }
-        binding.viewListButton.setOnClickListener {
-            findNavController().navigate(R.id.listOfFutureAndCurrentOutagesFragment)
-        }
+
         // Set up the tabs
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Current Outages"))
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Future Outages"))

@@ -79,32 +79,12 @@
         android:id="@+id/map_fragment_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:paddingTop="20dp"
         android:paddingHorizontal="20dp"
-        app:layout_constraintBottom_toTopOf="@id/bottomLinearLayout"
+        android:padding="@dimen/dimen_20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tabCard"/>
+        app:layout_constraintTop_toBottomOf="@id/tabCard" />
 
-    <LinearLayout
-        android:id="@+id/bottomLinearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/view_list_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/primary_main_color"
-            android:fontFamily="@font/roboto_medium"
-            android:text="View List"
-            android:textColor="@color/primary_light_color"
-            app:cornerRadius="10dp"/>
-
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

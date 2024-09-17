@@ -64,7 +64,7 @@ class NewsDetailsFragment : Fragment() {
         }
         Log.d("maintenancedetails", "Querying document with title: '$title'")
         val collectionRef = db.collection("news")
-        val query = collectionRef.whereEqualTo("title", title)
+        val query = collectionRef.whereEqualTo("timestamp", title)
         val selectedLocations = mutableSetOf<String>()
         query.get()
             .addOnSuccessListener { documents ->
