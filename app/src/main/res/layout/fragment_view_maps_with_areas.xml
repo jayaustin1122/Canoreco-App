@@ -11,6 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:elevation="@dimen/dimen_10dp"
         android:layout_marginTop="16dp"
         android:background="@android:color/transparent"
         android:src="@drawable/back_arrow"

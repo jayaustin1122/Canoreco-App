@@ -20,6 +20,7 @@ import com.example.canorecoapp.utils.ProgressDialogUtils
 import com.example.canorecoapp.utils.ProgressDialogUtils.dismissProgressDialog
 import com.example.canorecoapp.utils.ProgressDialogUtils.showProgressDialog
 import com.example.canorecoapp.views.user.news.DetailsOutageFragment
+import com.example.canorecoapp.views.user.news.NewsDetailsFragment
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -32,6 +33,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.Polygon
 import com.google.android.gms.maps.model.PolygonOptions
+import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -150,41 +152,82 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
             Log.d("PolygonClick", "Polygon tag is null")
         }
     }
-    private fun shoDataInRealTime() {
+    private fun showDataInRealTime() {
         val db = FirebaseDatabase.getInstance().reference.child("devices")
-        db.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val currentLocations = mutableSetOf<String>()
 
-                for (child in snapshot.children) {
-                    val documentId = child.key
-                    Log.e("qwer", "${child.key}")
+        // Use a thread-safe collection
+        val currentLocations = mutableSetOf<String>()
+        val damagedLocations = mutableSetOf<String>()
 
-                    documentId?.let { currentLocations.add(it) }
+        db.addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                handleDataChange(snapshot)
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                handleDataChange(snapshot)
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                val documentId = snapshot.key
+                if (documentId != null) {
+                    currentLocations.remove(documentId)
+                    damagedLocations.remove(documentId)
+                    updateUI()
                 }
-                val jsonData = loadJsonFromRaw(R.raw.filtered_barangayss)
-                Log.e("qwer", "$currentLocations")
+            }
 
-                if (jsonData != null) {
-                    val locationsToRemove = previousLocations - currentLocations
-                    val locationsToAdd = currentLocations - previousLocations
-                    if (locationsToRemove.isNotEmpty()) {
-                        resetFragmentWithProgress()
-                    } else {
-                        parseAndDrawPolygons(jsonData, locationsToAdd,"devices")
-                        previousLocations.clear()
-                        previousLocations.addAll(currentLocations)
-                    }
-                } else {
-                    Log.d("JSON", "Failed to load JSON data")
-                }
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                // Optional: Handle child moved if needed
             }
 
             override fun onCancelled(error: DatabaseError) {
                 Log.e("MapData", "Error retrieving data from Realtime Database: ${error.message}")
             }
+
+            private fun handleDataChange(snapshot: DataSnapshot) {
+                val documentId = snapshot.key
+                val status = snapshot.child("status").getValue(String::class.java)
+
+                Log.e("qwer", "${snapshot.key}, Status: $status")
+
+                documentId?.let {
+                    currentLocations.add(it)
+                    if (status == "damaged") {
+                        damagedLocations.add(it)
+                    } else {
+                        damagedLocations.remove(it)
+                    }
+                    updateUI()
+                }
+            }
+
+            private fun updateUI() {
+                try {
+                    val jsonData = loadJsonFromRaw(R.raw.filtered_barangayss)
+                    Log.e("qwer", "$currentLocations")
+
+                    if (jsonData != null) {
+                        val locationsToRemove = previousLocations - currentLocations
+                        val locationsToAdd = damagedLocations - previousLocations
+
+                        if (locationsToRemove.isNotEmpty()) {
+                            resetFragmentWithProgress()
+                        } else {
+                            parseAndDrawPolygons(jsonData, locationsToAdd, "devices")
+                            previousLocations.clear()
+                            previousLocations.addAll(currentLocations)
+                        }
+                    } else {
+                        Log.d("JSON", "Failed to load JSON data")
+                    }
+                } catch (e: Exception) {
+                    Log.e("DataProcessing", "Error processing data: ${e.message}")
+                }
+            }
         })
     }
+
 
 
     private fun parseAndDrawPolygons(jsonData: String, selectedLocations: Set<String>, devices: String) {
@@ -274,6 +317,17 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
         super.onViewCreated(view, savedInstanceState)
         showProgressDialog(requireContext(),"Loading...")
         checkPermissionLocation()
+        binding.fabRefresh.setOnClickListener{
+            resetFragmentWithProgress()
+        }
+        binding.viewListButton.setOnClickListener {
+            val detailsFragment = ListOfFutureAndCurrentOutagesFragment()
+            val bundle = Bundle().apply {
+                putString("from", "current")
+            }
+            detailsFragment.arguments = bundle
+            findNavController().navigate(R.id.listOfFutureAndCurrentOutagesFragment, bundle)
+        }
     }
 
 
@@ -350,7 +404,7 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
         gMap?.setOnPolygonClickListener(this)
         gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(sanVicenteCamarinesNorte, zoomLevel))
         showPolygonsBasedOnFirestore()
-        shoDataInRealTime()
+        showDataInRealTime()
 
 
     }

@@ -5,6 +5,8 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Geocoder
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,9 +14,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
+import androidx.navigation.fragment.findNavController
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentFutureOutagesMapBinding
 import com.example.canorecoapp.utils.ProgressDialogUtils
+import com.example.canorecoapp.utils.ProgressDialogUtils.dismissProgressDialog
 import com.example.canorecoapp.views.user.news.DetailsOutageFragment
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -53,6 +57,16 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
         return binding.root
     }
 
+    private fun resetFragmentWithProgress() {
+        ProgressDialogUtils.showProgressDialog(requireContext(),"Loading...")
+        Handler(Looper.getMainLooper()).post {
+            reloadFragment()
+            dismissProgressDialog()
+        }
+    }
+    private fun reloadFragment() {
+        findNavController().navigate(R.id.outagesFragment)
+    }
     private fun loadJsonFromRaw(resourceId: Int): String? {
         return if (isAdded) {
             try {
@@ -166,6 +180,17 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
         super.onViewCreated(view, savedInstanceState)
         ProgressDialogUtils.showProgressDialog(requireContext(),"Loading...")
         checkPermissionLocation()
+        binding.fabRefresh.setOnClickListener{
+            resetFragmentWithProgress()
+        }
+        binding.viewListButton.setOnClickListener {
+            val detailsFragment = ListOfFutureAndCurrentOutagesFragment()
+            val bundle = Bundle().apply {
+                putString("from", "outages")
+            }
+            detailsFragment.arguments = bundle
+            findNavController().navigate(R.id.listOfFutureAndCurrentOutagesFragment, bundle)
+        }
     }
     private fun calculateCentroid(latLngList: List<LatLng>): LatLng {
         var area = 0.0

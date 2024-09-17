@@ -72,6 +72,7 @@ dependencies {
     implementation ("pl.droidsonroids.gif:android-gif-drawable:1.2.27")
     // dependency for circular ImageView
     implementation ("de.hdodenhof:circleimageview:3.1.0")
+    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
 
     //karumi to access other component of mobile
     implementation ("com.karumi:dexter:6.2.2")

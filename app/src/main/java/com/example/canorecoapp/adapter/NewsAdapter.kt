@@ -59,7 +59,7 @@ class NewsAdapter(private val context: Context,
         holder.itemView.setOnClickListener {
             val detailsFragment = NewsDetailsFragment()
             val bundle = Bundle().apply {
-                putString("title", newsTitle)
+                putString("title", timeStamp)
                 putString("from", "News")
             }
             detailsFragment.arguments = bundle
