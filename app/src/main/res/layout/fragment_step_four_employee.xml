@@ -48,7 +48,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/area"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:hint="Area Designation"
@@ -56,16 +56,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/areaTextView">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etArea"
+            <AutoCompleteTextView
+                android:id="@+id/tvArea"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:inputType="none"
                 android:lines="1"
+                android:clickable="false"
                 android:scrollbars="horizontal"
                 android:singleLine="true"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 app:boxStrokeWidth="1dp"
-                app:boxStrokeWidthFocused="2dp"  />
+                app:boxStrokeWidthFocused="2dp"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 

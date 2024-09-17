@@ -93,17 +93,12 @@
         android:label="fragment_on_boarding_main"
         tools:layout="@layout/fragment_on_boarding_main" />
     <fragment
-        android:id="@+id/testNotifFragment"
-        android:name="com.example.canorecoapp.notification.TestNotifFragment"
-        android:label="fragment_test_notif"
-        tools:layout="@layout/fragment_test_notif" />
-    <fragment
         android:id="@+id/loginEmployeeFragment"
-        android:name="com.example.canorecoapp.employee.LoginEmployeeFragment"
+        android:name="com.example.canorecoapp.views.linemen.employee.LoginEmployeeFragment"
         android:label="LoginEmployeeFragment" />
     <fragment
         android:id="@+id/signUpEmployeeFragment"
-        android:name="com.example.canorecoapp.employee.SignUpEmployeeFragment"
+        android:name="com.example.canorecoapp.views.linemen.employee.SignUpEmployeeFragment"
         android:label="SignUpEmployeeFragment" />
     <fragment
         android:id="@+id/viewMapsWithAreasFragment"
@@ -124,11 +119,7 @@
         android:id="@+id/listOfMyComplaintsFragment"
         android:name="com.example.canorecoapp.views.user.complaints.ListOfMyComplaintsFragment"
         android:label="ListOfMyComplaintsFragment" />
-    <fragment
-        android:id="@+id/stepFourFragment"
-        android:name="com.example.canorecoapp.views.signups.StepFourFragment"
-        android:label="fragment_step_four"
-        tools:layout="@layout/fragment_step_four" />
+
     <fragment
         android:id="@+id/forgotPasswordFragment"
         android:name="com.example.canorecoapp.views.ForgotPasswordFragment"
@@ -138,4 +129,9 @@
         android:name="com.example.canorecoapp.views.user.notif.NotifFragment"
         android:label="fragment_notif"
         tools:layout="@layout/fragment_notif" />
+    <fragment
+        android:id="@+id/deviceNotifFragment"
+        android:name="com.example.canorecoapp.DeviceNotifFragment"
+        android:label="fragment_device_notif"
+        tools:layout="@layout/fragment_device_notif" />
 </navigation>

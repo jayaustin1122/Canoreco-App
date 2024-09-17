@@ -72,8 +72,9 @@ class NotifDetailsAdapter(private val context: Context,
     @SuppressLint("SimpleDateFormat")
     private fun parseAndFormatDate(timestampString: String): String {
         return try {
-            val timestampMilliseconds = timestampString.toDoubleOrNull()?.toLong() ?: return ""
-            val date = Date(timestampMilliseconds)
+
+            val timestamp = timestampString.toDoubleOrNull()?.toLong() ?: return ""
+            val date = Date(timestamp * 1000)
             val outputFormat = SimpleDateFormat("MMMM d, yyyy h:mm a", Locale.getDefault())
             outputFormat.format(date)
         } catch (e: NumberFormatException) {

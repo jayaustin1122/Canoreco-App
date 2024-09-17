@@ -129,7 +129,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="31/12/2024"
+            android:hint="Birth Date"
             app:endIconMode="custom"
             app:endIconDrawable="@drawable/icon_calendar"
             app:layout_constraintEnd_toEndOf="parent"
@@ -140,10 +140,13 @@
                 android:id="@+id/etBirthDate"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:inputType="date"
+                android:inputType="none"
                 android:lines="1"
+                android:clickable="false"
                 android:scrollbars="horizontal"
                 android:singleLine="true"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
                 app:boxStrokeWidth="1dp"
                 app:boxStrokeWidthFocused="2dp" />
 

@@ -17,6 +17,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -240,20 +241,12 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
 
     }
 
-    private fun zoomIn(location: LatLng? = null) {
-        gMap?.let {
-            val cameraPosition = it.cameraPosition
-            val targetLocation = location ?: cameraPosition.target
-            val newZoom = cameraPosition.zoom + 5.0f
-            val newCameraPosition = CameraUpdateFactory.newLatLngZoom(targetLocation, newZoom)
-            it.animateCamera(newCameraPosition)
-        }
-    }
+
 
     override fun onMarkerClick(marker: Marker): Boolean {
         val dataKey = marker.tag as? String
         if (dataKey != null) {
-            // showMarkerDetailsDialog(dataKey)
+            Toast.makeText(requireContext(),"${marker.tag}",Toast.LENGTH_SHORT).show()
             return true
         } else {
             // Handle the case when marker.tag is null
