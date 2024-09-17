@@ -159,18 +159,31 @@ class LoginEmployeeFragment : Fragment() {
                         val access = snapshot.getBoolean("access")
                         when (userType) {
                             "linemen" -> {
-                                Toast.makeText(
-                                    this@LoginEmployeeFragment.requireContext(),
-                                    "Login Successfully",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                progressDialog.setMessage("Redirecting...")
-                                progressDialog.show()
-                                findNavController().apply {
-                                    popBackStack(R.id.splashFragment, false)
-                                    navigate(R.id.adminHolderFragment)
+                                if (access == false) {
+                                    val dialogBinding = DialogReviewBinding.inflate(layoutInflater)
+                                    val dialog = Dialog(this@LoginEmployeeFragment.requireContext())
+                                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                                    dialog.setContentView(dialogBinding.root)
+                                    dialog.show()
+                                    auth.signOut()
                                 }
-                                progressDialog.dismiss()
+                                else{
+
+                                    Toast.makeText(
+                                        this@LoginEmployeeFragment.requireContext(),
+                                        "Login Successfully",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    progressDialog.setMessage("Redirecting...")
+                                    progressDialog.show()
+                                    findNavController().apply {
+                                        popBackStack(R.id.splashFragment, false)
+                                        navigate(R.id.adminHolderFragment)
+                                    }
+
+                                    progressDialog.dismiss()
+                                }
+
                             }
                             "member" -> {
                                 if (auth.currentUser?.isEmailVerified == true) {

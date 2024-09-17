@@ -165,6 +165,16 @@ class SignInFragment : Fragment() {
                         val access = snapshot.getBoolean("access")
                         when (userType) {
                             "linemen" -> {
+                                if (access == false) {
+                                    val dialogBinding = DialogReviewBinding.inflate(layoutInflater)
+                                    val dialog = Dialog(this@SignInFragment.requireContext())
+                                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                                    dialog.setContentView(dialogBinding.root)
+                                    dialog.show()
+                                    auth.signOut()
+                                }
+                                else{
+
                                 Toast.makeText(
                                     this@SignInFragment.requireContext(),
                                     "Login Successfully",
@@ -176,7 +186,10 @@ class SignInFragment : Fragment() {
                                     popBackStack(R.id.splashFragment, false)
                                     navigate(R.id.adminHolderFragment)
                                 }
+
                                 progressDialog.dismiss()
+                            }
+
                             }
                             "member" -> {
                                 if (auth.currentUser?.isEmailVerified == true) {
