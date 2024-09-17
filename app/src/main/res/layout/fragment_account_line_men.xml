@@ -91,7 +91,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="5dp"
-                        android:text="App Security"
+                        android:text="App Settings"
                         android:textSize="@dimen/dimen_16sp"
                         android:textColor="@color/text_dark_color"
                         android:fontFamily="@font/roboto_bold"/>
@@ -103,10 +103,27 @@
                         android:clickable="true"
                         android:focusable="true"
                         android:paddingVertical="12dp"
-                        android:text="Update Profile"
+                        android:text="Update Personal Details"
                         android:textSize="14sp"
                         android:textColor="@color/text_dark_color"
                         android:fontFamily="@font/roboto_regular"/>
+
+                    <com.google.android.material.divider.MaterialDivider
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        app:dividerColor="@color/stroke_light_color"/>
+
+                    <TextView
+                        android:id="@+id/update_contact_address"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:paddingVertical="12dp"
+                        android:text="Update Contact and Address"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_dark_color"
+                        android:fontFamily="@font/roboto_regular" />
 
                     <com.google.android.material.divider.MaterialDivider
                         android:layout_width="match_parent"
@@ -121,23 +138,6 @@
                         android:focusable="true"
                         android:paddingVertical="12dp"
                         android:text="Change Password"
-                        android:textSize="14sp"
-                        android:textColor="@color/text_dark_color"
-                        android:fontFamily="@font/roboto_regular" />
-
-                    <com.google.android.material.divider.MaterialDivider
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        app:dividerColor="@color/stroke_light_color"/>
-
-                    <TextView
-                        android:id="@+id/change_mobile_number"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:paddingVertical="12dp"
-                        android:text="Change Mobile Number"
                         android:textSize="14sp"
                         android:textColor="@color/text_dark_color"
                         android:fontFamily="@font/roboto_regular" />

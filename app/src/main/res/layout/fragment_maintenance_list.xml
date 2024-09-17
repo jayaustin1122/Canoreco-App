@@ -29,7 +29,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/roboto_bold"
-                android:text="Maintenance"
+                android:text="News"
                 android:textColor="@color/text_light_color"
                 android:textSize="22sp" />
 
