@@ -70,10 +70,6 @@ class UserHolderFragment : Fragment() {
                     findNavController().navigate(R.id.notifFragment)
                     true
                 }
-                R.id.imgProfiled -> {
-                    saveNotificationToFirestore("ss","ss")
-                    true
-                }
                 else -> false
             }
         }

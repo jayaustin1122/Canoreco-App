@@ -81,11 +81,11 @@ class NotifFragment : Fragment() {
                         notifList.clear()
                         for (document in querySnapshot.documents) {
                             val title = document.getString("title") ?: ""
-                            val timestamp = document.getDouble("timestamp") ?: ""
+                            val timestamp = document.getString("timestamp") ?: ""
                             val text = document.getString("text") ?: ""
                             val status = document.getBoolean("status") ?: false
 
-                            val news = Notif(title,text, timestamp.toString() , status)
+                            val news = Notif(title,text, timestamp , status)
                             notifList.add(news)
                         }
 

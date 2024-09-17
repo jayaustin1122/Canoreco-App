@@ -70,10 +70,7 @@ class LineMenHolderFragment : Fragment() {
                     findNavController().navigate(R.id.notifFragment)
                     true
                 }
-                R.id.imgProfiledEmployee -> {
-                    saveNotificationToFirestore("ss","ss")
-                    true
-                }
+
                 else -> false
             }
         }

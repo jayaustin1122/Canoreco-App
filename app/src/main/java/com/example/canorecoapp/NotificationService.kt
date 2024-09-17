@@ -1,6 +1,7 @@
 package com.example.canorecoapp
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
@@ -10,12 +11,16 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class NotificationService : Service() {
     private lateinit var db: FirebaseFirestore
@@ -45,14 +50,26 @@ class NotificationService : Service() {
                 for (document in it.documentChanges) {
                     if (document.type == com.google.firebase.firestore.DocumentChange.Type.ADDED) {
                         val title = document.document.getString("title") ?: "No Title"
-                        val timestamp = document.document.getDouble("timestamp")
+                        val timestamp = document.document.getString("timestamp")
                         createNotification(title, timestamp.toString())
                     }
                 }
             }
         }
     }
+    @SuppressLint("SimpleDateFormat")
+    private fun parseAndFormatDate(timestampString: String): String {
+        return try {
 
+            val timestamp = timestampString.toDoubleOrNull()?.toLong() ?: return ""
+            val date = Date(timestamp * 1000)
+            val outputFormat = SimpleDateFormat("MMMM d, yyyy h:mm a", Locale.getDefault())
+            outputFormat.format(date)
+        } catch (e: NumberFormatException) {
+            Log.e("Home", "Number format error: ", e)
+            ""
+        }
+    }
     private fun createNotification(title: String, timestamp: String) {
         val channelId = "test_channel_id"
         val channelName = "Test Channel"
@@ -73,7 +90,7 @@ class NotificationService : Service() {
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.logo)
             .setContentTitle(title)
-            .setContentText(timestamp)
+            .setContentText(parseAndFormatDate(timestamp))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setVibrate(longArrayOf(0, 500, 1000))
 
