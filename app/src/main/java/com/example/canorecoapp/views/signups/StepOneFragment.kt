@@ -77,7 +77,7 @@ class StepOneFragment : Fragment() {
             viewModel.month = (calendar.get(Calendar.MONTH) + 1).toString()
             viewModel.day = calendar.get(Calendar.DAY_OF_MONTH).toString()
 
-            binding.etBirthDate.setText("${viewModel.month}/${viewModel.year}/${viewModel.day}")
+            binding.etBirthDate.setText("${viewModel.month}/${viewModel.day}/${viewModel.year}")
         }
         datePicker.show(parentFragmentManager, "MaterialDatePicker")
     }

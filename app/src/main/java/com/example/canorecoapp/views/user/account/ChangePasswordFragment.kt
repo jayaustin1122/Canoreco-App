@@ -34,6 +34,31 @@ class ChangePasswordFragment : Fragment() {
             findNavController().navigateUp()
         }
     }
+
+    private fun validateData(password: String?, email: String?) {
+         val oldPass = binding.etOldPassword.text.toString()
+         val confirmPass = binding.etConfirmPassword.text.toString()
+         val newPass = binding.etNewPassword.text.toString()
+
+
+             if (oldPass.isEmpty()) {
+                Toast.makeText(requireContext(), "Password cannot be empty", Toast.LENGTH_SHORT).show()
+                return
+            }
+            else if (confirmPass.isEmpty()) {
+                Toast.makeText(requireContext(), "Please confirm your password", Toast.LENGTH_SHORT).show()
+                return
+            }
+            else if (newPass != confirmPass) {
+                Toast.makeText(requireContext(), "Passwords do not match", Toast.LENGTH_SHORT).show()
+                return
+            }
+            else {
+                 updatePassword(password,email)
+             }
+
+    }
+
     fun updatePassword(
         oldUserPassword: String?,
         email: String?,
@@ -58,7 +83,7 @@ class ChangePasswordFragment : Fragment() {
                             .update("password", newPassword)
                             .addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
-                                    findNavController().navigate(R.id.userHolderFragment)
+                                    findNavController().navigateUp()
                                 } else {
                                     Toast.makeText(
                                         this.requireContext(),
@@ -95,15 +120,8 @@ class ChangePasswordFragment : Fragment() {
                     val street = document.getString("street")
                     binding.etOldPassword.setText(password)
                     binding.btnSave.setOnClickListener {
-                        if (binding.etNewPassword != binding.etConfirmPassword){
-                            Toast.makeText(requireContext(),"Password Not Match!",Toast.LENGTH_SHORT).show()
-                        }
-                        else {
-                            updatePassword(password,email)
-                        }
+                        validateData(password,email)
                     }
-
-
 
 
                 }

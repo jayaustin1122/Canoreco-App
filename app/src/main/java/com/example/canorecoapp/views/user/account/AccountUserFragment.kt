@@ -38,9 +38,6 @@ class AccountUserFragment : Fragment() {
     private lateinit var auth : FirebaseAuth
     private lateinit var fireStore : FirebaseFirestore
     private lateinit var selectedImage: Uri
-    private val CAMERA_PERMISSION_CODE = 101
-    private val IMAGE_PICK_GALLERY_CODE = 102
-    private val IMAGE_PICK_CAMERA_CODE = 103
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -92,100 +89,6 @@ class AccountUserFragment : Fragment() {
 
 
     }
-    private fun showImagePickerDialog() {
-        val options = arrayOf("Camera", "Gallery")
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Choose Image From")
-            .setItems(options) { dialog: DialogInterface?, which: Int ->
-                when (which) {
-                    0 -> {
-                        if (checkCameraPermission()) {
-                            pickImageFromCamera()
-                        } else {
-                            requestCameraPermission()
-                        }
-                    }
-
-                    1 -> pickImageFromGallery()
-                }
-            }
-            .show()
-    }
-
-    private fun checkCameraPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            requireContext(),
-            android.Manifest.permission.CAMERA
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun requestCameraPermission() {
-        ActivityCompat.requestPermissions(
-            requireActivity(),
-            arrayOf(android.Manifest.permission.CAMERA),
-            CAMERA_PERMISSION_CODE
-        )
-    }
-
-    private fun pickImageFromGallery() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = "image/*"
-        startActivityForResult(intent, IMAGE_PICK_GALLERY_CODE)
-    }
-
-    private fun pickImageFromCamera() {
-        val values = ContentValues()
-        values.put(MediaStore.Images.Media.TITLE, "Temp Pic")
-        values.put(MediaStore.Images.Media.DESCRIPTION, "Temp Description")
-        selectedImage =
-            requireActivity().contentResolver.insert(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                values
-            )!!
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, selectedImage)
-        startActivityForResult(intent, IMAGE_PICK_CAMERA_CODE)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == IMAGE_PICK_GALLERY_CODE) {
-                selectedImage = data?.data!!
-                binding.imgUserProfile.setImageURI(selectedImage)
-                Log.d("TwoSignupFragment", "Image selected: $selectedImage")
-                updateProfile(selectedImage)
-            } else if (requestCode == IMAGE_PICK_CAMERA_CODE) {
-                binding.imgUserProfile.setImageURI(selectedImage)
-
-                Log.d("TwoSignupFragment", "Image selected: $selectedImage")
-                binding.imgUserProfile.visibility = View.GONE
-            }
-        }
-    }
-
-    fun updateProfile(selectedImage: Uri) {
-        val firestore = FirebaseFirestore.getInstance()
-        val auth = FirebaseAuth.getInstance()
-        val userId = auth.currentUser?.uid
-        val user = auth.currentUser
-
-
-        firestore.collection("users")
-            .document(userId!!)
-            .update("profile", selectedImage.toString())
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Toast.makeText(requireContext(), "Profile Updated", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(
-                        this.requireContext(),
-                        task.exception?.message ?: "Error updating Profile in Firestore",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-        }
 
 
     private fun loadUsersInfo() {

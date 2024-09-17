@@ -11,6 +11,10 @@
     <string name="map_id">714a7a57ec28897b</string>
     <string name="notification">Notification</string>
     <string name="menu_refresh">Refresh</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="birth_date">Birth Date</string>
+    <string name="update">Update</string>
     <string-array name="municipalities_camarines_norte">
         <item>Angas, Basud</item>
         <item>Bactas, Basud</item>

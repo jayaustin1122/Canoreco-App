@@ -51,12 +51,10 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/dimen_20dp">
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imgPersonal"
-            android:layout_width="157dp"
-            android:layout_height="132dp"
-            android:contentDescription="TODO"
-            android:scaleType="fitXY"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:src="@drawable/profiles"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -66,7 +64,7 @@
             android:id="@+id/firstNameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="First Name"
+            android:text="@string/first_name"
             android:textSize="16sp"
             android:textColor="@color/text_dark_color"
             android:fontFamily="@font/roboto_medium"
@@ -78,7 +76,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="First Name"
+            android:hint="@string/first_name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/firstNameTextView">
@@ -101,7 +99,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Last Name"
+            android:text="@string/last_name"
             android:textSize="16sp"
             android:textColor="@color/text_dark_color"
             android:fontFamily="@font/roboto_medium"
@@ -113,7 +111,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="Last Name"
+            android:hint="@string/last_name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/lastNameTextView">
@@ -136,7 +134,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Birth Date"
+            android:text="@string/birth_date"
             android:textSize="16sp"
             android:textColor="@color/text_dark_color"
             android:fontFamily="@font/roboto_medium"
@@ -148,7 +146,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="Birth Date"
+            android:hint="@string/birth_date"
             app:endIconMode="custom"
             app:endIconDrawable="@drawable/icon_calendar"
             app:layout_constraintEnd_toEndOf="parent"
@@ -188,7 +186,7 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/primary_main_color"
             android:fontFamily="@font/roboto_medium"
-            android:text="Update"
+            android:text="@string/update"
             android:textColor="@color/primary_light_color"
             app:cornerRadius="10dp"/>
 
