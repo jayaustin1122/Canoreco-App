@@ -1,5 +1,6 @@
 package com.example.canorecoapp.views.user.notif
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -21,6 +22,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 class NotifFragment : Fragment() {
@@ -88,7 +92,7 @@ class NotifFragment : Fragment() {
                             val news = Notif(title,text, timestamp , status)
                             notifList.add(news)
                         }
-
+                        notifList.reverse()
                         Log.d("NewsFragment", "Fetched ${notifList.size} news items")
 
                         lifecycleScope.launchWhenResumed {

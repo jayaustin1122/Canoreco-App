@@ -33,6 +33,53 @@ class NotificationService : Service() {
         auth = FirebaseAuth.getInstance()
         startListeningForNotifications()
     }
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        intent?.let {
+            val title = it.getStringExtra("title") ?: "No Title"
+            val message = it.getStringExtra("message") ?: "No Message"
+
+            showNotification(title, message)
+        }
+        return START_NOT_STICKY
+    }
+
+    private fun showNotification(title: String, message: String) {
+        val channelId = "device_status_channel"
+        val notificationId = 1
+
+        // Create Notification Channel if needed (API 26+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                "Device Status Notifications",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Channel for device status notifications"
+            }
+            val notificationManager = getSystemService(NotificationManager::class.java)
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val notificationBuilder = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.drawable.logo) // Set your own icon here
+            .setContentTitle(title)
+            .setContentText(message)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+
+        with(NotificationManagerCompat.from(this)) {
+            if (ActivityCompat.checkSelfPermission(
+                    this@NotificationService,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+
+                return
+            }
+            notify(notificationId, notificationBuilder.build())
+        }
+    }
+
 
     private fun startListeningForNotifications() {
         val userId = auth.currentUser?.uid ?: return
@@ -91,7 +138,7 @@ class NotificationService : Service() {
             .setSmallIcon(R.drawable.logo)
             .setContentTitle(title)
             .setContentText(parseAndFormatDate(timestamp))
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setVibrate(longArrayOf(0, 500, 1000))
 
         with(NotificationManagerCompat.from(this)) {
