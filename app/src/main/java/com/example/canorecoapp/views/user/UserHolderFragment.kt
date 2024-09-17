@@ -37,6 +37,8 @@ class UserHolderFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
     private lateinit var fragmentManager: FragmentManager
     private var isUserInfoLoaded = false
+    private var selectedFragmentId: Int = R.id.navigation_Home
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,6 +66,10 @@ class UserHolderFragment : Fragment() {
         val toolbar = binding.toolbar
 
 
+        // Restore the selected fragment ID if available
+        savedInstanceState?.let {
+            selectedFragmentId = it.getInt("selectedFragmentId", R.id.navigation_Home)
+        }
         toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.notif -> {
@@ -75,6 +81,7 @@ class UserHolderFragment : Fragment() {
         }
         val bottomNavigationView: BottomNavigationView? = binding.bottomNavigationUser
         bottomNavigationView?.setOnNavigationItemSelectedListener { item ->
+            selectedFragmentId = item.itemId
             val selectedFragment: Fragment = when (item.itemId) {
 
                 R.id.navigation_Home -> homeFragment
@@ -90,14 +97,23 @@ class UserHolderFragment : Fragment() {
         }
 
         if (savedInstanceState == null) {
-            if (!homeFragment.isAdded) {
-                fragmentManager.beginTransaction()
-                    .add(R.id.fragment_containerUser, homeFragment)
-                    .commit()
+            // Load the previously selected fragment, defaulting to home if none was selected
+            val initialFragment = when (selectedFragmentId) {
+                R.id.navigation_Home -> homeFragment
+                R.id.navigation_services -> serviceFragment
+                R.id.navigation_account -> accountUserFragment
+                else -> homeFragment
             }
-            bottomNavigationView?.selectedItemId = R.id.navigation_Home
+
+            fragmentManager.beginTransaction()
+                .replace(R.id.fragment_containerUser, initialFragment)
+                .commit()
+
+            bottomNavigationView?.selectedItemId = selectedFragmentId  // Set the selected item in bottom navigation
         }
+
         loadNotificationBadge()
+
 
 
 
@@ -109,33 +125,6 @@ class UserHolderFragment : Fragment() {
 
 
     }
-    private fun saveNotificationToFirestore(title: String, text: String) {
-        val uid = FirebaseAuth.getInstance().currentUser?.uid
-        if (uid != null) {
-            val db = FirebaseFirestore.getInstance()
-            val notificationData = hashMapOf(
-                "title" to title,
-                "text" to text,
-                "timestamp" to System.currentTimeMillis(),
-                "status" to false
-            )
-            db.collection("users")
-                .document(uid)
-                .collection("notifications")
-                .document(System.currentTimeMillis().toString())
-                .set(notificationData)
-                .addOnSuccessListener {
-
-                }
-                .addOnFailureListener { e ->
-
-                    e.printStackTrace()
-                }
-        }
-    }
-
-
-
 
 
     private var notificationsListener: ListenerRegistration? = null

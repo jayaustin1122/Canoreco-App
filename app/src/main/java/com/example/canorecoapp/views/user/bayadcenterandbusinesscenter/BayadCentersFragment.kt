@@ -1,6 +1,7 @@
 package com.example.canorecoapp.views.user.bayadcenterandbusinesscenter
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,11 +15,15 @@ import com.example.canorecoapp.views.user.bayadcenterandbusinesscenter.BusinessC
 import com.example.canorecoapp.views.user.outages.CurrentOutagesMapFragment
 import com.example.canorecoapp.views.user.outages.FutureOutagesMapFragment
 import com.google.android.material.tabs.TabLayout
+import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 class BayadCentersFragment : Fragment() {
     private lateinit var binding : FragmentBayadCentersBinding
-
+    private val firestore = FirebaseFirestore.getInstance()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -59,6 +64,13 @@ class BayadCentersFragment : Fragment() {
                 // No action needed
             }
         })
+        binding.viewListButton.setOnClickListener {
+            if (binding.tabLayout.selectedTabPosition == 0) {
+                queryBayadCenters()
+            } else {
+                queryBusinessCenters()
+            }
+        }
     }
 
     private fun replaceFragment(fragment: Fragment) {
@@ -66,4 +78,69 @@ class BayadCentersFragment : Fragment() {
             .replace(R.id.map_fragment_container, fragment)
             .commit()
     }
+
+    private fun queryBayadCenters() {
+        firestore.collection("bayad_centers")
+            .get()
+            .addOnSuccessListener { result ->
+                val selectedLocations = mutableListOf<String>()
+                for (document in result) {
+                    val barangay = document.getString("barangay")
+                    val municipality = document.getString("municipality")
+                    val locationName = document.getString("locationName")
+                    val latitude = document.getDouble("latitude")
+                    val longitude = document.getDouble("longitude")
+
+                    Log.d("FirestoreData", "Document ID: ${document.id}")
+                    Log.d("FirestoreData", "Barangay: $barangay")
+                    Log.d("FirestoreData", "Municipality: $municipality")
+                    Log.d("FirestoreData", "Location Name: $locationName")
+                    Log.d("FirestoreData", "Latitude: $latitude")
+                    Log.d("FirestoreData", "Longitude: $longitude")
+                }
+                Log.d("FirestoreData", "Bayad Centers Selected Locations: $selectedLocations")
+            }
+            .addOnFailureListener { exception ->
+                Log.w("FirestoreError", "Error getting documents: ", exception)
+            }
+    }
+
+    private fun queryBusinessCenters() {
+        firestore.collection("business_centers")
+            .get()
+            .addOnSuccessListener { result ->
+
+                for (document in result) {
+
+                    val barangay = document.getString("barangay")
+                    val municipality = document.getString("municipality")
+                    val locationName = document.getString("locationName")
+                    val latitude = document.getDouble("latitude")
+                    val longitude = document.getDouble("longitude")
+
+                    Log.d("FirestoreData", "Document ID: ${document.id}")
+                    Log.d("FirestoreData", "Barangay: $barangay")
+                    Log.d("FirestoreData", "Municipality: $municipality")
+                    Log.d("FirestoreData", "Location Name: $locationName")
+                    Log.d("FirestoreData", "Latitude: $latitude")
+                    Log.d("FirestoreData", "Longitude: $longitude")
+
+                }
+
+            }
+            .addOnFailureListener { exception ->
+                Log.w("FirestoreError", "Error getting documents: ", exception)
+            }
+    }
+
+    private fun parseDate(dateString: String): Date? {
+        return try {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+            dateFormat.parse(dateString)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+
 }

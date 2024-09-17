@@ -38,6 +38,7 @@ class LineMenHolderFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
     private lateinit var fragmentManager: FragmentManager
     private var isUserInfoLoaded = false
+    private var selectedFragmentId: Int = R.id.navigation_Home_linemen
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -62,7 +63,10 @@ class LineMenHolderFragment : Fragment() {
         }
         loadUsersInfo()
         val toolbar = binding.toolbar
-
+        // Restore the selected fragment ID if available
+        savedInstanceState?.let {
+            selectedFragmentId = it.getInt("selectedFragmentId", R.id.navigation_Home_linemen)
+        }
 
         toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
@@ -77,6 +81,7 @@ class LineMenHolderFragment : Fragment() {
 
         val bottomNavigationView: BottomNavigationView = binding.bottomNavigationLinemen
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            selectedFragmentId = item.itemId
             val selectedFragment: Fragment = when (item.itemId) {
                 R.id.navigation_Home_linemen -> homeFragment
                 R.id.navigation_notificationl_linemen -> serviceFragment
@@ -90,12 +95,19 @@ class LineMenHolderFragment : Fragment() {
             true
         }
         if (savedInstanceState == null) {
-            if (!homeFragment.isAdded) {
-                fragmentManager.beginTransaction()
-                    .add(R.id.fragment_containerLinemen, homeFragment)
-                    .commit()
+
+            val initialFragment = when (selectedFragmentId) {
+                R.id.navigation_Home_linemen -> homeFragment
+                R.id.navigation_notificationl_linemen -> serviceFragment
+                R.id.navigation_account_linemen -> accountUserFragment
+                else -> homeFragment
             }
-            bottomNavigationView.selectedItemId = R.id.navigation_Home
+
+            fragmentManager.beginTransaction()
+                .replace(R.id.fragment_containerLinemen, initialFragment)
+                .commit()
+
+            bottomNavigationView?.selectedItemId = selectedFragmentId  // Set the selected item in bottom navigation
         }
         loadNotificationBadge()
     }

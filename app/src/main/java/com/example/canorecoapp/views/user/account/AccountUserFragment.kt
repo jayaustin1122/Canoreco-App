@@ -3,11 +3,14 @@ package com.example.canorecoapp.views.user.account
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.ContentValues
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -20,6 +23,7 @@ import android.view.ViewGroup
 import android.view.Window
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import cn.pedant.SweetAlert.SweetAlertDialog
@@ -89,6 +93,40 @@ class AccountUserFragment : Fragment() {
 
 
     }
+
+    companion object {
+        private const val REQUEST_NOTIFICATION_PERMISSION = 1001
+    }
+
+    private fun enableLocalNotifications() {
+        Toast.makeText(requireContext(), "Local notifications enabled", Toast.LENGTH_SHORT).show()
+
+        val notificationManager = ContextCompat.getSystemService(requireContext(), NotificationManager::class.java) as NotificationManager
+        val channelId = "local_channel"
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(channelId, "Local Notifications", NotificationManager.IMPORTANCE_DEFAULT)
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val notification = NotificationCompat.Builder(requireContext(), channelId)
+            .setContentTitle("Local Notification")
+            .setContentText("This is a local notification")
+            .setSmallIcon(R.drawable.logo)
+            .setAutoCancel(true)
+            .build()
+
+        notificationManager.notify(1001, notification)
+    }
+
+    private fun disableLocalNotifications() {
+        Toast.makeText(requireContext(), "Local notifications disabled", Toast.LENGTH_SHORT).show()
+
+        val notificationManager = ContextCompat.getSystemService(requireContext(), NotificationManager::class.java) as NotificationManager
+        notificationManager.cancel(1001)
+    }
+
+
 
 
     private fun loadUsersInfo() {

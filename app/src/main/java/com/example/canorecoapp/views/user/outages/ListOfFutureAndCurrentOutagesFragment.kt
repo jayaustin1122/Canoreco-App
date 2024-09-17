@@ -168,7 +168,7 @@ class ListOfFutureAndCurrentOutagesFragment : Fragment() {
                 val endTime = document.getString("endTime") ?: ""
                 val selectedLocationsList = document.get("selectedLocations") as? List<*>
                 val isDateMatch = date == currentDate
-                val isTimeInRange = startTime <= currentTime && currentTime <= endTime
+                val isTimeInRange = startTime >= currentTime && currentTime <= endTime
 
                 if (isDateMatch && isTimeInRange) {
                     selectedLocationsList?.let {
