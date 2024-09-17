@@ -257,15 +257,9 @@ class AccountLineMenFragment : Fragment() {
                     binding.contactNumber.text = contact
                     val context = context ?: return@addOnSuccessListener
                     Glide.with(context)
-                        .load(image) // Load the image URL from Firestore
+                        .load(image)
                         .into(binding.imgUserProfile)
-                    binding.changeMobileNumber.setOnClickListener {
 
-                        showDialogChangePhoneNumber(contact)
-                    }
-                    binding.changePassword.setOnClickListener {
-                        showDialogChangePassWord(email, password)
-                    }
                 }
                 .addOnFailureListener { exception ->
 

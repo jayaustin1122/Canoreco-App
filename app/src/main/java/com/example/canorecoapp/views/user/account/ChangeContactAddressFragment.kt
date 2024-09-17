@@ -4,54 +4,73 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.example.canorecoapp.ARG_PARAM1
-import com.example.canorecoapp.ARG_PARAM2
+import com.bumptech.glide.Glide
 import com.example.canorecoapp.R
+import com.example.canorecoapp.databinding.FragmentChangeContactAddressBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
-/**
- * A simple [Fragment] subclass.
- * Use the [ChangeContactAddressFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+
 class ChangeContactAddressFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
-
+    private lateinit var binding : FragmentChangeContactAddressBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        binding = FragmentChangeContactAddressBinding.inflate(layoutInflater)
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_change_contact_address, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment ChangeContactAddressFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ChangeContactAddressFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        loadUsersInfo()
     }
+
+    private fun loadUsersInfo() {
+        val db = FirebaseFirestore.getInstance()
+        val currentUser = FirebaseAuth.getInstance().currentUser
+
+        currentUser?.let { user ->
+            db.collection("users").document(user.uid).get()
+                .addOnSuccessListener { document ->
+
+                    val userName = document.getString("firstName")
+                    val lastName = document.getString("lastName")
+                    val contact = document.getString("phone")
+                    val image = document.getString("image")
+                    val email = document.getString("email")
+                    val municipality = document.getString("municipality")
+                    val barangay = document.getString("barangay")
+                    val password = document.getString("password")
+                    val street = document.getString("street")
+
+                    binding.etContactNumber.setText(contact)
+                    binding.tvMunicipality.setText(municipality)
+                    binding.tvBrgy.setText(barangay)
+                    binding.etStreet.setText(contact)
+
+
+                }
+                .addOnFailureListener { exception ->
+
+                    Toast.makeText(
+                        requireContext(),
+                        "Error Loading User Data: ${exception.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+        } ?: run {
+
+            Toast.makeText(
+                requireContext(),
+                "User not authenticated",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
 }

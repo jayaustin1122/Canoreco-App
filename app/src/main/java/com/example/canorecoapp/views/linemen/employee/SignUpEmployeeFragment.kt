@@ -296,7 +296,8 @@ class SignUpEmployeeFragment : Fragment() {
             "token" to token,
             "dateOfBirth" to "$month-$day-$year",
             "timestamp" to timestamp,
-            "address" to "${viewModel.barangay}, ${viewModel.address}",
+            "barangay" to viewModel.barangay,
+            "municipality" to viewModel.address,
         )
         val firestore = FirebaseFirestore.getInstance()
         try {

@@ -78,8 +78,15 @@ class AccountUserFragment : Fragment() {
             }, 1000)
         }
         binding.updateProfile.setOnClickListener {
-            showImagePickerDialog()
+            findNavController().navigate(R.id.changePersonalFragment)
         }
+        binding.updateContactAddress.setOnClickListener {
+            findNavController().navigate(R.id.changeContactAddressFragment)
+        }
+        binding.changePassword.setOnClickListener {
+            findNavController().navigate(R.id.changePasswordFragment)
+        }
+
 
 
 
@@ -156,49 +163,7 @@ class AccountUserFragment : Fragment() {
             }
         }
     }
-    fun updatePassword(
-        currentUserEmail: String?,
-        oldUserPassword: String?,
-        etChangePhoneNumber: TextInputEditText
-    ) {
-        val firestore = FirebaseFirestore.getInstance()
-        val auth = FirebaseAuth.getInstance()
-        val userId = auth.currentUser?.uid
-        val user = auth.currentUser
-        val newPassword = etChangePhoneNumber.text.toString()
 
-        // Reauthenticate the user
-        val credential: AuthCredential = EmailAuthProvider.getCredential(currentUserEmail!!, oldUserPassword!!)
-        user?.reauthenticate(credential)?.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                // Update password in Firebase Authentication
-                user.updatePassword(newPassword).addOnCompleteListener {
-                    if (it.isSuccessful) {
-                        Toast.makeText(requireContext(), "Password Updated", Toast.LENGTH_SHORT).show()
-                        // Update the password field in Firestore
-                        firestore.collection("users")
-                            .document(userId!!)
-                            .update("password", newPassword)
-                            .addOnCompleteListener { task ->
-                                if (task.isSuccessful) {
-                                    Toast.makeText(requireContext(), "Password updated in Firestore", Toast.LENGTH_SHORT).show()
-                                } else {
-                                    Toast.makeText(
-                                        this.requireContext(),
-                                        task.exception?.message ?: "Error updating password in Firestore",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }
-                    } else {
-                        Toast.makeText(requireContext(), "Error Updating Password in Firebase Auth", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            } else {
-                Toast.makeText(requireContext(), "Reauthentication failed", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
     fun updateProfile(selectedImage: Uri) {
         val firestore = FirebaseFirestore.getInstance()
         val auth = FirebaseAuth.getInstance()
@@ -244,13 +209,7 @@ class AccountUserFragment : Fragment() {
                     Glide.with(context)
                         .load(image) // Load the image URL from Firestore
                         .into(binding.imgUserProfile)
-                    binding.changeMobileNumber.setOnClickListener {
 
-                        showDialogChangePhoneNumber(contact)
-                    }
-                    binding.changePassword.setOnClickListener {
-                        showDialogChangePassWord(email,password)
-                    }
                 }
                 .addOnFailureListener { exception ->
 
@@ -270,82 +229,6 @@ class AccountUserFragment : Fragment() {
         }
     }
 
-    private fun showDialogChangePhoneNumber(contact: String?) {
-        val dialogBinding = DialogChangePhoneNumberBinding.inflate(layoutInflater)
-        val dialog = Dialog(this@AccountUserFragment.requireContext())
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setContentView(dialogBinding.root)
-        dialog.show()
 
-        dialogBinding.etChangePhoneNumber.setText(contact)
-        dialogBinding.btnChangeNumber.setOnClickListener {
-            updatePhoneNumber(dialogBinding.etChangePhoneNumber)
-            dialog.dismiss()
-        }
 
-    }
-    private fun showDialogChangePassWord(email: String?, password: String?) {
-        val dialogBinding = DialogChangePhoneNumberBinding.inflate(layoutInflater)
-        val dialog = Dialog(this@AccountUserFragment.requireContext())
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setContentView(dialogBinding.root)
-        dialog.show()
-
-        dialogBinding.etChangePhoneNumber.setText(password)
-        dialogBinding.btnChangeNumber.setOnClickListener {
-            updatePassword(email,password,dialogBinding.etChangePhoneNumber)
-            dialog.dismiss()
-        }
-
-    }
-
-    private fun updatePhoneNumber(etChangePhoneNumber: TextInputEditText) {
-        val firestore = FirebaseFirestore.getInstance()
-        val auth = FirebaseAuth.getInstance()
-        val userId = auth.currentUser?.uid
-        if (userId == null) {
-            Toast.makeText(
-                this.requireContext(),
-                "User not authenticated",
-                Toast.LENGTH_SHORT
-            ).show()
-            return
-        }
-
-        val phoneNumber = etChangePhoneNumber.text.toString()
-        if (phoneNumber.isEmpty()) {
-            Toast.makeText(
-                this.requireContext(),
-                "Phone number cannot be empty",
-                Toast.LENGTH_SHORT
-            ).show()
-            return
-        }
-        try {
-            firestore.collection("users")
-                .document(userId)
-                .update("phone", phoneNumber)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        Toast.makeText(
-                            this.requireContext(),
-                            "Phone number updated successfully",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        Toast.makeText(
-                            this.requireContext(),
-                            task.exception?.message ?: "Error updating phone number",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-        } catch (e: Exception) {
-            Toast.makeText(
-                this.requireContext(),
-                "Error uploading data: ${e.message}",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
 }

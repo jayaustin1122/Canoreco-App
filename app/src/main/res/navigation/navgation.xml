@@ -134,4 +134,19 @@
         android:name="com.example.canorecoapp.DeviceNotifFragment"
         android:label="fragment_device_notif"
         tools:layout="@layout/fragment_device_notif" />
+    <fragment
+        android:id="@+id/changeContactAddressFragment"
+        android:name="com.example.canorecoapp.views.user.account.ChangeContactAddressFragment"
+        android:label="fragment_change_contact_address"
+        tools:layout="@layout/fragment_change_contact_address" />
+    <fragment
+        android:id="@+id/changePasswordFragment"
+        android:name="com.example.canorecoapp.views.user.account.ChangePasswordFragment"
+        android:label="fragment_change_password"
+        tools:layout="@layout/fragment_change_password" />
+    <fragment
+        android:id="@+id/changePersonalFragment"
+        android:name="com.example.canorecoapp.views.user.account.ChangePersonalFragment"
+        android:label="fragment_change_personal"
+        tools:layout="@layout/fragment_change_personal" />
 </navigation>

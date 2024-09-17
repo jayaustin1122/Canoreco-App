@@ -51,10 +51,12 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/dimen_20dp">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/imageView2"
-            android:layout_width="179dp"
-            android:layout_height="121dp"
+        <ImageView
+            android:id="@+id/imgPersonal"
+            android:layout_width="157dp"
+            android:layout_height="132dp"
+            android:contentDescription="TODO"
+            android:scaleType="fitXY"
             android:src="@drawable/profiles"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -69,7 +71,7 @@
             android:textColor="@color/text_dark_color"
             android:fontFamily="@font/roboto_medium"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+            app:layout_constraintTop_toBottomOf="@+id/imgPersonal" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout1"
