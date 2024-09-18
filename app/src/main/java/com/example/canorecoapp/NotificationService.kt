@@ -35,8 +35,8 @@ class NotificationService : Service() {
     }
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
-            val title = it.getStringExtra("title") ?: "No Title"
-            val message = it.getStringExtra("message") ?: "No Message"
+            val title = it.getStringExtra("title") ?: "Canoreco App!"
+            val message = it.getStringExtra("message") ?: "Welcome and thanks for using Canoreco App!"
 
             showNotification(title, message)
         }
@@ -61,7 +61,7 @@ class NotificationService : Service() {
         }
 
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.logo) // Set your own icon here
+            .setSmallIcon(R.drawable.bell) // Set your own icon here
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
