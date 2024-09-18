@@ -26,7 +26,7 @@
         android:fontFamily="@font/poppins_light"
         android:textSize="@dimen/dimen_15sp"
         android:drawableStart="@drawable/ea"
-        android:text="" />
+        android:text="dsdsd" />
     <TextView
         android:id="@+id/address"
         android:layout_width="wrap_content"

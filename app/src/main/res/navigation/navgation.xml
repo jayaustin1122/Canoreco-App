@@ -149,4 +149,14 @@
         android:name="com.example.canorecoapp.views.user.account.ChangePersonalFragment"
         android:label="fragment_change_personal"
         tools:layout="@layout/fragment_change_personal" />
+    <fragment
+        android:id="@+id/listOfCentersFragment"
+        android:name="com.example.canorecoapp.views.user.bayadcenterandbusinesscenter.ListOfCentersFragment"
+        android:label="fragment_list_of_centers"
+        tools:layout="@layout/fragment_list_of_centers" />
+    <fragment
+        android:id="@+id/viewMapMarkerClickFragment"
+        android:name="com.example.canorecoapp.views.user.bayadcenterandbusinesscenter.ViewMapMarkerClickFragment"
+        android:label="fragment_view_map_marker_click"
+        tools:layout="@layout/fragment_view_map_marker_click" />
 </navigation>

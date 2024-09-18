@@ -86,14 +86,16 @@ class DetailsOutageFragment : BottomSheetDialogFragment() {
                     val steps = listOf("Outage Detected", "Outage Under Repair", "Power Restored")
                     binding.stepView.setSteps(steps)
                     val formattedDate = parseAndFormatDatse(timestampString)
-                    if (from == "Maintenance"){
+                    if (from == "Maintenance"|| from == "future"){
                         Log.e("from", "from is $from")
                         binding.stepView.visibility = View.GONE
                         binding.tvOutageStatus.visibility = View.GONE
                         binding.tvEstimatedTimeResolution.text = "Scheduled Date of Power Interruption:"
                         binding.tvUpdated.text = "Updated As of maintenance: $formattedDate"
 
-                    } else{
+                    }
+
+                    else{
                         when (status) {
                             "Outage Detected" -> {
                                 binding.stepView.go(0, true)

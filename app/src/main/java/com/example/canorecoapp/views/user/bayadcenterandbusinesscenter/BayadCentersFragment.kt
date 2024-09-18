@@ -6,12 +6,18 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.canorecoapp.R
+import com.example.canorecoapp.adapter.NewsAdapter
 import com.example.canorecoapp.databinding.FragmentBayadCentersBinding
 import com.example.canorecoapp.databinding.FragmentOutagesBinding
+import com.example.canorecoapp.models.Centers
+import com.example.canorecoapp.models.News
 import com.example.canorecoapp.views.user.bayadcenterandbusinesscenter.BayadFragmentOne
 import com.example.canorecoapp.views.user.bayadcenterandbusinesscenter.BusinessCenterFragmentTwo
+import com.example.canorecoapp.views.user.news.NewsDetailsFragment
 import com.example.canorecoapp.views.user.outages.CurrentOutagesMapFragment
 import com.example.canorecoapp.views.user.outages.FutureOutagesMapFragment
 import com.google.android.material.tabs.TabLayout
@@ -36,7 +42,7 @@ class BayadCentersFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.backButton.setOnClickListener {
-            findNavController().navigate(R.id.userHolderFragment)
+            findNavController().navigateUp()
         }
         // Set up the tabs
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Bayad Centers"))
@@ -80,16 +86,17 @@ class BayadCentersFragment : Fragment() {
     }
 
     private fun queryBayadCenters() {
+        val centers = ArrayList<Centers>()
         firestore.collection("bayad_centers")
             .get()
             .addOnSuccessListener { result ->
                 val selectedLocations = mutableListOf<String>()
                 for (document in result) {
-                    val barangay = document.getString("barangay")
-                    val municipality = document.getString("municipality")
-                    val locationName = document.getString("locationName")
-                    val latitude = document.getDouble("latitude")
-                    val longitude = document.getDouble("longitude")
+                    val barangay = document.getString("barangay") ?: ""
+                    val municipality = document.getString("municipality") ?: ""
+                    val locationName = document.getString("locationName") ?: ""
+                    val latitude = document.getDouble("latitude") ?: 0
+                    val longitude = document.getDouble("longitude") ?: 0
 
                     Log.d("FirestoreData", "Document ID: ${document.id}")
                     Log.d("FirestoreData", "Barangay: $barangay")
@@ -97,7 +104,24 @@ class BayadCentersFragment : Fragment() {
                     Log.d("FirestoreData", "Location Name: $locationName")
                     Log.d("FirestoreData", "Latitude: $latitude")
                     Log.d("FirestoreData", "Longitude: $longitude")
+                    centers.add(Centers(
+                        "",
+                        barangay,
+                        latitude.toString(),
+                        locationName,
+                        longitude.toString(),
+                        "",
+                        municipality,
+                        "",
+                        ""
+
+                    ))
                 }
+                val bundle = Bundle().apply {
+                    putParcelableArrayList("data", java.util.ArrayList(centers))
+                    putString("from","List Of Bayad Centers")
+                }
+                findNavController().navigate(R.id.listOfCentersFragment, bundle)
                 Log.d("FirestoreData", "Bayad Centers Selected Locations: $selectedLocations")
             }
             .addOnFailureListener { exception ->
@@ -106,17 +130,18 @@ class BayadCentersFragment : Fragment() {
     }
 
     private fun queryBusinessCenters() {
+        val centers = ArrayList<Centers>()
         firestore.collection("business_centers")
             .get()
             .addOnSuccessListener { result ->
 
                 for (document in result) {
 
-                    val barangay = document.getString("barangay")
-                    val municipality = document.getString("municipality")
-                    val locationName = document.getString("locationName")
-                    val latitude = document.getDouble("latitude")
-                    val longitude = document.getDouble("longitude")
+                    val barangay = document.getString("barangay") ?: ""
+                    val municipality = document.getString("municipality") ?: ""
+                    val locationName = document.getString("locationName") ?: ""
+                    val latitude = document.getDouble("latitude") ?: 0
+                    val longitude = document.getDouble("longitude") ?: 0
 
                     Log.d("FirestoreData", "Document ID: ${document.id}")
                     Log.d("FirestoreData", "Barangay: $barangay")
@@ -124,8 +149,24 @@ class BayadCentersFragment : Fragment() {
                     Log.d("FirestoreData", "Location Name: $locationName")
                     Log.d("FirestoreData", "Latitude: $latitude")
                     Log.d("FirestoreData", "Longitude: $longitude")
+                    centers.add(Centers(
+                        "",
+                        barangay,
+                        latitude.toString(),
+                        locationName,
+                        longitude.toString(),
+                        "",
+                        municipality,
+                        "",
+                        ""
 
+                    ))
                 }
+                val bundle = Bundle().apply {
+                    putParcelableArrayList("data", java.util.ArrayList(centers))
+                    putString("from","List Of Business Centers")
+                }
+                findNavController().navigate(R.id.listOfCentersFragment, bundle)
 
             }
             .addOnFailureListener { exception ->
@@ -133,14 +174,7 @@ class BayadCentersFragment : Fragment() {
             }
     }
 
-    private fun parseDate(dateString: String): Date? {
-        return try {
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-            dateFormat.parse(dateString)
-        } catch (e: Exception) {
-            null
-        }
-    }
+
 
 
 }

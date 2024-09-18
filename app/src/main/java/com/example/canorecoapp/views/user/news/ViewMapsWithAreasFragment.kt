@@ -69,7 +69,7 @@ class ViewMapsWithAreasFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
     override fun onMapReady(googleMap: GoogleMap) {
         gMap = googleMap
         val sanVicenteCamarinesNorte = LatLng(14.08446, 122.88797)
-        val zoomLevel = 5.0f
+        val zoomLevel = 10.0f
         gMap?.setOnMarkerClickListener(this)
         gMap?.setOnPolygonClickListener(this)
         gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(sanVicenteCamarinesNorte, zoomLevel))
@@ -78,7 +78,6 @@ class ViewMapsWithAreasFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
             val areas = it.getString("Areas")
             if (areas != null) {
                 Log.d("ViewMapsWithAreasFragment", "Areas: $areas")
-                getCurrentLocation()
                 val selectedLocations = areas.split(",").map { it.trim() }.toSet()
                 val jsonData = loadJsonFromRaw(R.raw.filtered_barangayss)
                 jsonData?.let {
@@ -168,7 +167,7 @@ class ViewMapsWithAreasFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
                 }
             }
             dismissProgressDialog()
-            getCurrentLocation()
+
         } catch (e: JSONException) {
             Log.e("JSON", "Error parsing JSON data: ${e.message}")
         }
@@ -197,25 +196,7 @@ class ViewMapsWithAreasFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
     }
 
 
-    private fun getCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener { location ->
-                    location?.let {
-                        val currentLatLng = LatLng(it.latitude, it.longitude)
-                        gMap?.addMarker(
-                            MarkerOptions().position(currentLatLng).title("Current Location")
-                        )
-                        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentLatLng, 15.0f)
-                        gMap?.animateCamera(cameraUpdate)
-                    }
-                }
-        }
-    }
+
 
     private fun loadJsonFromRaw(resourceId: Int): String? {
         return try {

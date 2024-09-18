@@ -57,14 +57,17 @@ class NewsDetailsAdapter(private val context: Context,
         holder.title.text = newsTitle
         holder.date.text = formattedDate
         val from = "News"
+        val imageUrl = image ?: ""
+
         Glide.with(this@NewsDetailsAdapter.context)
-            .load(image)
+            .load(if (imageUrl.isNotEmpty()) imageUrl else R.drawable.logo)
+            .error(R.drawable.logo) // In case of an error loading the image
             .into(holder.image)
 
         holder.itemView.setOnClickListener {
             val detailsFragment = NewsDetailsFragment()
             val bundle = Bundle().apply {
-                putString("title", newsTitle)
+                putString("title", timeStamp)
                 putString("from", from)
             }
             detailsFragment.arguments = bundle

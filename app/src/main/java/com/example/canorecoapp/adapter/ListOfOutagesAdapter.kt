@@ -13,7 +13,6 @@ import com.example.canorecoapp.databinding.NewsItemViewBinding
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.navigation.NavController
-import androidx.navigation.fragment.findNavController
 import com.example.canorecoapp.R
 import com.example.canorecoapp.views.user.news.ViewMapsWithAreasFragment
 import org.json.JSONException
@@ -23,7 +22,8 @@ import java.io.IOException
 class   ListOfOutagesAdapter(
     private val context: Context,
     private val navController: NavController,
-    private var selectedLocations: List<String>
+    private var selectedLocations: List<String>,
+    private val from: String?
 ) : RecyclerView.Adapter<ListOfOutagesAdapter.ViewHolder>(), Filterable {
 
     private lateinit var binding: NewsItemViewBinding
@@ -46,10 +46,10 @@ class   ListOfOutagesAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val location = filteredList[position]
-
         holder.date.visibility = View.GONE
         holder.image.visibility = View.GONE
         retrieveLocationName(location, holder)
+
     }
     private fun loadJsonFromRaw(resourceId: Int): String? {
         return try {
@@ -78,6 +78,7 @@ class   ListOfOutagesAdapter(
                         val detailsFragment = ViewMapsWithAreasFragment()
                         val bundle = Bundle()
                         bundle.putString("Areas", location)
+                        bundle.putString("from", from)
                         detailsFragment.arguments = bundle
                         navController.navigate(R.id.viewMapsWithAreasFragment, bundle)
                     }

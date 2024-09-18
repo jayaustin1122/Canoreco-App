@@ -59,8 +59,8 @@ class DetailsCenterFragment : BottomSheetDialogFragment(){
                         val longitude = document.getDouble("longitude")?: ""
 
                         binding.title.text = locationName
-                        binding.latLng.text = "$longitude , $latitude"
-                        binding.address.text = "$municipality, $barangay $street"
+                        binding.latLng.text = "  $longitude , $latitude"
+                        binding.address.text = "  $municipality, $barangay $street"
 
                     }
                 } else {

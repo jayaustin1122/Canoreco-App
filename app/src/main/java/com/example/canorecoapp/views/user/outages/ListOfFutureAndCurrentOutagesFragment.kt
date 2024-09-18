@@ -10,7 +10,6 @@ import android.widget.SearchView
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.canorecoapp.R
 import com.example.canorecoapp.adapter.ListOfOutagesAdapter
 import com.example.canorecoapp.databinding.FragmentListOfFutureAndCurrentOutagesBinding
 import com.google.firebase.database.DataSnapshot
@@ -19,8 +18,6 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -34,7 +31,7 @@ class ListOfFutureAndCurrentOutagesFragment : Fragment() {
 
     private val barangaysWithDamagedDevices = mutableListOf<String>()
     private val firestoreOutages = mutableSetOf<String>()
-
+    val from = arguments?.getString("from")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -51,7 +48,7 @@ class ListOfFutureAndCurrentOutagesFragment : Fragment() {
             retrieveAllCurrentOutages()
             retrieveDeviceWithDamaged()
         }
-        if (from =="outages")
+        if (from =="future")
         {
             retrieveFutureOutages()
         }
@@ -97,11 +94,13 @@ class ListOfFutureAndCurrentOutagesFragment : Fragment() {
                     Log.d("FirestoreData", "Selected Locations: $selectedLocations")
 
                 }
+                val from = arguments?.getString("from")
                 lifecycleScope.launchWhenResumed {
                     adapter = ListOfOutagesAdapter(
                         this@ListOfFutureAndCurrentOutagesFragment.requireContext(),
                         findNavController(),
-                        selectedLocations.toList()
+                        selectedLocations.toList(),
+                        from
                     )
                     binding.rvListOutages.setHasFixedSize(true)
                     val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -148,7 +147,7 @@ class ListOfFutureAndCurrentOutagesFragment : Fragment() {
 
     private fun retrieveAllCurrentOutages() {
         val firestoreReference = FirebaseFirestore.getInstance().collection("outages")
-
+        val from = arguments?.getString("from")
         // Get current date and time
         val now = Date()
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
@@ -184,7 +183,8 @@ class ListOfFutureAndCurrentOutagesFragment : Fragment() {
                 adapter = ListOfOutagesAdapter(
                     this@ListOfFutureAndCurrentOutagesFragment.requireContext(),
                     findNavController(),
-                    selectedLocations
+                    selectedLocations,
+                    from
                 )
                 binding.rvListOutages.setHasFixedSize(true)
                 val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -205,7 +205,8 @@ class ListOfFutureAndCurrentOutagesFragment : Fragment() {
             adapter = ListOfOutagesAdapter(
                 this@ListOfFutureAndCurrentOutagesFragment.requireContext(),
                 findNavController(),
-                combinedList
+                combinedList,
+                from
             )
             binding.rvListOutages.setHasFixedSize(true)
             val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)

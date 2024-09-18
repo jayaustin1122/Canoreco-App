@@ -186,7 +186,7 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
         binding.viewListButton.setOnClickListener {
             val detailsFragment = ListOfFutureAndCurrentOutagesFragment()
             val bundle = Bundle().apply {
-                putString("from", "outages")
+                putString("from", "future")
             }
             detailsFragment.arguments = bundle
             findNavController().navigate(R.id.listOfFutureAndCurrentOutagesFragment, bundle)
