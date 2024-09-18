@@ -2,15 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/navigation_Home_linemen"
-        android:icon="@drawable/home"
+        android:icon="@drawable/baseline_home_24"
         android:title="@string/home" />
     <item
         android:id="@+id/navigation_notificationl_linemen"
-        android:icon="@drawable/notification"
-        android:title="@string/notification"/>
+        android:icon="@drawable/responsive"
+        android:title="@string/devices"/>
     <item
         android:id="@+id/navigation_account_linemen"
-        android:icon="@drawable/user"
+        android:icon="@drawable/icon_user"
         android:title="@string/account"/>
 
 

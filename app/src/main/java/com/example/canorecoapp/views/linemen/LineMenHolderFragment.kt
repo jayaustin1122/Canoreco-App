@@ -14,16 +14,14 @@ import android.widget.Toast
 import androidx.annotation.OptIn
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import androidx.core.view.doOnAttach
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentLineMenHolderBinding
 import com.example.canorecoapp.views.linemen.account.AccountLineMenFragment
-import com.example.canorecoapp.views.linemen.home.HomeLineMenFragment
 import com.example.canorecoapp.views.linemen.home.LinemenCurrentFurtureFragment
-import com.example.canorecoapp.views.linemen.notifications.NotificationLineMenFragment
+import com.example.canorecoapp.views.linemen.tasks.NotificationLineMenFragment
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.badge.ExperimentalBadgeUtils

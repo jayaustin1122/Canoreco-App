@@ -25,7 +25,9 @@ import androidx.navigation.fragment.findNavController
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentHomeLineMenBinding
 import com.example.canorecoapp.utils.ProgressDialogUtils
+import com.example.canorecoapp.views.linemen.tasks.TasksDetailsFragment
 import com.example.canorecoapp.views.user.news.DetailsOutageFragment
+import com.example.canorecoapp.views.user.outages.ListOfFutureAndCurrentOutagesFragment
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -238,7 +240,14 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
         super.onViewCreated(view, savedInstanceState)
         checkPermissionLocation()
         showPolygonsBasedOnFirestore()
-
+        binding.viewListButton.setOnClickListener {
+            val detailsFragment = ListOfFutureAndCurrentOutagesFragment()
+            val bundle = Bundle().apply {
+                putString("from", "current")
+            }
+            detailsFragment.arguments = bundle
+            findNavController().navigate(R.id.listOfFutureAndCurrentOutagesFragment, bundle)
+        }
     }
 
 
@@ -246,13 +255,53 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
     override fun onMarkerClick(marker: Marker): Boolean {
         val dataKey = marker.tag as? String
         if (dataKey != null) {
-            Toast.makeText(requireContext(),"${marker.tag}",Toast.LENGTH_SHORT).show()
+            showData(dataKey)
             return true
         } else {
             // Handle the case when marker.tag is null
             return false
         }
     }
+
+    private fun showData(dataKey: String) {
+        val databaseReference = FirebaseDatabase.getInstance().reference.child("devices")
+
+        databaseReference.child(dataKey).get()
+            .addOnSuccessListener { dataSnapshot ->
+                if (dataSnapshot.exists()) {
+                    val locationName = dataSnapshot.child("locationName").getValue(String::class.java)
+                    val latitude = dataSnapshot.child("latitude").getValue(Double::class.java)
+                    val longitude = dataSnapshot.child("longitude").getValue(Double::class.java)
+                    val startTime = dataSnapshot.child("startTime").getValue(String::class.java)
+                    val endTime = dataSnapshot.child("endTime").getValue(String::class.java)
+                    val status = dataSnapshot.child("status").getValue(String::class.java)
+                    val assigned = dataSnapshot.child("assigned").getValue(String::class.java)
+
+                    // Create the dialog fragment and set the data
+                    val detailsDialog = TasksDetailsFragment()
+                    val bundle = Bundle().apply {
+                        putString("locationName", locationName)
+                        putDouble("latitude", latitude ?: 0.0)
+                        putDouble("longitude", longitude ?: 0.0)
+                        putString("startTime", startTime)
+                        putString("endTime", endTime)
+                        putString("status", status)
+                        putString("id", dataKey)
+                        putString("assigned", assigned)
+                    }
+                    detailsDialog.arguments = bundle
+                    detailsDialog.show(childFragmentManager, "TasksDetailsFragment")
+                } else {
+                    Toast.makeText(requireContext(), "No data found for the key: $dataKey", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("RTDB", "Error fetching data: ${exception.message}")
+                Toast.makeText(requireContext(), "Error fetching data", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+
 
 
     private fun checkPermissionLocation() {

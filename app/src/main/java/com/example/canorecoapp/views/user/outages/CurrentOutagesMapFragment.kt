@@ -374,26 +374,7 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
         }
     }
 
-    private fun getCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener { location ->
-                    location?.let {
-                        val currentLatLng = LatLng(it.latitude, it.longitude)
-                        gMap?.addMarker(
-                            MarkerOptions().position(currentLatLng).title("Current Location")
-                        )
 
-                        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentLatLng, 15.0f)
-                        gMap?.animateCamera(cameraUpdate)
-                    }
-                }
-        }
-    }
 
     override fun onMapReady(googleMap: GoogleMap) {
 
