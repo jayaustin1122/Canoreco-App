@@ -150,7 +150,12 @@ class TasksDetailsFragment  : DialogFragment() {
             val database: DatabaseReference = FirebaseDatabase.getInstance().reference
             val deviceRef = database.child("devices/$id")
             val updates = mapOf<String, Any?>(
-                "status" to "working"
+                "status" to "working",
+                "assigned" to "",
+                "date" to "",
+                "endTime" to "",
+                "startTime" to "",
+                "endTime" to "",
             )
             deviceRef.updateChildren(updates)
                 .addOnSuccessListener {

@@ -21,6 +21,7 @@ import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentHomeLineMenBinding
@@ -358,15 +359,17 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
                             "damaged", "not working" -> Color.RED
                             else -> Color.GRAY
                         }
+                        lifecycleScope.launchWhenResumed {
+                            val markerIcon = bitmapFromVector(this@HomeLineMenFragment.requireContext(), R.drawable.baseline_adjust_24, color)
 
-                        val markerIcon = bitmapFromVector(this@HomeLineMenFragment.requireContext(), R.drawable.baseline_adjust_24, color)
+                            val marker = gMap?.addMarker(
+                                MarkerOptions()
+                                    .position(LatLng(lat, lng))
+                                    .icon(markerIcon)
+                            )
+                            marker?.tag = deviceSnapshot.child("id").getValue(String::class.java)
+                        }
 
-                        val marker = gMap?.addMarker(
-                            MarkerOptions()
-                                .position(LatLng(lat, lng))
-                                .icon(markerIcon)
-                        )
-                        marker?.tag = deviceSnapshot.child("id").getValue(String::class.java)
                     }
                 }
             }
