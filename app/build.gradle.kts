@@ -53,7 +53,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-
+    implementation ("com.github.mreram:showcaseview:1.4.1")
     val nav_version = "2.7.2"
     implementation ("com.itextpdf:itext7-core:7.1.15")
     implementation (platform("com.google.firebase:firebase-bom:33.1.1"))

@@ -97,8 +97,15 @@ class NotificationService : Service() {
                 for (document in it.documentChanges) {
                     if (document.type == com.google.firebase.firestore.DocumentChange.Type.ADDED) {
                         val title = document.document.getString("title") ?: "No Title"
-                        val timestamp = document.document.getString("timestamp")
-                        createNotification(title, timestamp.toString())
+                        val timestamp = document.document.get("timestamp")
+                        if (timestamp is Long) {
+                            createNotification(title, timestamp.toString())
+                        } else if (timestamp is Double) {
+                            createNotification(title, timestamp.toString())
+                        } else {
+                            createNotification(title, timestamp.toString())
+                        }
+
                     }
                 }
             }

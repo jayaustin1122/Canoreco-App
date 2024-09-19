@@ -1,8 +1,11 @@
 package com.example.canorecoapp.views.user
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -16,6 +19,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.canorecoapp.R
@@ -30,6 +34,13 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import smartdevelop.ir.eram.showcaseviewlib.GuideView
+import smartdevelop.ir.eram.showcaseviewlib.config.DismissType
+import smartdevelop.ir.eram.showcaseviewlib.config.Gravity
+import smartdevelop.ir.eram.showcaseviewlib.config.PointerType
 
 
 class UserHolderFragment : Fragment() {
@@ -54,10 +65,17 @@ class UserHolderFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         auth = FirebaseAuth.getInstance()
         fragmentManager = childFragmentManager
-
         val homeFragment = HomeUserFragment()
         val serviceFragment = ServicesUserFragment()
         val accountUserFragment = AccountUserFragment()
+        val sharedPreferences: SharedPreferences = requireActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+        val areGuidesShown = sharedPreferences.getBoolean("areGuidesShown", false)
+        val areFinish = sharedPreferences.getBoolean("areFinish", false)
+
+        if (!areGuidesShown) {
+            showGuide(binding.bottomNavigationUser) // Show bottom navigation guide
+        }
+
 
         if (!isUserInfoLoaded) {
             loadUsersInfo()
@@ -76,9 +94,12 @@ class UserHolderFragment : Fragment() {
                     findNavController().navigate(R.id.notifFragment)
                     true
                 }
+
                 else -> false
             }
         }
+
+
         val bottomNavigationView: BottomNavigationView? = binding.bottomNavigationUser
         bottomNavigationView?.setOnNavigationItemSelectedListener { item ->
             selectedFragmentId = item.itemId
@@ -97,7 +118,6 @@ class UserHolderFragment : Fragment() {
         }
 
         if (savedInstanceState == null) {
-            // Load the previously selected fragment, defaulting to home if none was selected
             val initialFragment = when (selectedFragmentId) {
                 R.id.navigation_Home -> homeFragment
                 R.id.navigation_services -> serviceFragment
@@ -109,16 +129,56 @@ class UserHolderFragment : Fragment() {
                 .replace(R.id.fragment_containerUser, initialFragment)
                 .commit()
 
-            bottomNavigationView?.selectedItemId = selectedFragmentId  // Set the selected item in bottom navigation
+            bottomNavigationView?.selectedItemId =
+                selectedFragmentId
         }
-
         loadNotificationBadge()
 
 
-
-
     }
-    @Deprecated("Deprecated in Java")
+
+
+    private fun showGuide(targetView: View) {
+        val sharedPreferences: SharedPreferences = requireActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+
+        lifecycleScope.launch {
+            val builder = GuideView.Builder(requireContext())
+                .setTitle("Bottom Navigation")
+                .setContentText("This is where you can navigate Home, Services, and Account")
+                .setGravity(Gravity.center)
+                .setDismissType(DismissType.anywhere)
+                .setPointerType(PointerType.circle)
+                .setTargetView(targetView)
+                .setGuideListener {
+                    showAppBarGuide() // Show app bar guide after bottom navigation guide
+                }
+
+            builder.build().show()
+
+        }
+    }
+
+
+    private fun showAppBarGuide() {
+            val toolbarGuide = GuideView.Builder(requireContext())
+                .setTitle("Notification and Account Icon")
+                .setContentText("This is where you can access notifications and user settings.")
+                .setGravity(Gravity.center)
+                .setDismissType(DismissType.anywhere)
+                .setPointerType(PointerType.circle)
+                .setTargetView(binding.toolbar)
+                .setGuideListener {
+
+                }
+                .build()
+
+            toolbarGuide.show()
+        }
+
+
+
+
+        @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(com.example.canorecoapp.R.menu.appbar, menu)

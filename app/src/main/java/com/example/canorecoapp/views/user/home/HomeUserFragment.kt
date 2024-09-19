@@ -2,12 +2,14 @@ package com.example.canorecoapp.views.user.home
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -30,6 +32,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import smartdevelop.ir.eram.showcaseviewlib.GuideView
+import smartdevelop.ir.eram.showcaseviewlib.config.DismissType
+import smartdevelop.ir.eram.showcaseviewlib.config.Gravity
+import smartdevelop.ir.eram.showcaseviewlib.config.PointerType
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -39,7 +45,8 @@ import java.util.Locale
     private lateinit var adapter: NewsAdapter
     private lateinit var adapter2: MaintenanceAdapter
      private lateinit var auth: FirebaseAuth
-    override fun onCreateView(
+
+     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
@@ -47,15 +54,28 @@ import java.util.Locale
         return binding.root
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         ProgressDialogUtils.showProgressDialog(requireContext(),"PLease Wait...")
         auth = FirebaseAuth.getInstance()
+        val sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
 
         loadUsersInfo()
         getNews()
         getMaintenances()
+        val areFinish = sharedPreferences.getBoolean("areFinish", false)
+        val areGuidesShown = sharedPreferences.getBoolean("areGuidesShown", false)
 
+        if (!areGuidesShown) {
+            binding.scrollView.setOnTouchListener { _, event ->
+                if (event.action == MotionEvent.ACTION_MOVE) {
+                    showGuide(binding.rvMaintenanceActivities)
+                    binding.scrollView.setOnTouchListener(null)
+                }
+                true
+            }
+        }
 
         binding.tvViewAllNews.setOnClickListener {
             findNavController().apply {
@@ -70,12 +90,46 @@ import java.util.Locale
         }
 
 
+
     }
-     private fun showShimmerEffect() {
-         binding.shimmerViewContainer.startShimmerAnimation()
-         binding.shimmerViewContainer.visibility = View.VISIBLE
+
+     private fun showGuide(targetView: View) {
+         val sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+
+         val builder = GuideView.Builder(this@HomeUserFragment.requireContext())
+             .setTitle("Maintenance")
+             .setContentText("This is where you can Read and View Maintenance Activities")
+             .setGravity(Gravity.center)
+             .setDismissType(DismissType.anywhere)
+             .setPointerType(PointerType.circle)
+             .setTargetView(binding.rvMaintenanceActivities)
+             .setGuideListener { view: View ->
+                 showAppBarGuide()
+             }
+
+         val guideView = builder.build()
+         guideView.show()
+         sharedPreferences.edit().putBoolean("areFinish", true).apply()
+         sharedPreferences.edit().putBoolean("areGuidesShown", true).apply()
 
      }
+     private fun showAppBarGuide() {
+         val toolbarGuide = GuideView.Builder(this@HomeUserFragment.requireContext())
+             .setTitle("News")
+             .setContentText("This is where you can Read and View News Activities")
+             .setGravity(Gravity.center)
+             .setDismissType(DismissType.anywhere)
+             .setPointerType(PointerType.circle)
+             .setTargetView(binding.rvLatestNews)
+             .setGuideListener { view: View ->
+
+             }
+             .build()
+
+         toolbarGuide.show()
+     }
+
+
 
      private fun hideShimmerEffect() {
          binding.shimmerViewContainer.stopShimmerAnimation()

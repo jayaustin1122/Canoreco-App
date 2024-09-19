@@ -85,12 +85,21 @@ class NotifFragment : Fragment() {
                         notifList.clear()
                         for (document in querySnapshot.documents) {
                             val title = document.getString("title") ?: ""
-                            val timestamp = document.getString("timestamp") ?: ""
                             val text = document.getString("text") ?: ""
                             val status = document.getBoolean("status") ?: false
+                            val timestamp = document.get("timestamp")
+                            if (timestamp is Long) {
+                                val news = Notif(title,text, timestamp.toString() , status)
+                                notifList.add(news)
+                            } else if (timestamp is Double) {
+                                val news = Notif(title,text, timestamp.toString() , status)
+                                notifList.add(news)
+                            } else {
+                                val news = Notif(title,text, timestamp.toString() , status)
+                                notifList.add(news)
+                            }
 
-                            val news = Notif(title,text, timestamp , status)
-                            notifList.add(news)
+
                         }
                         notifList.reverse()
                         Log.d("NewsFragment", "Fetched ${notifList.size} news items")
