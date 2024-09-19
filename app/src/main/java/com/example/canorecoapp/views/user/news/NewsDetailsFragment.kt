@@ -15,6 +15,8 @@ import com.example.canorecoapp.R
 import com.example.canorecoapp.adapter.NewsImagesAdapter
 import com.example.canorecoapp.databinding.FragmentNewsDetailsBinding
 import com.example.canorecoapp.utils.ProgressDialogUtils
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import org.json.JSONException
@@ -122,8 +124,30 @@ class NewsDetailsFragment : Fragment() {
                         ProgressDialogUtils.dismissProgressDialog()
                     }
                 } else {
-                    Log.d("Firestore", "No document found with the given title")
-                    Toast.makeText(requireContext(), "No document found with the given title", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Notification from device",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    ProgressDialogUtils.dismissProgressDialog()
+                    val userId = FirebaseAuth.getInstance().currentUser?.uid
+                    val db: FirebaseFirestore = FirebaseFirestore.getInstance()
+
+                    val notificationsRef = db.collection("users")
+                        .document(userId!!)
+                        .collection("notifications")
+                        .document(title)
+
+                    notificationsRef.update("status", true)
+                        .addOnCompleteListener { updateTask ->
+                            if (updateTask.isSuccessful) {
+                                Log.d("NotificationService", "Notification status updated successfully")
+                                findNavController().navigateUp()
+                            } else {
+                                Log.e("NotificationService", "Failed to update isRead status", updateTask.exception)
+                            }
+                        }
                 }
             }
             .addOnFailureListener { exception ->

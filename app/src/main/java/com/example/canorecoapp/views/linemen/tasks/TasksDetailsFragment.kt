@@ -9,13 +9,14 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.example.canorecoapp.databinding.FragmentTasksDetailsBinding
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 
 
-class TasksDetailsFragment  : DialogFragment() {
+class TasksDetailsFragment  : BottomSheetDialogFragment() {
 
     private lateinit var binding : FragmentTasksDetailsBinding
 
@@ -188,7 +189,7 @@ class TasksDetailsFragment  : DialogFragment() {
                     val password = document.getString("password")
                     Log.d("UploadData1", "saveUserTaskInDevice called with userName: $userName and id: $id")
                     saveUserTaskInDevice(userName,id)
-
+                    dismiss()
                 }
                 .addOnFailureListener { exception ->
 
