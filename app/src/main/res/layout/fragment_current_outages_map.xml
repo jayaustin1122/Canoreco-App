@@ -12,7 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
-        android:src="@drawable/baseline_360_24"
+        android:backgroundTint="@color/background_color"
+        android:src="@drawable/icon_refresh"
         app:layout_constraintBottom_toTopOf="@+id/view_list_button"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -24,10 +25,8 @@
 
         app:layout_constraintBottom_toTopOf="@+id/view_list_button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/view_list_button"
@@ -42,4 +41,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

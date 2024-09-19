@@ -23,12 +23,14 @@
             android:layout_height="?attr/actionBarSize"
             android:background="@color/primary_dark_color"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
             <de.hdodenhof.circleimageview.CircleImageView
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:src="@drawable/logo"
                 android:layout_gravity="start"/>
         </androidx.appcompat.widget.Toolbar>
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout
@@ -47,6 +49,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
+        app:itemActiveIndicatorStyle="@color/text_dark_color"
         app:itemIconSize="24dp"
         app:itemIconTint="@color/primary_main_color"
         app:itemTextColor="@color/primary_dark_color"

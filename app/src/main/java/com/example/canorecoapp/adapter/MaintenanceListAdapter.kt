@@ -53,10 +53,9 @@ class MaintenanceListAdapter(private val context: Context,
 
         val imageUrl = image ?: ""
         Glide.with(this@MaintenanceListAdapter.context)
-            .load(if (imageUrl.isNotEmpty()) imageUrl else R.drawable.logo)
-            .error(R.drawable.logo) // In case of an error loading the image
+            .load(if (imageUrl.isNotEmpty()) imageUrl else R.drawable.img_item_placeholder_small)
+            .error(R.drawable.img_item_placeholder_small) // In case of an error loading the image
             .into(holder.image)
-
 
         holder.itemView.setOnClickListener {
             val detailsFragment = NewsDetailsFragment()

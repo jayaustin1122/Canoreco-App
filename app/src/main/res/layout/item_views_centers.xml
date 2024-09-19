@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="10dp"
+    android:layout_marginTop="2.5dp"
     android:layout_marginBottom="5.5dp"
     android:layout_marginHorizontal="2dp"
     app:cardCornerRadius="8dp"
@@ -51,7 +51,7 @@
             android:scaleType="fitXY"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:src="@drawable/logo" />
+            android:src="@drawable/img_item_placeholder_small" />
 
     </LinearLayout>
 

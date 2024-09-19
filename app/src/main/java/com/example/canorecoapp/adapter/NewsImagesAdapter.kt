@@ -47,7 +47,7 @@ class NewsImagesAdapter(private val context: Context,
         Log.d("NewsImagesAdapter", "Loading image from URL: $imageUrl")
         Glide.with(holder.itemView.context)
             .load(imageUrl)
-            .error(R.drawable.logo) // Optional error image
+            .error(R.drawable.img_item_placeholder) // Optional error image
             .into(holder.image)
 
 

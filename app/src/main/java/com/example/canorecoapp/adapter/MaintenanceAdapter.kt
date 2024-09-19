@@ -52,7 +52,7 @@ class MaintenanceAdapter(private val context: Context,
         holder.shortDescription.text = newsDesc
         holder.date.text = date
         Glide.with(this@MaintenanceAdapter.context)
-            .load(image ?: R.drawable.back_arrow)
+            .load(image ?: R.drawable.img_item_placeholder)
             .into(holder.image)
 
         holder.itemView.setOnClickListener {

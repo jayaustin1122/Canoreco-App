@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/background_color"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".views.linemen.LineMenHolderFragment">
 
@@ -41,18 +41,17 @@
                 android:src="@drawable/logo" />
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationLinemen"
         style="@style/Widget.MaterialComponents.BottomNavigationView.Colored"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        app:itemTextAppearanceActive="@color/g_blue2"
-        app:itemIconSize="28dp"
-        app:itemIconTint="@color/g_blue2"
-        app:itemTextColor="@color/black"
+        app:itemActiveIndicatorStyle="@color/text_dark_color"
+        app:itemIconSize="24dp"
+        app:itemIconTint="@color/primary_main_color"
+        app:itemTextColor="@color/primary_dark_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

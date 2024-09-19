@@ -53,7 +53,7 @@ class CentersAdapter(
         if (from == "List Of Bayad Centers"){
             Glide.with(this@CentersAdapter.context)
                 .load(imageUrl2)
-                .error(R.drawable.logo) // In case of an error loading the image
+                .error(R.drawable.img_item_placeholder_small) // In case of an error loading the image
                 .into(holder.image)
             holder.itemView.setOnClickListener {
                 val detailsFragment = ViewMapMarkerClickFragment()

@@ -51,16 +51,16 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/dimen_20dp">
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imgPersonal"
-            android:layout_width="157dp"
-            android:layout_height="132dp"
-            android:contentDescription="TODO"
-            android:scaleType="fitXY"
-            android:src="@drawable/profiles"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:elevation="2dp"
+            android:src="@drawable/img_user_placeholder"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/firstNameTextView"
