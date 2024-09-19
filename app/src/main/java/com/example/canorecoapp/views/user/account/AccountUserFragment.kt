@@ -29,7 +29,6 @@ import androidx.navigation.fragment.findNavController
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.bumptech.glide.Glide
 import com.example.canorecoapp.R
-import com.example.canorecoapp.databinding.DialogChangePhoneNumberBinding
 import com.example.canorecoapp.databinding.FragmentAccountLineMenBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.AuthCredential

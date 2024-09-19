@@ -65,7 +65,7 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
         }
     }
     private fun reloadFragment() {
-        findNavController().navigate(R.id.outagesFragment)
+        findNavController().navigateUp()
     }
     private fun loadJsonFromRaw(resourceId: Int): String? {
         return if (isAdded) {

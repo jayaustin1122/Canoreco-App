@@ -59,7 +59,13 @@ class DetailsCenterFragment : BottomSheetDialogFragment(){
 
                         binding.title.text = locationName
                         binding.address.text = "$municipality, $barangay, $street"
-                        binding.contact.text = "$contact, $additionalContact"
+
+                        if (contact.isEmpty()){
+                            binding.contact.visibility = View.GONE
+                        }else{
+                            binding.contact.text = "$contact, $additionalContact"
+                            binding.contact.visibility = View.VISIBLE
+                        }
 
                     }
                 } else {
