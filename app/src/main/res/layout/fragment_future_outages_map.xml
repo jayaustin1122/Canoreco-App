@@ -35,6 +35,7 @@
         android:backgroundTint="@color/primary_main_color"
         android:fontFamily="@font/roboto_medium"
         android:text="View List"
+        android:visibility="gone"
         android:textColor="@color/primary_light_color"
         app:cornerRadius="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
