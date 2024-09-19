@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -98,7 +99,7 @@ class NotificationService : Service() {
         val channelName = "Test Channel"
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val importance = NotificationManager.IMPORTANCE_HIGH
             val notificationChannel = NotificationChannel(channelId, channelName, importance).apply {
                 description = "Channel description"
                 enableLights(true)
@@ -114,8 +115,11 @@ class NotificationService : Service() {
             .setSmallIcon(R.drawable.logo)
             .setContentTitle(title)
             .setContentText(parseAndFormatDate(timestamp))
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setPriority(NotificationCompat.PRIORITY_HIGH) // Set to high priority for heads-up notification
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC) // Show on lock screen
+            .setOngoing(false) // Set to false if you want it to be dismissible
             .setVibrate(longArrayOf(0, 500, 1000))
+
 
         with(NotificationManagerCompat.from(this)) {
             if (ActivityCompat.checkSelfPermission(
@@ -123,12 +127,12 @@ class NotificationService : Service() {
                     Manifest.permission.POST_NOTIFICATIONS
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-
                 return
             }
-            notify(1, notificationBuilder.build())
+            notify(1, notificationBuilder.build()) // Use a unique ID for the notification
         }
     }
+
 
 
     private fun startListeningForDeviceStatuses() {
@@ -158,22 +162,30 @@ class NotificationService : Service() {
                 val userEmail = userDoc.getString("email") ?: "No Email"
                 val notificationTitle = "Electric Post Damaged in $barangay"
                 val notificationMessage = "A device in $barangay has been detected as damaged. Please check the system for more details."
-
                 val timestamp = System.currentTimeMillis() / 1000
+                val notificationData = mapOf(
+                    "title" to notificationTitle,
+                    "status" to false,
+                    "isRead" to false,
+                    "message" to notificationMessage,
+                    "timestamp" to timestamp.toString()
+                )
+
                 db.collection("users").document(userId)
-                    .collection("notifications")
-                    .add(mapOf(
-                        "title" to notificationTitle,
-                        "status" to false,
-                        "isRead" to false,
-                        "message" to notificationMessage,
-                        "timestamp" to timestamp.toString()
-                    ))
+                    .collection("notifications").document(timestamp.toString())
+                    .set(notificationData)
+                    .addOnSuccessListener {
+                        Log.d("DeviceNotifFragment", "Notification successfully added for user $userId")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("DeviceNotifFragment", "Failed to add notification for user $userId", e)
+                    }
             }
         }.addOnFailureListener { exception ->
             Log.e("DeviceNotifFragment", "Failed to query users", exception)
         }
     }
+
     override fun onDestroy() {
         super.onDestroy()
         notificationsListener?.remove()

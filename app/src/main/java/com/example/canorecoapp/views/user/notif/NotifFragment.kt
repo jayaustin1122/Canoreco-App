@@ -1,5 +1,6 @@
 package com.example.canorecoapp.views.user.notif
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.canorecoapp.adapter.NotifDetailsAdapter
 import com.example.canorecoapp.databinding.FragmentNotifBinding
 import com.example.canorecoapp.models.Notif
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -26,6 +28,7 @@ class NotifFragment : Fragment() {
    private lateinit var binding : FragmentNotifBinding
     private lateinit var notifList: ArrayList<Notif>
     private lateinit var newsAdapter: NotifDetailsAdapter
+    private lateinit var deletedNotifications: List<Notif>
     private var db  = Firebase.firestore
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,6 +46,7 @@ class NotifFragment : Fragment() {
         newsAdapter = NotifDetailsAdapter(requireContext(), findNavController(), notifList)
         binding.recyclerNews.adapter = newsAdapter
         getAllNews()
+        setupSwipeToDelete()
         binding.backButton.setOnClickListener {
             findNavController().apply {
                 navigateUp()
@@ -63,8 +67,78 @@ class NotifFragment : Fragment() {
                 return false
             }
         })
+
     }
-    private fun setupSwipeToDelete(timestamp: String) {
+
+    private fun clearAllNotifications(notifyDataSetChanged: Unit) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val notificationsRef = db.collection("users")
+            .document(userId)
+            .collection("notifications")
+
+        notificationsRef.get()
+            .addOnSuccessListener { querySnapshot ->
+                if (!querySnapshot.isEmpty) {
+                    deletedNotifications = querySnapshot.documents.map { document ->
+                        Notif(
+                            title = document.getString("title") ?: "",
+                            text = document.getString("text") ?: "",
+                            timestamp = document.get("timestamp").toString(),
+                            status = document.getBoolean("status") ?: false
+                        )
+                    }
+                    for (document in querySnapshot.documents) {
+                        document.reference.delete()
+                            .addOnSuccessListener {
+                                Log.d("NotificationService", "Notification ${document.id} deleted successfully")
+                                notifyDataSetChanged
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("NotificationService", "Failed to delete notification ${document.id}", e)
+                            }
+                    }
+                    showUndoSnackbar()
+                } else {
+                    Log.d("NotificationService", "No notifications found to delete.")
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("NotificationService", "Error fetching notifications", e)
+            }
+    }
+    private fun showUndoSnackbar() {
+        val snackbar = Snackbar.make(binding.recyclerNews, "All notifications deleted", Snackbar.LENGTH_LONG)
+        snackbar.setAction("UNDO") {
+            restoreDeletedNotifications()
+        }
+        snackbar.show()
+    }
+    private fun restoreDeletedNotifications() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val notificationsRef = db.collection("users")
+            .document(userId)
+            .collection("notifications")
+
+        // Add back the deleted notifications
+        deletedNotifications.forEach { notif ->
+            notificationsRef.add(
+                mapOf(
+                    "title" to notif.title,
+                    "text" to notif.text,
+                    "timestamp" to notif.timestamp.toLong(),
+                    "status" to notif.status
+                )
+            ).addOnSuccessListener {
+                Log.d("NotificationService", "Notification restored successfully")
+            }.addOnFailureListener { e ->
+                Log.e("NotificationService", "Failed to restore notification", e)
+            }
+        }
+
+        // Refresh the notification list
+        getAllNews()
+    }
+    private fun setupSwipeToDelete() {
         val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
             override fun onMove(
                 recyclerView: RecyclerView,
@@ -79,13 +153,25 @@ class NotifFragment : Fragment() {
                 val notifToDelete = notifList[position]
                 notifList.removeAt(position)
                 newsAdapter.notifyItemRemoved(position)
-                Toast.makeText(requireContext(), "Notification deleted", Toast.LENGTH_SHORT).show()
-                deleteNotificationFromFirestore(timestamp)
+                val snackbar = Snackbar.make(binding.recyclerNews, "Notification deleted", Snackbar.LENGTH_LONG)
+                snackbar.setAction("UNDO") {
+                    notifList.add(position, notifToDelete)
+                    newsAdapter.notifyItemInserted(position)
+                }
+                snackbar.addCallback(object : Snackbar.Callback() {
+                    override fun onDismissed(snackbar: Snackbar?, event: Int) {
+                        super.onDismissed(snackbar, event)
+                        if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
+                            deleteNotificationFromFirestore(notifToDelete.timestamp)
+                        }
+                    }
+                })
+                snackbar.show()
             }
         })
-
         itemTouchHelper.attachToRecyclerView(binding.recyclerNews)
     }
+
 
     private fun deleteNotificationFromFirestore(timestamp: String) {
         val currentUser = FirebaseAuth.getInstance().currentUser
@@ -98,6 +184,7 @@ class NotifFragment : Fragment() {
             notificationsRef.delete()
                 .addOnSuccessListener {
                     Log.d("NotifFragment", "Notification successfully deleted!")
+                    getAllNews()
                 }
                 .addOnFailureListener { e ->
                     Log.e("NotifFragment", "Error deleting notification: ${e.message}")
@@ -124,23 +211,20 @@ class NotifFragment : Fragment() {
                             val status = document.getBoolean("status") ?: false
                             val timestamp = document.get("timestamp")
                             if (timestamp is Long) {
-                                val news = Notif(title,text, timestamp.toString() , status)
+                                val news = Notif(title, text, timestamp.toString(), status)
                                 notifList.add(news)
-                                setupSwipeToDelete(timestamp.toString())
                             } else if (timestamp is Double) {
-                                val news = Notif(title,text, timestamp.toString() , status)
+                                val news = Notif(title, text, timestamp.toString(), status)
                                 notifList.add(news)
-                                setupSwipeToDelete(timestamp.toString())
                             } else {
-                                val news = Notif(title,text, timestamp.toString() , status)
+                                val news = Notif(title, text, timestamp.toString(), status)
                                 notifList.add(news)
-                                setupSwipeToDelete(timestamp.toString())
                             }
-
-
                         }
                         notifList.reverse()
                         Log.d("NewsFragment", "Fetched ${notifList.size} news items")
+
+                        binding.recyclerNews.visibility = View.VISIBLE
 
                         lifecycleScope.launchWhenResumed {
                             newsAdapter = NotifDetailsAdapter(requireContext(), findNavController(), notifList)
@@ -148,9 +232,14 @@ class NotifFragment : Fragment() {
                             val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
                             binding.recyclerNews.layoutManager = layoutManager
                             binding.recyclerNews.adapter = newsAdapter
+                            newsAdapter.notifyDataSetChanged()
                         }
                     } else {
                         Log.d("NewsFragment", "No documents found")
+                        // Show the "No Notifications" text and hide the RecyclerView
+                        binding.tvEmpty.visibility = View.VISIBLE
+                        binding.imgEmpty.visibility = View.VISIBLE
+                        binding.recyclerNews.visibility = View.GONE
                     }
                 }
                 .addOnFailureListener { exception ->

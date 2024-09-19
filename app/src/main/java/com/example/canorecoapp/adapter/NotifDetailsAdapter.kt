@@ -11,6 +11,7 @@ import android.widget.Filter
 import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -21,6 +22,8 @@ import com.example.canorecoapp.models.Maintenance
 import com.example.canorecoapp.models.News
 import com.example.canorecoapp.models.Notif
 import com.example.canorecoapp.views.user.news.NewsDetailsFragment
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -55,22 +58,58 @@ class NotifDetailsAdapter(private val context: Context,
         val text = model.text
         val timeStamp = model.timestamp
         val status = model.status
+        val isRead = model.isRead
+        val isFromDevice = model.isFromDevice
         val formattedDate = parseAndFormatDate(timeStamp)
+
         holder.title.text = newsTitle
         holder.date.text = formattedDate
         holder.image.visibility = View.GONE
 
-        if (!status){
+        if (!status) {
             holder.indicator.visibility = View.VISIBLE
-        }
-        else{
+        } else {
             holder.indicator.visibility = View.GONE
         }
-
         holder.itemView.setOnClickListener {
-            Log.d("adapteradapter", "$formattedDate")
+                if (isFromDevice) {
+                    updateNotifStatus(timeStamp)
+
+                } else {
+                    updateNotifStatus(timeStamp)
+                    Log.d("adapteradapter", "$formattedDate")
+                    val detailsFragment = NewsDetailsFragment()
+                    val bundle = Bundle().apply {
+                        putString("title", timeStamp)
+                        putString("from", "News")
+                    }
+                    detailsFragment.arguments = bundle
+                    navController.navigate(R.id.newsDetailsFragment, bundle)
+                }
+
         }
     }
+
+
+     fun updateNotifStatus(timeStamp: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val db: FirebaseFirestore = FirebaseFirestore.getInstance()
+
+        val notificationsRef = db.collection("users")
+            .document(userId)
+            .collection("notifications")
+            .document(timeStamp)
+
+        notificationsRef.update("status", true)
+            .addOnCompleteListener { updateTask ->
+                if (updateTask.isSuccessful) {
+                    Log.d("NotificationService", "Notification status updated successfully")
+                } else {
+                    Log.e("NotificationService", "Failed to update isRead status", updateTask.exception)
+                }
+            }
+    }
+
 
     @SuppressLint("SimpleDateFormat")
     private fun parseAndFormatDate(timestampString: String): String {

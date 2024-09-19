@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentSetTimeDateragmentBinding
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
@@ -19,7 +20,7 @@ import com.google.firebase.database.FirebaseDatabase
 import java.util.Calendar
 
 
-class FragmentSetTimeDateFragment : DialogFragment() {
+class FragmentSetTimeDateFragment : BottomSheetDialogFragment() {
     private var _binding : FragmentSetTimeDateragmentBinding? = null
     val binding get() = _binding!!
     override fun onCreateView(
