@@ -88,7 +88,7 @@ class NewsFragment : Fragment() {
 
                 Log.d("NewsFragment", "Fetched ${newsList.size} news items")
 
-                // Notify the adapter of changes
+
                 lifecycleScope.launchWhenResumed {
                         newsAdapter = NewsDetailsAdapter(this@NewsFragment.requireContext(), findNavController(), newsList)
                         binding.recyclerNews.setHasFixedSize(true)
@@ -99,6 +99,9 @@ class NewsFragment : Fragment() {
                 }
             } else {
                 Log.d("NewsFragment", "No documents found")
+                binding.tvEmpty.visibility = View.VISIBLE
+                binding.imgEmpty.visibility = View.VISIBLE
+                binding.recyclerNews.visibility = View.GONE
             }
         }
     }

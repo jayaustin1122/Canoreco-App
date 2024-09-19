@@ -69,6 +69,14 @@ class MaintenanceListFragment : Fragment() {
         val collectionRef = db.collection("news")
         collectionRef.whereEqualTo("category", "Patalastas ng Power Interruption").get()
             .addOnSuccessListener { documents ->
+                if (documents.isEmpty) {
+                    Log.d("NewsFragment", "No documents found for the specified category.")
+                    binding.tvEmpty.visibility = View.VISIBLE
+                    binding.imgEmpty.visibility = View.VISIBLE
+                    binding.recyclerNews.visibility = View.GONE
+                    return@addOnSuccessListener
+                }
+
                 for (document in documents) {
                     val title = document.getString("title") ?: ""
                     val imageList = document.get("image") as? List<String> ?: emptyList()
@@ -78,22 +86,23 @@ class MaintenanceListFragment : Fragment() {
                     val content = document.getString("content") ?: ""
                     val category = document.getString("category") ?: ""
 
-                    // Create News object and add to the list
-                    val maintenance = Maintenance(title, "","",firstImage,timestamp,date,"","","","",category)
+
+                    val maintenance = Maintenance(title, "", "", firstImage, timestamp, date, "", "", "", "", category)
                     newsList.add(maintenance)
                 }
 
                 lifecycleScope.launchWhenResumed {
-                    newsAdapter = MaintenanceListAdapter(this@MaintenanceListFragment.requireContext(),findNavController(), newsList)
+                    newsAdapter = MaintenanceListAdapter(this@MaintenanceListFragment.requireContext(), findNavController(), newsList)
                     binding.recyclerNews.setHasFixedSize(true)
                     val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
                     binding.recyclerNews.layoutManager = layoutManager
                     binding.recyclerNews.adapter = newsAdapter
+                    newsAdapter.notifyDataSetChanged()
                 }
-                newsAdapter.notifyDataSetChanged()
             }
             .addOnFailureListener { exception ->
                 Log.e("NewsFragment", "Error getting documents: ", exception)
             }
     }
+
 }
