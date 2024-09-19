@@ -57,7 +57,7 @@
             android:layout_gravity="center"
             android:scaleType="centerCrop"
             android:background="@color/white"
-            android:src="@drawable/logo" />
+            android:src="@drawable/img_item_placeholder" />
 
         <!-- Description -->
         <TextView

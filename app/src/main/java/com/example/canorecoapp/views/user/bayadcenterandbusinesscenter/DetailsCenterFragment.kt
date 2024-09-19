@@ -24,7 +24,6 @@ class DetailsCenterFragment : BottomSheetDialogFragment(){
         return binding.root
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val markerTag = arguments?.getString("marker")
@@ -55,12 +54,12 @@ class DetailsCenterFragment : BottomSheetDialogFragment(){
                         val municipality = document.getString("municipality")?: ""
                         val street = document.getString("street")?: ""
                         val locationName = document.getString("locationName")?: ""
-                        val latitude = document.getDouble("latitude")?: ""
-                        val longitude = document.getDouble("longitude")?: ""
+                        val contact = document.getString("mobile")?: ""
+                        val additionalContact = document.getString("additionalMobile")?: ""
 
                         binding.title.text = locationName
-                        binding.latLng.text = "  $longitude , $latitude"
-                        binding.address.text = "  $municipality, $barangay $street"
+                        binding.address.text = "$municipality, $barangay, $street"
+                        binding.contact.text = "$contact, $additionalContact"
 
                     }
                 } else {
