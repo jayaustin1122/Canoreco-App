@@ -53,7 +53,7 @@ class NewsAdapter(private val context: Context,
         holder.date.text = date
 
         Glide.with(this@NewsAdapter.context)
-            .load(image)
+            .load(image ?: R.drawable.logo)
             .into(holder.image)
 
         holder.itemView.setOnClickListener {

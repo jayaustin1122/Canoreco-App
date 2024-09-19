@@ -35,6 +35,7 @@ class NotifDetailsAdapter(private val context: Context,
         var title: TextView = binding.tvTitle
         var date: TextView = binding.tvDate
         var image: ImageView = binding.ivThumbnail
+        var indicator: ImageView = binding.imgMessageIndicator
 //        var indicator: ImageView = binding.indicator
 //        var logo: ImageView = binding.logo
     }
@@ -58,12 +59,14 @@ class NotifDetailsAdapter(private val context: Context,
         holder.title.text = newsTitle
         holder.date.text = formattedDate
         holder.image.visibility = View.GONE
-//        holder.logo.visibility = View.VISIBLE
-//        if(!status){
-//            holder.indicator.visibility = View.VISIBLE
-//        }else{
-//            holder.indicator.visibility = View.GONE
-//        }
+
+        if (!status){
+            holder.indicator.visibility = View.VISIBLE
+        }
+        else{
+            holder.indicator.visibility = View.GONE
+        }
+
         holder.itemView.setOnClickListener {
             Log.d("adapteradapter", "$formattedDate")
         }

@@ -46,6 +46,7 @@ class CentersAdapter(
         val municipality = model.municipality
         val lat = model.latitude
         val lng = model.longitude
+        val mobile = model.mobile
 
         val imageUrl = R.drawable.icon_business_center
         val imageUrl2 = R.drawable.icon_payment_center
@@ -84,7 +85,7 @@ class CentersAdapter(
         }
         holder.title.text = locationName
 
-        holder.date.text = "$barangay, $municipality"
+        holder.date.text = "$barangay, $municipality \n$mobile"
 
 
 

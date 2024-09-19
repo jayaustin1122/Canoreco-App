@@ -142,6 +142,7 @@ class BayadCentersFragment : Fragment() {
                     val locationName = document.getString("locationName") ?: ""
                     val latitude = document.getDouble("latitude") ?: 0
                     val longitude = document.getDouble("longitude") ?: 0
+                    val mobile = document.getString("mobile") ?: ""
 
                     Log.d("FirestoreData", "Document ID: ${document.id}")
                     Log.d("FirestoreData", "Barangay: $barangay")
@@ -155,7 +156,7 @@ class BayadCentersFragment : Fragment() {
                         latitude.toString(),
                         locationName,
                         longitude.toString(),
-                        "",
+                        mobile,
                         municipality,
                         "",
                         ""

@@ -1,6 +1,5 @@
 package com.example.canorecoapp.views.user.notif
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -11,20 +10,16 @@ import android.widget.SearchView
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.canorecoapp.R
-import com.example.canorecoapp.adapter.NewsDetailsAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.example.canorecoapp.adapter.NotifDetailsAdapter
 import com.example.canorecoapp.databinding.FragmentNotifBinding
-import com.example.canorecoapp.models.News
 import com.example.canorecoapp.models.Notif
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 
 class NotifFragment : Fragment() {
@@ -69,6 +64,46 @@ class NotifFragment : Fragment() {
             }
         })
     }
+    private fun setupSwipeToDelete(timestamp: String) {
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                val notifToDelete = notifList[position]
+                notifList.removeAt(position)
+                newsAdapter.notifyItemRemoved(position)
+                Toast.makeText(requireContext(), "Notification deleted", Toast.LENGTH_SHORT).show()
+                deleteNotificationFromFirestore(timestamp)
+            }
+        })
+
+        itemTouchHelper.attachToRecyclerView(binding.recyclerNews)
+    }
+
+    private fun deleteNotificationFromFirestore(timestamp: String) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        currentUser?.let { user ->
+            val notificationsRef = db.collection("users")
+                .document(user.uid)
+                .collection("notifications")
+                .document(timestamp)
+
+            notificationsRef.delete()
+                .addOnSuccessListener {
+                    Log.d("NotifFragment", "Notification successfully deleted!")
+                }
+                .addOnFailureListener { e ->
+                    Log.e("NotifFragment", "Error deleting notification: ${e.message}")
+                }
+        }
+    }
 
     private fun getAllNews() {
         val db = FirebaseFirestore.getInstance()
@@ -91,12 +126,15 @@ class NotifFragment : Fragment() {
                             if (timestamp is Long) {
                                 val news = Notif(title,text, timestamp.toString() , status)
                                 notifList.add(news)
+                                setupSwipeToDelete(timestamp.toString())
                             } else if (timestamp is Double) {
                                 val news = Notif(title,text, timestamp.toString() , status)
                                 notifList.add(news)
+                                setupSwipeToDelete(timestamp.toString())
                             } else {
                                 val news = Notif(title,text, timestamp.toString() , status)
                                 notifList.add(news)
+                                setupSwipeToDelete(timestamp.toString())
                             }
 
 

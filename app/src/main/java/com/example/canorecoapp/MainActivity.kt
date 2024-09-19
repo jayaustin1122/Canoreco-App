@@ -15,9 +15,6 @@ import java.util.logging.Handler
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private var backPressTime: Long = 0
-    private var doubleBackToExitPressedOnce: Boolean = false
-    private val handler = android.os.Handler()
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,18 +31,7 @@ class MainActivity : AppCompatActivity() {
             startNotificationService()
         }
     }
-    override fun onBackPressed() {
-        if (doubleBackToExitPressedOnce) {
-            super.onBackPressed()
-            finish()
-            return
-        }
 
-        this.doubleBackToExitPressedOnce = true
-        Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show()
-
-        handler.postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
-    }
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == REQUEST_CODE_PERMISSION) {

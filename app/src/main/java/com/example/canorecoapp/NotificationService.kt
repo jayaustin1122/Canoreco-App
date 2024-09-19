@@ -15,7 +15,13 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import java.text.SimpleDateFormat
@@ -26,58 +32,13 @@ class NotificationService : Service() {
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
     private var notificationsListener: ListenerRegistration? = null
-
+    private lateinit var devicesRef: DatabaseReference
     override fun onCreate() {
         super.onCreate()
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
         startListeningForNotifications()
-    }
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        intent?.let {
-            val title = it.getStringExtra("title") ?: "Canoreco App!"
-            val message = it.getStringExtra("message") ?: "Welcome and thanks for using Canoreco App!"
-
-            showNotification(title, message)
-        }
-        return START_NOT_STICKY
-    }
-
-    private fun showNotification(title: String, message: String) {
-        val channelId = "device_status_channel"
-        val notificationId = 1
-
-        // Create Notification Channel if needed (API 26+)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId,
-                "Device Status Notifications",
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = "Channel for device status notifications"
-            }
-            val notificationManager = getSystemService(NotificationManager::class.java)
-            notificationManager.createNotificationChannel(channel)
-        }
-
-        val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.bell) // Set your own icon here
-            .setContentTitle(title)
-            .setContentText(message)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setAutoCancel(true)
-
-        with(NotificationManagerCompat.from(this)) {
-            if (ActivityCompat.checkSelfPermission(
-                    this@NotificationService,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-
-                return
-            }
-            notify(notificationId, notificationBuilder.build())
-        }
+        startListeningForDeviceStatuses()
     }
 
 
@@ -93,24 +54,32 @@ class NotificationService : Service() {
                 return@addSnapshotListener
             }
 
-            snapshot?.let {
-                for (document in it.documentChanges) {
+            snapshot?.let { snap ->
+                for (document in snap.documentChanges) {
                     if (document.type == com.google.firebase.firestore.DocumentChange.Type.ADDED) {
-                        val title = document.document.getString("title") ?: "No Title"
-                        val timestamp = document.document.get("timestamp")
-                        if (timestamp is Long) {
-                            createNotification(title, timestamp.toString())
-                        } else if (timestamp is Double) {
-                            createNotification(title, timestamp.toString())
-                        } else {
-                            createNotification(title, timestamp.toString())
-                        }
+                        val doc = document.document
+                        val title = doc.getString("title") ?: "No Title"
+                        val timestamp = doc.get("timestamp")
+                        val isRead = doc.getBoolean("isRead") ?: false
 
+                        if (!isRead) {
+                            val notificationsRef2 = db.collection("users")
+                                .document(userId)
+                                .collection("notifications")
+                                .document(timestamp.toString())
+                            createNotification(title, timestamp.toString())
+                            notificationsRef2.update("isRead", true).addOnCompleteListener { updateTask ->
+                                if (!updateTask.isSuccessful) {
+                                    Log.e("NotificationService", "Failed to update isRead status", updateTask.exception)
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
     }
+
     @SuppressLint("SimpleDateFormat")
     private fun parseAndFormatDate(timestampString: String): String {
         return try {
@@ -161,6 +130,50 @@ class NotificationService : Service() {
         }
     }
 
+
+    private fun startListeningForDeviceStatuses() {
+        devicesRef = FirebaseDatabase.getInstance().getReference("devices")
+        devicesRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                snapshot.children.forEach { deviceSnapshot ->
+                    val status = deviceSnapshot.child("status").getValue(String::class.java) ?: "unknown"
+                    if (status == "damaged") {
+                        val barangay = deviceSnapshot.child("barangay").getValue(String::class.java) ?: ""
+                        handleDeviceDamage(barangay)
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("DeviceNotifFragment", "Failed to read device statuses", error.toException())
+            }
+        })
+    }
+
+    private fun handleDeviceDamage(barangay: String) {
+        val usersRef = db.collection("users")
+        usersRef.whereEqualTo("barangay", barangay).get().addOnSuccessListener { querySnapshot ->
+            for (userDoc in querySnapshot.documents) {
+                val userId = userDoc.id
+                val userEmail = userDoc.getString("email") ?: "No Email"
+                val notificationTitle = "Electric Post Damaged in $barangay"
+                val notificationMessage = "A device in $barangay has been detected as damaged. Please check the system for more details."
+
+                val timestamp = System.currentTimeMillis() / 1000
+                db.collection("users").document(userId)
+                    .collection("notifications")
+                    .add(mapOf(
+                        "title" to notificationTitle,
+                        "status" to false,
+                        "isRead" to false,
+                        "message" to notificationMessage,
+                        "timestamp" to timestamp.toString()
+                    ))
+            }
+        }.addOnFailureListener { exception ->
+            Log.e("DeviceNotifFragment", "Failed to query users", exception)
+        }
+    }
     override fun onDestroy() {
         super.onDestroy()
         notificationsListener?.remove()

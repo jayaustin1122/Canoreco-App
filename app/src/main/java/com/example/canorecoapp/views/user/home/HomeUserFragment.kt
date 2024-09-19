@@ -264,7 +264,8 @@ import java.util.Locale
                     val imageList = document.get("image") as? List<String> ?: emptyList()
                     val firstImage = imageList.getOrNull(0) ?: ""
 
-                    Log.d("Home", ": $title, $shortDesc, $firstImage")
+
+                    Log.d("Home", "$firstImage")
 
                     freeItems.add(Maintenance(
                         title,
