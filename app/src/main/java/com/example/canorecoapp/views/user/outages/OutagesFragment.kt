@@ -10,6 +10,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.findNavController
 import com.example.canorecoapp.R
@@ -33,7 +35,7 @@ import java.util.Locale
 
 class OutagesFragment : Fragment() {
     private lateinit var binding: FragmentOutagesBinding
-
+    private var selectedFragmentId: Int? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -44,10 +46,24 @@ class OutagesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.backButton.setOnClickListener {
-            findNavController().navigateUp()
+        arguments?.let {
+            selectedFragmentId = it.getInt("selectedFragmentId", R.id.navigation_services)
         }
-
+        binding.backButton.setOnClickListener {
+            val bundle = Bundle().apply {
+                putInt("selectedFragmentId", selectedFragmentId ?: R.id.navigation_services)
+            }
+            findNavController().navigate(R.id.userHolderFragment, bundle)
+        }
+        // Handle back button press
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val bundle = Bundle().apply {
+                    putInt("selectedFragmentId", selectedFragmentId ?: R.id.navigation_services)
+                }
+                findNavController().navigate(R.id.userHolderFragment, bundle)
+            }
+        })
         // Set up the tabs
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Current Outages"))
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Future Outages"))

@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
+import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,6 +28,7 @@ class ListOfMyComplaintsFragment : Fragment() {
     private lateinit var adapter: ListOfComplaintsAdapter
     private var db  = Firebase.firestore
     private lateinit var newsList: ArrayList<News>
+    private var selectedFragmentId: Int? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -43,6 +45,24 @@ class ListOfMyComplaintsFragment : Fragment() {
         adapter = ListOfComplaintsAdapter(requireContext(), findNavController(), newsList)
         binding.rvListOutages.adapter = adapter
         retrieveAllComplaints()
+        arguments?.let {
+            selectedFragmentId = it.getInt("selectedFragmentId", R.id.navigation_services)
+        }
+        binding.backButton.setOnClickListener {
+            val bundle = Bundle().apply {
+                putInt("selectedFragmentId", selectedFragmentId ?: R.id.navigation_services)
+            }
+            findNavController().navigate(R.id.userHolderFragment, bundle)
+        }
+        // Handle back button press
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val bundle = Bundle().apply {
+                    putInt("selectedFragmentId", selectedFragmentId ?: R.id.navigation_services)
+                }
+                findNavController().navigate(R.id.userHolderFragment, bundle)
+            }
+        })
         binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 query?.let {
@@ -58,9 +78,7 @@ class ListOfMyComplaintsFragment : Fragment() {
                 return false
             }
         })
-        binding.backButton.setOnClickListener {
-            findNavController().navigateUp()
-        }
+
     }
 
     private fun retrieveAllComplaints() {

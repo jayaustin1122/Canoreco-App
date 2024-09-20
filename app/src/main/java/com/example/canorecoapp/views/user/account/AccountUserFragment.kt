@@ -25,22 +25,26 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.bumptech.glide.Glide
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentAccountLineMenBinding
+import com.example.canorecoapp.utils.DialogUtils
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.launch
 
 class AccountUserFragment : Fragment() {
     private lateinit var binding : FragmentAccountLineMenBinding
     private lateinit var auth : FirebaseAuth
     private lateinit var fireStore : FirebaseFirestore
     private lateinit var selectedImage: Uri
+    private lateinit var loadingDialog: SweetAlertDialog
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -55,10 +59,14 @@ class AccountUserFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
         fireStore = FirebaseFirestore.getInstance()
         selectedImage = Uri.EMPTY
+        loadingDialog = DialogUtils.showLoading(requireActivity())
+        lifecycleScope.launch {
+            loadingDialog.show()
+            Handler(Looper.getMainLooper()).postDelayed({
+                loadUsersInfo()
+            }, 600)
+        }
 
-        Handler(Looper.getMainLooper()).postDelayed({
-            loadUsersInfo()
-        }, 600)
 
         binding.logoutCard.setOnClickListener {
             val progressDialog = SweetAlertDialog(requireContext(), SweetAlertDialog.PROGRESS_TYPE)
@@ -93,38 +101,6 @@ class AccountUserFragment : Fragment() {
 
     }
 
-    companion object {
-        private const val REQUEST_NOTIFICATION_PERMISSION = 1001
-    }
-
-    private fun enableLocalNotifications() {
-        Toast.makeText(requireContext(), "Local notifications enabled", Toast.LENGTH_SHORT).show()
-
-        val notificationManager = ContextCompat.getSystemService(requireContext(), NotificationManager::class.java) as NotificationManager
-        val channelId = "local_channel"
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(channelId, "Local Notifications", NotificationManager.IMPORTANCE_DEFAULT)
-            notificationManager.createNotificationChannel(channel)
-        }
-
-        val notification = NotificationCompat.Builder(requireContext(), channelId)
-            .setContentTitle("Local Notification")
-            .setContentText("This is a local notification")
-            .setSmallIcon(R.drawable.logo)
-            .setAutoCancel(true)
-            .build()
-
-        notificationManager.notify(1001, notification)
-    }
-
-    private fun disableLocalNotifications() {
-        Toast.makeText(requireContext(), "Local notifications disabled", Toast.LENGTH_SHORT).show()
-
-        val notificationManager = ContextCompat.getSystemService(requireContext(), NotificationManager::class.java) as NotificationManager
-        notificationManager.cancel(1001)
-    }
-
 
 
 
@@ -147,12 +123,13 @@ class AccountUserFragment : Fragment() {
                     binding.contactNumber.text = contact
                     val context = context ?: return@addOnSuccessListener
                     Glide.with(context)
-                        .load(image) // Load the image URL from Firestore
+                        .load(image)
                         .into(binding.imgUserProfile)
-
+                    loadingDialog.dismissWithAnimation()
                 }
-                .addOnFailureListener { exception ->
 
+                .addOnFailureListener { exception ->
+                    loadingDialog.dismissWithAnimation()
                     Toast.makeText(
                         requireContext(),
                         "Error Loading User Data: ${exception.message}",
@@ -160,13 +137,14 @@ class AccountUserFragment : Fragment() {
                     ).show()
                 }
         } ?: run {
-
+            loadingDialog.dismissWithAnimation()
             Toast.makeText(
                 requireContext(),
                 "User not authenticated",
                 Toast.LENGTH_SHORT
             ).show()
         }
+        loadingDialog.dismissWithAnimation()
     }
 
 

@@ -26,6 +26,7 @@ import com.example.canorecoapp.adapter.NewsAdapter
 import com.example.canorecoapp.databinding.FragmentHomeUserBinding
 import com.example.canorecoapp.models.Maintenance
 import com.example.canorecoapp.models.News
+import com.example.canorecoapp.utils.DialogUtils
 import com.example.canorecoapp.utils.ProgressDialogUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -45,6 +46,7 @@ import java.util.Locale
     private lateinit var adapter: NewsAdapter
     private lateinit var adapter2: MaintenanceAdapter
      private lateinit var auth: FirebaseAuth
+     private lateinit var loadingDialog: SweetAlertDialog
 
      override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,10 +59,10 @@ import java.util.Locale
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ProgressDialogUtils.showProgressDialog(requireContext(),"PLease Wait...")
+        loadingDialog = DialogUtils.showLoading(requireActivity())
         auth = FirebaseAuth.getInstance()
         val sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
-
+        loadingDialog.show()
         loadUsersInfo()
         getNews()
         getMaintenances()
@@ -281,7 +283,9 @@ import java.util.Locale
                         category))
                     itemCount++
                 }
-                ProgressDialogUtils.dismissProgressDialog()
+                if (loadingDialog.isShowing) {
+                    loadingDialog.dismissWithAnimation()
+                }
                 lifecycleScope.launchWhenResumed {
                     adapter2 = MaintenanceAdapter(this@HomeUserFragment.requireContext(), findNavController(), freeItems)
                     binding.rvMaintenanceActivities.setHasFixedSize(true)

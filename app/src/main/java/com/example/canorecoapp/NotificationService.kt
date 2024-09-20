@@ -16,13 +16,13 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContentProviderCompat.requireContext
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import java.text.SimpleDateFormat
@@ -68,7 +68,7 @@ class NotificationService : Service() {
                                 .document(userId)
                                 .collection("notifications")
                                 .document(timestamp.toString())
-                            createNotification(title, timestamp.toString())
+                            createNotification(title, timestamp.toString(),notificationsRef2,isRead)
                             notificationsRef2.update("isRead", true).addOnCompleteListener { updateTask ->
                                 if (!updateTask.isSuccessful) {
                                     Log.e("NotificationService", "Failed to update isRead status", updateTask.exception)
@@ -94,7 +94,12 @@ class NotificationService : Service() {
             ""
         }
     }
-    private fun createNotification(title: String, timestamp: String) {
+    private fun createNotification(
+        title: String,
+        timestamp: String,
+        notificationsRef2: DocumentReference,
+        isRead: Boolean
+    ) {
         val channelId = "test_channel_id"
         val channelName = "Test Channel"
 
@@ -110,16 +115,23 @@ class NotificationService : Service() {
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(notificationChannel)
         }
+        val intent = Intent(this, MainActivity::class.java).apply {
+            updateIsRead(notificationsRef2,isRead)
+            putExtra("navigate_to_fragment", "YourFragmentTag") // Replace with your fragment tag
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+        }
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.logo)
             .setContentTitle(title)
             .setContentText(parseAndFormatDate(timestamp))
-            .setPriority(NotificationCompat.PRIORITY_HIGH) // Set to high priority for heads-up notification
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC) // Show on lock screen
-            .setOngoing(false) // Set to false if you want it to be dismissible
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setOngoing(false)
             .setVibrate(longArrayOf(0, 500, 1000))
-
+            .setContentIntent(pendingIntent)
 
         with(NotificationManagerCompat.from(this)) {
             if (ActivityCompat.checkSelfPermission(
@@ -129,10 +141,17 @@ class NotificationService : Service() {
             ) {
                 return
             }
-            notify(1, notificationBuilder.build()) // Use a unique ID for the notification
+            notify(1, notificationBuilder.build())
         }
     }
 
+    private fun updateIsRead(notificationsRef2: DocumentReference, isRead: Boolean) {
+        notificationsRef2.update("isRead", true).addOnCompleteListener { updateTask ->
+            if (!updateTask.isSuccessful) {
+                Log.e("NotificationService", "Failed to update isRead status", updateTask.exception)
+            }
+        }
+    }
 
 
     private fun startListeningForDeviceStatuses() {

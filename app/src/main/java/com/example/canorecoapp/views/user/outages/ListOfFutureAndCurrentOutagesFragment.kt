@@ -10,6 +10,7 @@ import android.widget.SearchView
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.canorecoapp.R
 import com.example.canorecoapp.adapter.ListOfOutagesAdapter
 import com.example.canorecoapp.databinding.FragmentListOfFutureAndCurrentOutagesBinding
 import com.google.firebase.database.DataSnapshot
@@ -68,9 +69,8 @@ class ListOfFutureAndCurrentOutagesFragment : Fragment() {
                 return false
             }
         })
-
         binding.backButton.setOnClickListener {
-            findNavController().navigateUp()
+            findNavController().navigate(R.id.action_listOfFutureAndCurrentOutagesFragment_to_outagesFragment)
         }
     }
 

@@ -14,8 +14,10 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.findNavController
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentCurrentOutagesMapBinding
+import com.example.canorecoapp.utils.DialogUtils
 import com.example.canorecoapp.utils.ProgressDialogUtils
 import com.example.canorecoapp.utils.ProgressDialogUtils.dismissProgressDialog
 import com.example.canorecoapp.utils.ProgressDialogUtils.showProgressDialog
@@ -53,14 +55,10 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
     private var gMap: GoogleMap? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val previousLocations = mutableSetOf<String>()
-
+    private lateinit var loadingDialog: SweetAlertDialog
 
     private fun resetFragmentWithProgress() {
-        ProgressDialogUtils.showProgressDialog(requireContext(),"Loading...")
-        Handler(Looper.getMainLooper()).post {
             reloadFragment()
-            dismissProgressDialog()
-        }
     }
     private fun reloadFragment() {
         findNavController().navigate(R.id.outagesFragment)
@@ -280,7 +278,10 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
                     }
                 }
             }
-            dismissProgressDialog()
+            Handler(Looper.getMainLooper()).postDelayed({
+                loadingDialog.dismiss()
+            }, 1000)
+
            // getCurrentLocation()
         } catch (e: JSONException) {
             Log.e("JSON", "Error parsing JSON data: ${e.message}")
@@ -315,7 +316,8 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        showProgressDialog(requireContext(),"Loading...")
+        loadingDialog = DialogUtils.showLoading(requireActivity())
+        loadingDialog.show()
         checkPermissionLocation()
         binding.fabRefresh.setOnClickListener{
             resetFragmentWithProgress()
@@ -328,6 +330,7 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
             detailsFragment.arguments = bundle
             findNavController().navigate(R.id.listOfFutureAndCurrentOutagesFragment, bundle)
         }
+
     }
 
 
@@ -386,7 +389,9 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
         gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(sanVicenteCamarinesNorte, zoomLevel))
         showPolygonsBasedOnFirestore()
         showDataInRealTime()
-
+        Handler(Looper.getMainLooper()).postDelayed({
+            loadingDialog.dismiss()
+        }, 1000)
 
     }
 

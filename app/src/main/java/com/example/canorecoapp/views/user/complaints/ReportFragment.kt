@@ -17,6 +17,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
@@ -37,6 +38,7 @@ class ReportFragment : Fragment() {
     private val CAMERA_PERMISSION_CODE = 101
     private lateinit var storage : FirebaseStorage
     private lateinit var progressDialog : ProgressDialog
+    private var selectedFragmentId: Int? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -168,6 +170,24 @@ class ReportFragment : Fragment() {
     )
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        arguments?.let {
+            selectedFragmentId = it.getInt("selectedFragmentId", R.id.navigation_services)
+        }
+        binding.backButton.setOnClickListener {
+            val bundle = Bundle().apply {
+                putInt("selectedFragmentId", selectedFragmentId ?: R.id.navigation_services)
+            }
+            findNavController().navigate(R.id.userHolderFragment, bundle)
+        }
+        // Handle back button press
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val bundle = Bundle().apply {
+                    putInt("selectedFragmentId", selectedFragmentId ?: R.id.navigation_services)
+                }
+                findNavController().navigate(R.id.userHolderFragment, bundle)
+            }
+        })
         auth = FirebaseAuth.getInstance()
         storage = FirebaseStorage.getInstance()
         progressDialog = ProgressDialog(this.requireContext())
@@ -192,9 +212,7 @@ class ReportFragment : Fragment() {
         binding.submitButton.setOnClickListener {
             validateData()
         }
-        binding.backButton.setOnClickListener {
-            findNavController().navigateUp()
-        }
+
     }
     private fun validateData() {
         val report = binding.reportTypeSpinner.text.toString().trim()

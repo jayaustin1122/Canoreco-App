@@ -117,4 +117,7 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
     // Dots Indicator
     implementation("com.tbuonomo:dotsindicator:5.0")
+    implementation("io.github.ronjunevaldoz:kpaymongo-jvm:1.0.0-SNAPSHOT"){
+        isChanging = true // this will allow to get all latest changes
+    }
 }
