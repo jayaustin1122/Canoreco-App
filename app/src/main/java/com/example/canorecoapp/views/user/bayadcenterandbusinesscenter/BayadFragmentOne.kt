@@ -17,6 +17,7 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentBayadOneBinding
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -77,38 +78,43 @@ class BayadFragmentOne : Fragment() , OnMapReadyCallback, GoogleMap.OnMarkerClic
     override fun onMarkerClick(marker: Marker): Boolean {
         val dataKey = marker.tag as? String
         if (dataKey != null) {
-            //showMarkerDetailsDialog(dataKey)
+            val addDataDialog = DetailsCenterFragment()
+            val bundle = Bundle()
+            bundle.putString("marker", marker.tag.toString())
+            bundle.putString("id", "bayadCenters")
+            addDataDialog.arguments = bundle
+            addDataDialog.show(childFragmentManager, "DetailsCenterFragment")
             return true
         } else {
             // Handle the case when marker.tag is null
             return false
         }
     }
-    private fun bitmapFromVector(context: Context, vectorResId: Int, @ColorInt color: Int): BitmapDescriptor {
+    private fun bitmapFromVector(context: Context, vectorResId: Int): BitmapDescriptor {
         val vectorDrawable = ContextCompat.getDrawable(context, vectorResId)
-        vectorDrawable?.setBounds(
-            0, 0,
-            vectorDrawable.intrinsicWidth,
-            vectorDrawable.intrinsicHeight
-        )
+        if (vectorDrawable == null) {
+            throw IllegalArgumentException("Resource not found: $vectorResId")
+        }
 
+        val width = dpToPx(context, 60)
+        val height = dpToPx(context, 60)
+        vectorDrawable.setBounds(0, 0, width, height)
 
-        vectorDrawable?.setTint(color)
-
-        val bitmap = Bitmap.createBitmap(
-            vectorDrawable!!.intrinsicWidth,
-            vectorDrawable.intrinsicHeight,
-            Bitmap.Config.ARGB_8888
-        )
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         vectorDrawable.draw(canvas)
+
         return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
+
+    private fun dpToPx(context: Context, dp: Int): Int {
+        return (dp * context.resources.displayMetrics.density).toInt()
+    }
+
+
     fun showAllDataOnMaps() {
-        // Get a reference to your Firestore collection
         val firestoreReference = FirebaseFirestore.getInstance().collection("bayad_centers")
 
-        // Fetch all documents in the collection
         firestoreReference.get().addOnSuccessListener { querySnapshot ->
             for (document in querySnapshot.documents) {
                 val locationName = document.getString("locationName")
@@ -118,15 +124,17 @@ class BayadFragmentOne : Fragment() , OnMapReadyCallback, GoogleMap.OnMarkerClic
                 // Check if latitude and longitude are not null
                 if (latitude != null && longitude != null) {
                     // Add a marker for each item
-                    val markerIcon = bitmapFromVector(this@BayadFragmentOne.requireContext(), R.drawable.baseline_adjust_24,
-                        Color.RED)
+                    lifecycleScope.launchWhenResumed {
+                        val markerIcon = bitmapFromVector(this@BayadFragmentOne.requireContext(), R.drawable.icon_payment_center)
 
-                    val marker = gMap?.addMarker(MarkerOptions()
-                        .position(LatLng(latitude, longitude))
-                        .title(locationName)
-                        .icon(markerIcon))
-                    marker?.tag = document.id // Save the Firestore document ID as a tag for reference
-                }
+                        val marker = gMap?.addMarker(MarkerOptions()
+                            .position(LatLng(latitude, longitude))
+                            .title(locationName)
+                            .icon(markerIcon))
+                        marker?.tag = locationName // Save the Firestore document ID as a tag for reference
+
+                    }
+                  }
             }
         }.addOnFailureListener { exception ->
             // Handle errors if needed
@@ -154,29 +162,33 @@ class BayadFragmentOne : Fragment() , OnMapReadyCallback, GoogleMap.OnMarkerClic
         }
     }
     private fun getCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener { location ->
-                    // Add marker for the current location
-                    location?.let {
-                        val currentLatLng = LatLng(it.latitude, it.longitude)
-                        gMap?.addMarker(
-                            MarkerOptions().position(currentLatLng).title("Current Location")
-                        )
+        //to fix the not attach to a context fragment put lifecycle scope.
+        lifecycleScope.launchWhenResumed {
+            if (ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                fusedLocationClient.lastLocation
+                    .addOnSuccessListener { location ->
+                        // Add marker for the current location
+                        location?.let {
+                            val currentLatLng = LatLng(it.latitude, it.longitude)
+                            gMap?.addMarker(
+                                MarkerOptions().position(currentLatLng).title("Current Location")
+                            )
 
-                        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentLatLng, 15.0f)
-                        gMap?.animateCamera(cameraUpdate)
+                            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentLatLng, 15.0f)
+                            gMap?.animateCamera(cameraUpdate)
 
-                        // binding.tvCurrentLocation.text = it.latitude.toString()
-                        //     binding.tvCurrentLocation2.text = it.longitude.toString()
+                            // binding.tvCurrentLocation.text = it.latitude.toString()
+                            //     binding.tvCurrentLocation2.text = it.longitude.toString()
+                        }
+
                     }
-
-                }
+            }
         }
+
     }
     override fun onResume() {
         // Initialize the map if it hasn't been initialized already
@@ -200,7 +212,6 @@ class BayadFragmentOne : Fragment() , OnMapReadyCallback, GoogleMap.OnMarkerClic
 
     override fun onDestroy() {
         super.onDestroy()
-        // Initialize the map if it hasn't been initialized already
         if (gMap == null) {
             val mapFragment =
                 childFragmentManager.findFragmentById(R.id.fragmentMap) as SupportMapFragment
@@ -210,7 +221,6 @@ class BayadFragmentOne : Fragment() , OnMapReadyCallback, GoogleMap.OnMarkerClic
 
     override fun onLowMemory() {
         super.onLowMemory()
-        // Initialize the map if it hasn't been initialized already
         if (gMap == null) {
             val mapFragment =
                 childFragmentManager.findFragmentById(R.id.fragmentMap) as SupportMapFragment
@@ -224,9 +234,8 @@ class BayadFragmentOne : Fragment() , OnMapReadyCallback, GoogleMap.OnMarkerClic
     override fun onMapReady(googleMap: GoogleMap) {
         gMap = googleMap
         val sanVicenteCamarinesNorte = LatLng(14.08446, 122.88797)
-        val zoomLevel = 5.0f // Adjust the zoom level as needed
+        val zoomLevel = 5.0f
         gMap?.setOnMarkerClickListener(this)
-        // Move the camera to the initial position
         gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(sanVicenteCamarinesNorte, zoomLevel))
 
         getCurrentLocation()

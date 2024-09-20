@@ -6,6 +6,31 @@
     android:layout_height="match_parent"
     android:background="@color/background_color"
     tools:context=".views.user.maintenance.MaintenanceListFragment">
+    <TextView
+        android:id="@+id/tvEmpty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:fontFamily="@font/roboto_regular"
+        android:text="No Notification Available \nat the moment"
+        android:textColor="@color/text_dark_color"
+        android:textSize="18sp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgEmpty" />
+
+    <ImageView
+        android:id="@+id/imgEmpty"
+        android:layout_width="256dp"
+        android:layout_height="256dp"
+        android:layout_marginTop="100dp"
+        android:visibility="gone"
+        android:src="@drawable/img_mpty_list"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -21,51 +46,76 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/primary_dark_color"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" >
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Maintenance"
+                android:fontFamily="@font/roboto_bold"
+                android:text="News"
                 android:textColor="@color/text_light_color"
-                android:textSize="22sp"
-                android:fontFamily="@font/roboto_bold"/>
+                android:textSize="22sp" />
 
             <ImageButton
                 android:id="@+id/back_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/back_arrow"
                 android:background="@android:color/transparent"
-                app:tint="@color/text_light_color"/>
+                android:src="@drawable/back_arrow"
+                app:tint="@color/text_light_color" />
 
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
+        android:elevation="4dp"
+        app:cardCornerRadius="50dp"
+        app:cardBackgroundColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
+
+        <SearchView
+            android:id="@+id/search"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@android:color/transparent"
+            android:iconifiedByDefault="false"
+            android:queryHint="Search..."
+            android:queryBackground="@android:color/transparent"
+            app:queryBackground="@android:color/transparent"/>
+
+    </androidx.cardview.widget.CardView>
+
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/latest_news"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="25dp"
         android:layout_marginTop="20dp"
-        android:layout_marginHorizontal="20dp"
         android:fontFamily="@font/roboto_medium"
         android:text="Latest Maintenance and Updates"
         android:textColor="@color/text_dark_color"
-        android:textSize="22sp"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/card" />
 
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="15dp"
-        android:layout_marginHorizontal="20dp"
+        android:layout_marginHorizontal="25dp"
         app:dividerColor="@color/stroke_light_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -78,10 +128,10 @@
         android:layout_marginTop="15dp"
         android:paddingHorizontal="20dp"
         android:paddingBottom="20dp"
-        tools:listitem="@layout/news_item_view"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view" />
+        app:layout_constraintTop_toBottomOf="@+id/view"
+        tools:listitem="@layout/news_item_view" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

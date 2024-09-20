@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/dimen_20dp"
+    android:paddingHorizontal="@dimen/dimen_20dp"
+    android:orientation="vertical"
+    tools:context=".views.user.bayadcenterandbusinesscenter.DetailsCenterFragment">
+
+    <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+        android:id="@+id/handle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dimen_15dp"
+        android:text="RAV COMSHOP"
+        android:textSize="@dimen/dimen_18sp"
+        android:textColor="@color/text_dark_color"
+        android:fontFamily="@font/roboto_black" />
+
+    <TextView
+        android:id="@+id/address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="5dp"
+        android:text="adawdwdwadw"
+        android:textSize="14sp"
+        android:textColor="@color/g_gray700"
+        android:fontFamily="@font/roboto_regular"
+        android:drawableStart="@drawable/ic_location"
+        android:drawablePadding="@dimen/dimen_10dp"/>
+
+    <TextView
+        android:id="@+id/contact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/dimen_10dp"
+        android:layout_marginStart="5dp"
+        android:text="adawdwdwadw"
+        android:textSize="14sp"
+        android:textColor="@color/g_gray700"
+        android:fontFamily="@font/roboto_regular"
+        android:drawableStart="@drawable/icon_phone"
+        android:drawablePadding="@dimen/dimen_10dp" />
+
+</LinearLayout>

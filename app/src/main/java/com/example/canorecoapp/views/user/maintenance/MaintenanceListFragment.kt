@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,6 +26,7 @@ class MaintenanceListFragment : Fragment() {
     private lateinit var newsList: ArrayList<Maintenance>
     private lateinit var newsAdapter: MaintenanceListAdapter
     private var db  = Firebase.firestore
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,36 +48,61 @@ class MaintenanceListFragment : Fragment() {
                 navigateUp()
             }
         }
+        binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let {
+                    newsAdapter.filter.filter(query)
+                }
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let {
+                    newsAdapter.filter.filter(newText)
+                }
+                return false
+            }
+        })
     }
 
     private fun getListOfMaintenance() {
-        val collectionRef = db.collection("maintenance")
-
-        collectionRef.get()
+        val collectionRef = db.collection("news")
+        collectionRef.whereEqualTo("category", "Patalastas ng Power Interruption").get()
             .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    val title = document.getString("Title") ?: ""
-                    val image = document.getString("Image") ?: ""
-                    val date = document.getString("Date") ?: ""
-                    val timestamp = document.getString("timestamp") ?: ""
+                if (documents.isEmpty) {
+                    Log.d("NewsFragment", "No documents found for the specified category.")
+                    binding.tvEmpty.visibility = View.VISIBLE
+                    binding.imgEmpty.visibility = View.VISIBLE
+                    binding.recyclerNews.visibility = View.GONE
+                    return@addOnSuccessListener
+                }
 
-                    // Create News object and add to the list
-                    val maintenance = Maintenance(title, "","",image,timestamp,date)
+                for (document in documents) {
+                    val title = document.getString("title") ?: ""
+                    val imageList = document.get("image") as? List<String> ?: emptyList()
+                    val firstImage = imageList.getOrNull(0) ?: ""
+                    val date = document.getString("date") ?: ""
+                    val timestamp = document.getString("timestamp") ?: ""
+                    val content = document.getString("content") ?: ""
+                    val category = document.getString("category") ?: ""
+
+
+                    val maintenance = Maintenance(title, "", "", firstImage, timestamp, date, "", "", "", "", category)
                     newsList.add(maintenance)
                 }
-                // Notify the adapter that the data has changed
-                // Set up the adapter after retrieving data for all users
+
                 lifecycleScope.launchWhenResumed {
-                    newsAdapter = MaintenanceListAdapter(this@MaintenanceListFragment.requireContext(),findNavController(), newsList)
+                    newsAdapter = MaintenanceListAdapter(this@MaintenanceListFragment.requireContext(), findNavController(), newsList)
                     binding.recyclerNews.setHasFixedSize(true)
-                    val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                    val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
                     binding.recyclerNews.layoutManager = layoutManager
                     binding.recyclerNews.adapter = newsAdapter
+                    newsAdapter.notifyDataSetChanged()
                 }
-                newsAdapter.notifyDataSetChanged()
             }
             .addOnFailureListener { exception ->
                 Log.e("NewsFragment", "Error getting documents: ", exception)
             }
     }
+
 }

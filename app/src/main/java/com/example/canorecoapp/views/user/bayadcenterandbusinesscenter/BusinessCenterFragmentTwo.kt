@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.lifecycleScope
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentBusinessCenterTwoBinding
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -55,13 +56,19 @@ class BusinessCenterFragmentTwo : Fragment() , OnMapReadyCallback, GoogleMap.OnM
     override fun onMarkerClick(marker: Marker): Boolean {
         val dataKey = marker.tag as? String
         if (dataKey != null) {
-            //showMarkerDetailsDialog(dataKey)
+            val addDataDialog = DetailsCenterFragment()
+            val bundle = Bundle()
+            bundle.putString("marker", marker.tag.toString())
+            bundle.putString("id", "businessCenters")
+            addDataDialog.arguments = bundle
+            addDataDialog.show(childFragmentManager, "DetailsCenterFragment")
             return true
         } else {
             // Handle the case when marker.tag is null
             return false
         }
     }
+
 
     fun showAllDataOnMaps() {
         // Get a reference to your Firestore collection
@@ -77,20 +84,22 @@ class BusinessCenterFragmentTwo : Fragment() , OnMapReadyCallback, GoogleMap.OnM
                 Log.d("MapData", "Processing document: ${document.id}, locationName: $locationName, latitude: $latitude, longitude: $longitude")
 
                 if (latitude != null && longitude != null) {
+                    lifecycleScope.launchWhenResumed {
+                        val smallMarker = Bitmap.createScaledBitmap(
+                            BitmapFactory.decodeResource(resources, R.drawable.icon_business_center),
+                            114, 92, false
+                        )
 
-                    val smallMarker = Bitmap.createScaledBitmap(
-                        BitmapFactory.decodeResource(resources, R.drawable.icon_business_center),
-                        114, 92, false
-                    )
+                        // Add a marker for each item
+                        val marker = gMap?.addMarker(
+                            MarkerOptions()
+                                .position(LatLng(latitude, longitude))
+                                .title(locationName)
+                                .icon(BitmapDescriptorFactory.fromBitmap(smallMarker)) // Custom marker icon
+                        )
+                        marker?.tag = locationName// Save the Firestore document ID as a tag for reference
+                    }
 
-                    // Add a marker for each item
-                    val marker = gMap?.addMarker(
-                        MarkerOptions()
-                            .position(LatLng(latitude, longitude))
-                            .title(locationName)
-                            .icon(BitmapDescriptorFactory.fromBitmap(smallMarker)) // Custom marker icon
-                    )
-                    marker?.tag = document.id // Save the Firestore document ID as a tag for reference
                 }
             }
         }.addOnFailureListener { exception ->
@@ -119,29 +128,33 @@ class BusinessCenterFragmentTwo : Fragment() , OnMapReadyCallback, GoogleMap.OnM
         }
     }
     private fun getCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            fusedLocationClient.lastLocation
-                .addOnSuccessListener { location ->
-                    // Add marker for the current location
-                    location?.let {
-                        val currentLatLng = LatLng(it.latitude, it.longitude)
-                        gMap?.addMarker(
-                            MarkerOptions().position(currentLatLng).title("Current Location")
-                        )
+        //to fix the not attach to a context fragment put lifecycle scope.
+        lifecycleScope.launchWhenResumed {
+            if (ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                fusedLocationClient.lastLocation
+                    .addOnSuccessListener { location ->
+                        // Add marker for the current location
+                        location?.let {
+                            val currentLatLng = LatLng(it.latitude, it.longitude)
+                            gMap?.addMarker(
+                                MarkerOptions().position(currentLatLng).title("Current Location")
+                            )
 
-                        val cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentLatLng, 15.0f)
-                        gMap?.animateCamera(cameraUpdate)
+                            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentLatLng, 15.0f)
+                            gMap?.animateCamera(cameraUpdate)
 
-                        // binding.tvCurrentLocation.text = it.latitude.toString()
-                        //     binding.tvCurrentLocation2.text = it.longitude.toString()
+                            // binding.tvCurrentLocation.text = it.latitude.toString()
+                            //     binding.tvCurrentLocation2.text = it.longitude.toString()
+                        }
+
                     }
-
-                }
+            }
         }
+
     }
     override fun onResume() {
         // Initialize the map if it hasn't been initialized already

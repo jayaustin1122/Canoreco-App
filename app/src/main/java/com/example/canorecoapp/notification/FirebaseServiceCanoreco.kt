@@ -16,6 +16,8 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.example.canorecoapp.MainActivity
 import com.example.canorecoapp.R
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import kotlin.random.Random
@@ -50,7 +52,6 @@ class FirebaseServiceCanoreco : FirebaseMessagingService() {
         val intent = Intent(this, MainActivity::class.java)
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notificationID = Random.nextInt()
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel(notificationManager)
         }

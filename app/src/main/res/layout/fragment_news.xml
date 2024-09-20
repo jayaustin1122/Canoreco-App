@@ -45,12 +45,37 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
+        android:elevation="4dp"
+        app:cardCornerRadius="50dp"
+        app:cardBackgroundColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
+
+        <SearchView
+            android:id="@+id/search"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@android:color/transparent"
+            android:iconifiedByDefault="false"
+            android:queryHint="Search..."
+            android:queryBackground="@android:color/transparent"
+            app:queryBackground="@android:color/transparent"/>
+
+    </androidx.cardview.widget.CardView>
+
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/latest_news"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
         android:fontFamily="@font/roboto_medium"
         android:text="Latest News and Updates"
         android:textColor="@color/text_dark_color"
@@ -58,7 +83,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/card" />
 
     <com.google.android.material.divider.MaterialDivider
         android:id="@+id/view"
@@ -83,5 +108,30 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view" />
+    <TextView
+        android:id="@+id/tvEmpty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:fontFamily="@font/roboto_regular"
+        android:text="No Notification Available \nat the moment"
+        android:textColor="@color/text_dark_color"
+        android:textSize="18sp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgEmpty" />
+
+    <ImageView
+        android:id="@+id/imgEmpty"
+        android:layout_width="256dp"
+        android:layout_height="256dp"
+        android:layout_marginTop="100dp"
+        android:visibility="gone"
+        android:src="@drawable/img_mpty_list"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -53,7 +53,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-
+    implementation ("com.github.mreram:showcaseview:1.4.1")
     val nav_version = "2.7.2"
     implementation ("com.itextpdf:itext7-core:7.1.15")
     implementation (platform("com.google.firebase:firebase-bom:33.1.1"))
@@ -72,6 +72,7 @@ dependencies {
     implementation ("pl.droidsonroids.gif:android-gif-drawable:1.2.27")
     // dependency for circular ImageView
     implementation ("de.hdodenhof:circleimageview:3.1.0")
+    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
 
     //karumi to access other component of mobile
     implementation ("com.karumi:dexter:6.2.2")
@@ -87,7 +88,6 @@ dependencies {
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
     //Retrofit
-    implementation ("com.squareup.retrofit2:retrofit:2.6.2")
     implementation ("com.squareup.retrofit2:converter-gson:2.6.0")
 
     implementation ("pub.devrel:easypermissions:3.0.0")
@@ -112,5 +112,9 @@ dependencies {
     implementation ("com.paytm.appinvokesdk:appinvokesdk:1.6.12") // Updated version
 
     implementation ("com.facebook.shimmer:shimmer:0.1.0@aar")
-
+    implementation ("com.github.f0ris.sweetalert:library:1.6.2")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+    // Dots Indicator
+    implementation("com.tbuonomo:dotsindicator:5.0")
 }

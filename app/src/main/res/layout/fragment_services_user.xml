@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_color"
-    tools:context=".views.user.ServicesUserFragment">
+    tools:context=".views.user.service.ServicesUserFragment">
 
     <LinearLayout
         android:id="@+id/cardsLinearLayout"
@@ -79,7 +79,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="16dp"
                     android:fontFamily="@font/bold"
-                    android:text="Consumer Complaints"
+                    android:text="Report Complaints"
                     android:textSize="18sp" />
 
             </LinearLayout>
@@ -91,6 +91,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dp"
+            android:visibility="gone"
             app:cardCornerRadius="10dp"
             app:cardElevation="1dp">
 
@@ -158,6 +159,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dp"
             app:cardCornerRadius="10dp"
+            android:visibility="gone"
             app:cardElevation="1dp">
 
             <LinearLayout
@@ -186,6 +188,39 @@
 
         </androidx.cardview.widget.CardView>
 
+        <androidx.cardview.widget.CardView
+            android:id="@+id/track"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <ImageView
+                    android:id="@+id/imageView2ee"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/status" />
+
+                <TextView
+                    android:id="@+id/trackComplaints"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="16dp"
+                    android:fontFamily="@font/bold"
+                    android:text="My Complaints"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

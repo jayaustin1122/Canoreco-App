@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background_color"
+    tools:context=".views.user.bayadcenterandbusinesscenter.ListOfCentersFragment">
+
+   <com.google.android.material.appbar.AppBarLayout
+       android:id="@+id/appBarLayout"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
+
+      <androidx.appcompat.widget.Toolbar
+          android:id="@+id/toolbar"
+          android:layout_width="match_parent"
+          android:layout_height="?attr/actionBarSize"
+          android:background="@color/primary_dark_color"
+          app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+         <com.google.android.material.textview.MaterialTextView
+             android:id="@+id/textView"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_gravity="center"
+             android:text="List of Bayad Centers"
+             android:textColor="@color/text_light_color"
+             android:textSize="22sp"
+             android:fontFamily="@font/roboto_bold" />
+
+         <ImageButton
+             android:id="@+id/back_button"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:background="@android:color/transparent"
+             android:src="@drawable/back_arrow"
+             app:tint="@color/white" />
+
+      </androidx.appcompat.widget.Toolbar>
+
+   </com.google.android.material.appbar.AppBarLayout>
+
+   <androidx.recyclerview.widget.RecyclerView
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:padding="@dimen/dimen_20dp"
+       tools:listitem="@layout/item_views_centers"
+       android:id="@+id/rvCenters"/>
+</LinearLayout>

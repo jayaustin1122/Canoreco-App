@@ -16,6 +16,7 @@ import com.example.canorecoapp.databinding.NewsActivitiesItemViewsBinding
 import com.example.canorecoapp.databinding.NewsItemViewBinding
 import com.example.canorecoapp.models.News
 import com.example.canorecoapp.views.user.news.NewsDetailsFragment
+import org.bouncycastle.asn1.x500.style.RFC4519Style.title
 
 class NewsAdapter(private val context: Context,
                   private val navController: NavController,
@@ -24,7 +25,6 @@ class NewsAdapter(private val context: Context,
     private  lateinit var binding: NewsActivitiesItemViewsBinding
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var title: TextView = binding.tvActivityTitle
-        var moreBtn: ImageView = binding.moreBtn
         var date: TextView = binding.tvActivityDate
         var image: ImageView = binding.imageBackground
         var shortDescription: TextView = binding.tvActivityDescription
@@ -46,23 +46,26 @@ class NewsAdapter(private val context: Context,
         val image = model.image
         val date = model.date
         val timeStamp = model.timestamp
+        val category = model.category
 
         holder.title.text = newsTitle
         holder.shortDescription.text = newsDesc
         holder.date.text = date
 
         Glide.with(this@NewsAdapter.context)
-            .load(image)
+            .load(image ?: R.drawable.img_item_placeholder_small)
             .into(holder.image)
 
         holder.itemView.setOnClickListener {
             val detailsFragment = NewsDetailsFragment()
-            val bundle = Bundle()
-            bundle.putString("timeStamp", timeStamp)
+            val bundle = Bundle().apply {
+                putString("title", timeStamp)
+                putString("from", "News")
+            }
             detailsFragment.arguments = bundle
-            Log.d("BundleValues", "TimeStamp: $timeStamp")
             navController.navigate(R.id.newsDetailsFragment, bundle)
         }
+
     }
 
 

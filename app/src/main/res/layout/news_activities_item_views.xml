@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="5dp"
+    android:layout_marginVertical="2dp"
     card_view:cardCornerRadius="12dp"
     card_view:cardElevation="1dp">
 
@@ -11,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:layout_marginBottom="@dimen/dimen_10dp"
         android:padding="20dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -18,30 +20,23 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
+            <!-- Title -->
             <TextView
                 android:id="@+id/tvActivityTitle"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:textColor="@color/text_dark_color"
+                android:maxLines="2"
                 android:text="Canoreco in Action"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textSize="@dimen/dimen_16sp"
+                android:fontFamily="@font/roboto_medium"
                 android:textStyle="bold"
+                card_view:layout_constraintEnd_toEndOf="parent"
                 card_view:layout_constraintStart_toStartOf="parent"
                 card_view:layout_constraintTop_toTopOf="parent" />
 
-            <ImageButton
-                android:id="@+id/moreBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:src="@drawable/baseline_more_vert_24"
-                android:textStyle="bold"
-                card_view:layout_constraintEnd_toEndOf="parent"
-                card_view:layout_constraintTop_toTopOf="parent"
-                card_view:tint="@color/black" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
-        <!-- Title -->
-
 
         <!-- Date -->
         <TextView
@@ -49,8 +44,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="January 18, 2024"
-            android:textColor="@color/black"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/text_dark_color"
+            android:textSize="@dimen/dimen_14dp"
+            android:fontFamily="@font/roboto_regular"
             android:layout_marginBottom="8dp" />
 
         <!-- Image Placeholder -->
@@ -61,15 +57,19 @@
             android:layout_gravity="center"
             android:scaleType="centerCrop"
             android:background="@color/white"
-            android:src="@drawable/logo" />
+            android:src="@drawable/img_item_placeholder" />
 
         <!-- Description -->
         <TextView
             android:id="@+id/tvActivityDescription"
             android:layout_width="match_parent"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:layout_height="wrap_content"
             android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textColor="@color/text_dark_color"
+            android:textSize="@dimen/dimen_15dp"
+            android:fontFamily="@font/roboto_regular"
             android:layout_marginTop="8dp" />
 
     </LinearLayout>

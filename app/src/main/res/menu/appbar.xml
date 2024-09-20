@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/notif"
+        android:icon="@drawable/icon_notifications"
+        android:iconTint="@color/text_light_color"
+        android:iconTintMode="multiply"
+        app:showAsAction="always"
+        android:title="@string/notification"/>
+    <item
+        android:id="@+id/imgProfiled"
+        android:icon="@drawable/icon_account_circle"
+        android:iconTint="@color/text_light_color"
+        app:showAsAction="always"
+        android:title="@string/account"/>
+
+</menu>

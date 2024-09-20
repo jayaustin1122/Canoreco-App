@@ -50,12 +50,12 @@
         tools:layout="@layout/fragment_news" />
     <fragment
         android:id="@+id/outagesFragment"
-        android:name="com.example.canorecoapp.views.user.OutagesFragment"
+        android:name="com.example.canorecoapp.views.user.outages.OutagesFragment"
         android:label="fragment_outages"
         tools:layout="@layout/fragment_outages" />
     <fragment
         android:id="@+id/billingInformationFragment"
-        android:name="com.example.canorecoapp.views.user.BillingInformationFragment"
+        android:name="com.example.canorecoapp.views.user.billing.BillingInformationFragment"
         tools:layout="@layout/fragment_billing_information"
         android:label="BillingInformationFragment" >
         <action
@@ -64,17 +64,17 @@
     </fragment>
     <fragment
         android:id="@+id/reportFragment"
-        android:name="com.example.canorecoapp.views.user.ReportFragment"
+        android:name="com.example.canorecoapp.views.user.complaints.ReportFragment"
         android:label="fragment_report"
         tools:layout="@layout/fragment_report" />
     <fragment
         android:id="@+id/bayadCentersFragment"
-        android:name="com.example.canorecoapp.views.user.BayadCentersFragment"
+        android:name="com.example.canorecoapp.views.user.bayadcenterandbusinesscenter.BayadCentersFragment"
         android:label="fragment_bayad_centers"
         tools:layout="@layout/fragment_bayad_centers" />
     <fragment
         android:id="@+id/servicesFragment"
-        android:name="com.example.canorecoapp.views.user.ServicesFragment"
+        android:name="com.example.canorecoapp.views.user.service.ServicesFragment"
         android:label="fragment_services"
         tools:layout="@layout/fragment_services" />
     <fragment
@@ -84,7 +84,7 @@
         tools:layout="@layout/fragment_maintenance_list" />
     <fragment
         android:id="@+id/servicesUserFragment"
-        android:name="com.example.canorecoapp.views.user.ServicesUserFragment"
+        android:name="com.example.canorecoapp.views.user.service.ServicesUserFragment"
         android:label="fragment_services_user"
         tools:layout="@layout/fragment_services_user" />
     <fragment
@@ -93,16 +93,70 @@
         android:label="fragment_on_boarding_main"
         tools:layout="@layout/fragment_on_boarding_main" />
     <fragment
-        android:id="@+id/testNotifFragment"
-        android:name="com.example.canorecoapp.notification.TestNotifFragment"
-        android:label="fragment_test_notif"
-        tools:layout="@layout/fragment_test_notif" />
-    <fragment
         android:id="@+id/loginEmployeeFragment"
-        android:name="com.example.canorecoapp.employee.LoginEmployeeFragment"
+        android:name="com.example.canorecoapp.views.linemen.employee.LoginEmployeeFragment"
         android:label="LoginEmployeeFragment" />
     <fragment
         android:id="@+id/signUpEmployeeFragment"
-        android:name="com.example.canorecoapp.employee.SignUpEmployeeFragment"
+        android:name="com.example.canorecoapp.views.linemen.employee.SignUpEmployeeFragment"
         android:label="SignUpEmployeeFragment" />
+    <fragment
+        android:id="@+id/viewMapsWithAreasFragment"
+        android:name="com.example.canorecoapp.views.user.news.ViewMapsWithAreasFragment"
+        android:label="fragment_view_maps_with_areas"
+        tools:layout="@layout/fragment_view_maps_with_areas" />
+    <fragment
+        android:id="@+id/accountUserFragment"
+        android:name="com.example.canorecoapp.views.user.account.AccountUserFragment"
+        android:label="fragment_account_user"
+        tools:layout="@layout/fragment_account_user" />
+    <fragment
+        android:id="@+id/listOfFutureAndCurrentOutagesFragment"
+        android:name="com.example.canorecoapp.views.user.outages.ListOfFutureAndCurrentOutagesFragment"
+        android:label="fragment_list_of_future_and_current_outages"
+        tools:layout="@layout/fragment_list_of_future_and_current_outages" />
+    <fragment
+        android:id="@+id/listOfMyComplaintsFragment"
+        android:name="com.example.canorecoapp.views.user.complaints.ListOfMyComplaintsFragment"
+        android:label="ListOfMyComplaintsFragment" />
+
+    <fragment
+        android:id="@+id/forgotPasswordFragment"
+        android:name="com.example.canorecoapp.views.ForgotPasswordFragment"
+        android:label="ForgotPasswordFragment" />
+    <fragment
+        android:id="@+id/notifFragment"
+        android:name="com.example.canorecoapp.views.user.notif.NotifFragment"
+        android:label="fragment_notif"
+        tools:layout="@layout/fragment_notif" />
+    <fragment
+        android:id="@+id/deviceNotifFragment"
+        android:name="com.example.canorecoapp.DeviceNotifFragment"
+        android:label="fragment_device_notif"
+        tools:layout="@layout/fragment_device_notif" />
+    <fragment
+        android:id="@+id/changeContactAddressFragment"
+        android:name="com.example.canorecoapp.views.user.account.ChangeContactAddressFragment"
+        android:label="fragment_change_contact_address"
+        tools:layout="@layout/fragment_change_contact_address" />
+    <fragment
+        android:id="@+id/changePasswordFragment"
+        android:name="com.example.canorecoapp.views.user.account.ChangePasswordFragment"
+        android:label="fragment_change_password"
+        tools:layout="@layout/fragment_change_password" />
+    <fragment
+        android:id="@+id/changePersonalFragment"
+        android:name="com.example.canorecoapp.views.user.account.ChangePersonalFragment"
+        android:label="fragment_change_personal"
+        tools:layout="@layout/fragment_change_personal" />
+    <fragment
+        android:id="@+id/listOfCentersFragment"
+        android:name="com.example.canorecoapp.views.user.bayadcenterandbusinesscenter.ListOfCentersFragment"
+        android:label="fragment_list_of_centers"
+        tools:layout="@layout/fragment_list_of_centers" />
+    <fragment
+        android:id="@+id/viewMapMarkerClickFragment"
+        android:name="com.example.canorecoapp.views.user.bayadcenterandbusinesscenter.ViewMapMarkerClickFragment"
+        android:label="fragment_view_map_marker_click"
+        tools:layout="@layout/fragment_view_map_marker_click" />
 </navigation>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color"
+    tools:context=".views.linemen.home.LinemenCurrentFurtureFragment">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/tabCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:elevation="@dimen/cardview_compat_inset_shadow"
+        app:cardCornerRadius="6dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:strokeColor="@color/secondary_accent_color"
+        app:strokeWidth="2dp">
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabBackground="@color/background_color"
+            app:tabGravity="fill"
+            app:tabIndicatorColor="@color/secondary_accent_color"
+            app:tabIndicatorFullWidth="true"
+            app:tabIndicatorGravity="stretch"
+            app:tabMaxWidth="0dp"
+            app:tabMode="fixed"
+            app:tabSelectedTextColor="@color/text_dark_color"
+            app:tabTextAppearance="@android:style/TextAppearance.Widget.TabWidget"
+            app:tabTextColor="@color/text_dark_color" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/map_fragment_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="20dp"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tabCard" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

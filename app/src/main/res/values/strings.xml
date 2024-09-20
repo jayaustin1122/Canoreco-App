@@ -10,9 +10,295 @@
     <string name="navigation_drawer_close">close\n</string>
     <string name="map_id">714a7a57ec28897b</string>
     <string name="notification">Notification</string>
-    <string-array name="planets_array">
-        <item>Area 1</item>
-        <item>Area 2</item>
-        <item>Area 3</item>
+    <string name="menu_refresh">Refresh</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="birth_date">Birth Date</string>
+    <string name="update">Update</string>
+    <string name="devices">Devices</string>
+    <string-array name="municipalities_camarines_norte">
+        <item>Angas, Basud</item>
+        <item>Bactas, Basud</item>
+        <item>Binatagan, Basud</item>
+        <item>Caayunan, Basud</item>
+        <item>Guinatungan, Basud</item>
+        <item>Hinampacan, Basud</item>
+        <item>Langa, Basud</item>
+        <item>Laniton, Basud</item>
+        <item>Lidong, Basud</item>
+        <item>Mampili, Basud</item>
+        <item>Mandazo, Basud</item>
+        <item>Mangcamagong, Basud</item>
+        <item>Manmuntay, Basud</item>
+        <item>Mantugawe, Basud</item>
+        <item>Matnog, Basud</item>
+        <item>Mocong, Basud</item>
+        <item>Oliva, Basud</item>
+        <item>Pagsangahan, Basud</item>
+        <item>Pinagwarasan, Basud</item>
+        <item>Plaridel, Basud</item>
+        <item>Poblacion 1, Basud</item>
+        <item>Poblacion 2, Basud</item>
+        <item>San Felipe, Basud</item>
+        <item>San Jose, Basud</item>
+        <item>San Pascual, Basud</item>
+        <item>Taba-taba, Basud</item>
+        <item>Tacad, Basud</item>
+        <item>Taisan, Basud</item>
+        <item>Tuaca, Basud</item>
+        <item>Alayao, Capalonga</item>
+        <item>Binawangan, Capalonga</item>
+        <item>Calabaca, Capalonga</item>
+        <item>Camagsaan, Capalonga</item>
+        <item>Catabaguangan, Capalonga</item>
+        <item>Catioan, Capalonga</item>
+        <item>Del Pilar, Capalonga</item>
+        <item>Itok, Capalonga</item>
+        <item>Lucbanan, Capalonga</item>
+        <item>Mabini, Capalonga</item>
+        <item>Mactang, Capalonga</item>
+        <item>Magsaysay, Capalonga</item>
+        <item>Mataque, Capalonga</item>
+        <item>Old Camp, Capalonga</item>
+        <item>Poblacion, Capalonga</item>
+        <item>San Antonio, Capalonga</item>
+        <item>San Isidro, Capalonga</item>
+        <item>San Roque, Capalonga</item>
+        <item>Tanawan, Capalonga</item>
+        <item>Ubang, Capalonga</item>
+        <item>Villa Aurora, Capalonga</item>
+        <item>Villa Belen, Capalonga</item>
+        <item>Alawihao, Daet</item>
+        <item>Awitan, Daet</item>
+        <item>Bagasbas, Daet</item>
+        <item>Barangay I, Daet</item>
+        <item>Barangay II, Daet</item>
+        <item>Barangay III, Daet</item>
+        <item>Barangay IV, Daet</item>
+        <item>Barangay V, Daet</item>
+        <item>Barangay VI, Daet</item>
+        <item>Barangay VII, Daet</item>
+        <item>Barangay VIII, Daet</item>
+        <item>Bibirao, Daet</item>
+        <item>Borabod, Daet</item>
+        <item>Calasgasan, Daet</item>
+        <item>Camambugan, Daet</item>
+        <item>Cobangbang, Daet</item>
+        <item>Dogongan, Daet</item>
+        <item>Gahonon, Daet</item>
+        <item>Gubat, Daet</item>
+        <item>Lag-on, Daet</item>
+        <item>Magang, Daet</item>
+        <item>Mambalite, Daet</item>
+        <item>Mancruz, Daet</item>
+        <item>Pamorangon, Daet</item>
+        <item>San Isidro, Daet</item>
+        <item>Bagong Bayan, Jose Panganiban</item>
+        <item>Calero, Jose Panganiban</item>
+        <item>Dahican, Jose Panganiban</item>
+        <item>Dayhagan, Jose Panganiban</item>
+        <item>Larap, Jose Panganiban</item>
+        <item>Luklukan Norte, Jose Panganiban</item>
+        <item>Luklukan Sur, Jose Panganiban</item>
+        <item>Motherlode, Jose Panganiban</item>
+        <item>Nakalaya, Jose Panganiban</item>
+        <item>North Poblacion, Jose Panganiban</item>
+        <item>Osmeña, Jose Panganiban</item>
+        <item>Pag-asa, Jose Panganiban</item>
+        <item>Parang, Jose Panganiban</item>
+        <item>Plaridel, Jose Panganiban</item>
+        <item>Salvacion, Jose Panganiban</item>
+        <item>San Isidro, Jose Panganiban</item>
+        <item>San Jose, Jose Panganiban</item>
+        <item>San Martin, Jose Panganiban</item>
+        <item>San Pedro, Jose Panganiban</item>
+        <item>San Rafael, Jose Panganiban</item>
+        <item>Santa Cruz, Jose Panganiban</item>
+        <item>Santa Elena, Jose Panganiban</item>
+        <item>Santa Milagrosa, Jose Panganiban</item>
+        <item>Santa Rosa Norte, Jose Panganiban</item>
+        <item>Santa Rosa Sur, Jose Panganiban</item>
+        <item>South Poblacion, Jose Panganiban</item>
+        <item>Tamisan, Jose Panganiban</item>
+        <item>Anahaw, Labo</item>
+        <item>Anameam, Labo</item>
+        <item>Awitan, Labo</item>
+        <item>Baay, Labo</item>
+        <item>Bagacay, Labo</item>
+        <item>Bagong Silang I, Labo</item>
+        <item>Bagong Silang II, Labo</item>
+        <item>Bagong Silang III, Labo</item>
+        <item>Bakiad, Labo</item>
+        <item>Bautista, Labo</item>
+        <item>Bayabas, Labo</item>
+        <item>Bayan-bayan, Labo</item>
+        <item>Benit, Labo</item>
+        <item>Bulhao, Labo</item>
+        <item>Cabatuhan, Labo</item>
+        <item>Cabusay, Labo</item>
+        <item>Calabasa, Labo</item>
+        <item>Canapawan, Labo</item>
+        <item>Daguit, Labo</item>
+        <item>Dalas, Labo</item>
+        <item>Dumagmang, Labo</item>
+        <item>Exciban, Labo</item>
+        <item>Fundado, Labo</item>
+        <item>Guinacutan, Labo</item>
+        <item>Guisican, Labo</item>
+        <item>Gumamela, Labo</item>
+        <item>Iberica, Labo</item>
+        <item>Kalamunding, Labo</item>
+        <item>Lugui, Labo</item>
+        <item>Mabilo I, Labo</item>
+        <item>Mabilo II, Labo</item>
+        <item>Macogon, Labo</item>
+        <item>Mahawan-hawan, Labo</item>
+        <item>Malangcao-Basud, Labo</item>
+        <item>Malasugui, Labo</item>
+        <item>Malatap, Labo</item>
+        <item>Malaya, Labo</item>
+        <item>Malibago, Labo</item>
+        <item>Maot, Labo</item>
+        <item>Masalong, Labo</item>
+        <item>Matanlang, Labo</item>
+        <item>Napaod, Labo</item>
+        <item>Pag-asa, Labo</item>
+        <item>Pangpang, Labo</item>
+        <item>Pinya, Labo</item>
+        <item>San Antonio, Labo</item>
+        <item>San Francisco, Labo</item>
+        <item>Santa Cruz, Labo</item>
+        <item>Submakin, Labo</item>
+        <item>Talobatib, Labo</item>
+        <item>Tigbinan, Labo</item>
+        <item>Tulay na Lupa, Labo</item>
+        <item>Apuao, Mercedes</item>
+        <item>Barangay I, Mercedes</item>
+        <item>Barangay II, Mercedes</item>
+        <item>Barangay III, Mercedes</item>
+        <item>Barangay IV, Mercedes</item>
+        <item>Barangay V, Mercedes</item>
+        <item>Barangay VI, Mercedes</item>
+        <item>Barangay VII, Mercedes</item>
+        <item>Caringo, Mercedes</item>
+        <item>Catandunganon, Mercedes</item>
+        <item>Cayucyucan, Mercedes</item>
+        <item>Colasi, Mercedes</item>
+        <item>Del Rosario, Mercedes</item>
+        <item>Gaboc, Mercedes</item>
+        <item>Hamoraon, Mercedes</item>
+        <item>Hinipaan, Mercedes</item>
+        <item>Lalawigan, Mercedes</item>
+        <item>Lanot, Mercedes</item>
+        <item>Mambungalon, Mercedes</item>
+        <item>Manguisoc, Mercedes</item>
+        <item>Masalongsalong, Mercedes</item>
+        <item>Matoogtoog, Mercedes</item>
+        <item>Pambuhan, Mercedes</item>
+        <item>Quinapaguian, Mercedes</item>
+        <item>San Roque, Mercedes</item>
+        <item>Tarum, Mercedes</item>
+        <item>Awitan, Paracale</item>
+        <item>Bagumbayan, Paracale</item>
+        <item>Bakal, Paracale</item>
+        <item>Batobalani, Paracale</item>
+        <item>Calaburnay, Paracale</item>
+        <item>Capacuan, Paracale</item>
+        <item>Casalugan, Paracale</item>
+        <item>Dagang, Paracale</item>
+        <item>Dalnac, Paracale</item>
+        <item>Dancalan, Paracale</item>
+        <item>Gumaus, Paracale</item>
+        <item>Labnig, Paracale</item>
+        <item>Macolabo Island, Paracale</item>
+        <item>Malacbang, Paracale</item>
+        <item>Malaguit, Paracale</item>
+        <item>Mampungo, Paracale</item>
+        <item>Mangkasay, Paracale</item>
+        <item>Maybato, Paracale</item>
+        <item>Palanas, Paracale</item>
+        <item>Pinagbirayan Malaki, Paracale</item>
+        <item>Pinagbirayan Munti, Paracale</item>
+        <item>Poblacion Norte, Paracale</item>
+        <item>Poblacion Sur, Paracale</item>
+        <item>Tabas, Paracale</item>
+        <item>Talusan, Paracale</item>
+        <item>Tawig, Paracale</item>
+        <item>Tugos, Paracale</item>
+        <item>Daculang Bolo, San Lorenzo Ruiz</item>
+        <item>Dagotdotan, San Lorenzo Ruiz</item>
+        <item>Langga, San Lorenzo Ruiz</item>
+        <item>Laniton, San Lorenzo Ruiz</item>
+        <item>Maisog, San Lorenzo Ruiz</item>
+        <item>Mampurog, San Lorenzo Ruiz</item>
+        <item>Manlimonsito, San Lorenzo Ruiz</item>
+        <item>Matacong, San Lorenzo Ruiz</item>
+        <item>Salvacion, San Lorenzo Ruiz</item>
+        <item>San Antonio, San Lorenzo Ruiz</item>
+        <item>San Isidro, San Lorenzo Ruiz</item>
+        <item>San Ramon, San Lorenzo Ruiz</item>
+        <item>Asdum, San Vicente</item>
+        <item>Cabanbanan, San Vicente</item>
+        <item>Calabagas, San Vicente</item>
+        <item>Fabrica, San Vicente</item>
+        <item>Iraya Sur, San Vicente</item>
+        <item>Man-ogob, San Vicente</item>
+        <item>Poblacion District I, San Vicente</item>
+        <item>Poblacion District II, San Vicente</item>
+        <item>San Jose, San Vicente</item>
+        <item>Basiad, Santa Elena</item>
+        <item>Bulala, Santa Elena</item>
+        <item>Don Tomas, Santa Elena</item>
+        <item>Guitol, Santa Elena</item>
+        <item>Kabuluan, Santa Elena</item>
+        <item>Kagtalaba, Santa Elena</item>
+        <item>Maulawin, Santa Elena</item>
+        <item>Patag Ibaba, Santa Elena</item>
+        <item>Patag Iraya, Santa Elena</item>
+        <item>Plaridel, Santa Elena</item>
+        <item>Polungguitguit, Santa Elena</item>
+        <item>Rizal, Santa Elena</item>
+        <item>Salvacion, Santa Elena</item>
+        <item>San Lorenzo, Santa Elena</item>
+        <item>San Pedro, Santa Elena</item>
+        <item>San Vicente, Santa Elena</item>
+        <item>Santa Elena, Santa Elena</item>
+        <item>Tabugon, Santa Elena</item>
+        <item>Villa San Isidro, Santa Elena</item>
+        <item>Binanuaan, Talisay</item>
+        <item>Caawigan, Talisay</item>
+        <item>Cahabaan, Talisay</item>
+        <item>Calintaan, Talisay</item>
+        <item>Del Carmen, Talisay</item>
+        <item>Gabon, Talisay</item>
+        <item>Itomang, Talisay</item>
+        <item>Poblacion, Talisay</item>
+        <item>San Francisco, Talisay</item>
+        <item>San Isidro, Talisay</item>
+        <item>San Jose, Talisay</item>
+        <item>San Nicolas, Talisay</item>
+        <item>Santa Cruz, Talisay</item>
+        <item>Santa Elena, Talisay</item>
+        <item>Santo Niño, Talisay</item>
+        <item>Aguit-it, Vinzons</item>
+        <item>Banocboc, Vinzons</item>
+        <item>Barangay I, Vinzons</item>
+        <item>Barangay II, Vinzons</item>
+        <item>Barangay III, Vinzons</item>
+        <item>Cagbalogo, Vinzons</item>
+        <item>Calangcawan Norte, Vinzons</item>
+        <item>Calangcawan Sur, Vinzons</item>
+        <item>Guinacutan, Vinzons</item>
+        <item>Mangcawayan, Vinzons</item>
+        <item>Mangcayo, Vinzons</item>
+        <item>Manlucugan, Vinzons</item>
+        <item>Matango, Vinzons</item>
+        <item>Napilihan, Vinzons</item>
+        <item>Pinagtigasan, Vinzons</item>
+        <item>Sabang, Vinzons</item>
+        <item>Santo Domingo, Vinzons</item>
+        <item>Singi, Vinzons</item>
+        <item>Sula, Vinzons</item>
     </string-array>
+
 </resources>

@@ -105,12 +105,14 @@ class SplashFragment : Fragment() {
                             showToast("Your account may have a problem. Please contact the admin for assistance.")
                             auth.signOut()
                             activity?.finish()
+                            findNavController().apply {
+                                popBackStack(R.id.splashFragment, false)
+                                navigate(R.id.signInFragment)
+                            }
                         } else if (access == true) {
                             Toast.makeText(this@SplashFragment.requireContext(), "Login Successfully", Toast.LENGTH_SHORT).show()
-                            findNavController().apply {
-                                popBackStack(R.id.splashFragment, false) // Pop all fragments up to HomeFragment
-                                navigate(R.id.userHolderFragment) // Navigate to UserHolderFragment
-                            }
+                            findNavController().navigate(R.id.userHolderFragment) // Navigate to UserHolderFragment
+
                         }
                     }
                     else -> {

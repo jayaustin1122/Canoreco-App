@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -44,37 +45,66 @@ class NewsFragment : Fragment() {
                 navigateUp()
             }
         }
+        binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                query?.let {
+                    newsAdapter.filter.filter(query)
+                }
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                newText?.let {
+                    newsAdapter.filter.filter(newText)
+                }
+                return false
+            }
+        })
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private fun getAllNews() {
         val collectionRef = db.collection("news")
 
-        collectionRef.get()
-            .addOnSuccessListener { documents ->
+        collectionRef.addSnapshotListener { documents, exception ->
+            if (exception != null) {
+                Log.e("NewsFragment", "Error getting documents: ", exception)
+                return@addSnapshotListener
+            }
+
+            if (documents != null) {
+                newsList.clear()
                 for (document in documents) {
-                    val title = document.getString("Title") ?: ""
-                    val image = document.getString("Image") ?: ""
-                    val date = document.getString("Date") ?: ""
-                    val timestamp = document.getDouble("timestamp") ?: ""
+                    val title = document.getString("title") ?: ""
+                    val imageList = document.get("image") as? List<String> ?: emptyList()
+                    val firstImage = imageList.getOrNull(0) ?: ""
+                    val date = document.getString("date") ?: ""
+                    val category = document.getString("category") ?: ""
+                    val timestamp = document.getString("timestamp") ?: ""
 
                     // Create News object and add to the list
-                    val news = News(title, "","",image, timestamp.toString(),date)
+                    val news = News(title, "", "", firstImage, timestamp, date, "", "", "", "", category)
                     newsList.add(news)
                 }
-                // Notify the adapter that the data has changed
-                // Set up the adapter after retrieving data for all users
+
+                Log.d("NewsFragment", "Fetched ${newsList.size} news items")
+
+
                 lifecycleScope.launchWhenResumed {
-                    newsAdapter = NewsDetailsAdapter(this@NewsFragment.requireContext(),findNavController(), newsList)
-                    binding.recyclerNews.setHasFixedSize(true)
-                    val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-                    binding.recyclerNews.layoutManager = layoutManager
-                    binding.recyclerNews.adapter = newsAdapter
+                        newsAdapter = NewsDetailsAdapter(this@NewsFragment.requireContext(), findNavController(), newsList)
+                        binding.recyclerNews.setHasFixedSize(true)
+                        val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                        binding.recyclerNews.layoutManager = layoutManager
+                        binding.recyclerNews.adapter = newsAdapter
+
                 }
-                newsAdapter.notifyDataSetChanged()
+            } else {
+                Log.d("NewsFragment", "No documents found")
+                binding.tvEmpty.visibility = View.VISIBLE
+                binding.imgEmpty.visibility = View.VISIBLE
+                binding.recyclerNews.visibility = View.GONE
             }
-            .addOnFailureListener { exception ->
-                Log.e("NewsFragment", "Error getting documents: ", exception)
-            }
+        }
     }
+
+
 }

@@ -6,6 +6,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.navigation.NavController
@@ -19,8 +21,9 @@ import com.example.canorecoapp.views.user.news.NewsDetailsFragment
 class MaintenanceListAdapter(private val context: Context,
                              private val navController: NavController,
                              private var maintenanceList: List<Maintenance>
-                ): RecyclerView.Adapter<MaintenanceListAdapter.ViewHolder>() {
+                ): RecyclerView.Adapter<MaintenanceListAdapter.ViewHolder>(), Filterable {
     private  lateinit var binding: NewsItemViewBinding
+    private var filteredList = maintenanceList
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var title: TextView = binding.tvTitle
         var date: TextView = binding.tvDate
@@ -33,7 +36,7 @@ class MaintenanceListAdapter(private val context: Context,
     }
 
     override fun getItemCount(): Int {
-        return maintenanceList.size
+        return filteredList.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -43,23 +46,53 @@ class MaintenanceListAdapter(private val context: Context,
         val image = model.image
         val date = model.date
         val timeStamp = model.timestamp
-
+        val category = model.category
+        val from = "Maintenance"
         holder.title.text = newsTitle
         holder.date.text = date
 
+        val imageUrl = image ?: ""
         Glide.with(this@MaintenanceListAdapter.context)
-            .load(image)
+            .load(if (imageUrl.isNotEmpty()) imageUrl else R.drawable.img_item_placeholder_small)
+            .error(R.drawable.img_item_placeholder_small) // In case of an error loading the image
             .into(holder.image)
 
         holder.itemView.setOnClickListener {
             val detailsFragment = NewsDetailsFragment()
-            val bundle = Bundle()
-            bundle.putString("timeStamp", timeStamp)
+            val bundle = Bundle().apply {
+                putString("title", timeStamp)
+                putString("from", from)
+            }
             detailsFragment.arguments = bundle
-            Log.d("BundleValues", "TimeStamp: $timeStamp")
+            Log.d("maintenanceList", "Category: $category $from")
             navController.navigate(R.id.newsDetailsFragment, bundle)
         }
     }
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val charString = constraint?.toString() ?: ""
+                val results = FilterResults()
+
+                results.values = if (charString.isEmpty()) {
+                    maintenanceList
+                } else {
+                    val filtered = maintenanceList.filter {
+                        it.title.contains(charString, ignoreCase = true) ||
+                                it.shortDescription.contains(charString, ignoreCase = true)
+                    }
+                    filtered
+                }
+                return results
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                filteredList = results?.values as List<Maintenance>
+                notifyDataSetChanged()
+            }
+        }
+    }
+
 
 
 }
