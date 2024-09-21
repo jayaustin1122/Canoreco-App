@@ -43,7 +43,7 @@ class NewsFragment : Fragment() {
         getAllNews()
         binding.backButton.setOnClickListener {
             val bundle = Bundle().apply {
-                putInt("selectedFragmentId", null ?: R.id.navigation_Home)
+                putInt("selectedFragmentId", null ?: R.id.navigation_services)
             }
             findNavController().navigate(R.id.userHolderFragment, bundle)
         }
