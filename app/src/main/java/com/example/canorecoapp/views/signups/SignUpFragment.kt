@@ -51,6 +51,7 @@ import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 const val TOPIC = "/topics/myTopic2"
+
 class SignUpFragment : Fragment() {
     private lateinit var binding: FragmentSignUpBinding
     private lateinit var auth: FirebaseAuth
@@ -62,8 +63,8 @@ class SignUpFragment : Fragment() {
     private lateinit var loadingDialog: SweetAlertDialog
     private lateinit var successDialog: SweetAlertDialog
     private lateinit var warningMessage: SweetAlertDialog
-    private lateinit var storage : FirebaseStorage
-    private lateinit var fireStore : FirebaseFirestore
+    private lateinit var storage: FirebaseStorage
+    private lateinit var fireStore: FirebaseFirestore
     private lateinit var storedVerificationId: String
     private lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
     override fun onCreateView(
@@ -80,6 +81,7 @@ class SignUpFragment : Fragment() {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(requireActivity()).get(SignUpViewModel::class.java)
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         firebaseUtils = FirebaseUtils()
@@ -89,11 +91,13 @@ class SignUpFragment : Fragment() {
         fireStore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
         viewPager.adapter = adapter
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                backItem()
-            }
-        })
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    backItem()
+                }
+            })
         adapter.addFragment(StepOneFragment())
         adapter.addFragment(StepTwoFragment())
         adapter.addFragment(StepThreeFragment())
@@ -113,20 +117,23 @@ class SignUpFragment : Fragment() {
             }
         }
         binding.backButton.setOnClickListener {
-            DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to exit? Changes will not be saved."
+            DialogUtils.showWarningMessage(
+                requireActivity(),
+                "Warning",
+                "Are you sure you want to exit? Changes will not be saved."
             ) { sweetAlertDialog ->
                 sweetAlertDialog.dismissWithAnimation()
                 viewModel.firstName = ""
-                viewModel.lastName
-                viewModel.month
-                viewModel.day
-                viewModel.year
-                viewModel.phone
-                viewModel.barangay
-                viewModel.address
-                viewModel.email
-                viewModel.password
-                viewModel.confirmPass
+                viewModel.lastName = ""
+                viewModel.month = ""
+                viewModel.day = ""
+                viewModel.year = ""
+                viewModel.phone = ""
+                viewModel.barangay = ""
+                viewModel.address = ""
+                viewModel.email = ""
+                viewModel.password = ""
+                viewModel.confirmPass = ""
                 findNavController().navigate(R.id.signInFragment)
             }
         }
@@ -148,7 +155,7 @@ class SignUpFragment : Fragment() {
         }
     }
 
-    fun validateFragmentOne(){
+    fun validateFragmentOne() {
         val firstName = viewModel.firstName
         val lastName = viewModel.lastName
         val month = viewModel.month
@@ -156,15 +163,20 @@ class SignUpFragment : Fragment() {
         val year = viewModel.year
         val selectedImageUri = viewModel.image
         if (firstName.isEmpty() && lastName.isEmpty()) {
-            Toast.makeText(requireContext(), "Please enter your First Name And Last Name", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "Please enter your First Name And Last Name",
+                Toast.LENGTH_SHORT
+            ).show()
             return
-        }else if (month.isEmpty() || day.isEmpty() || year.isEmpty()) {
+        } else if (month.isEmpty() || day.isEmpty() || year.isEmpty()) {
             Toast.makeText(requireContext(), "Please Select Date of Birth", Toast.LENGTH_SHORT)
                 .show()
             return
-        }else if (selectedImageUri == null) {
-                Toast.makeText(requireContext(), "Please upload a profile picture", Toast.LENGTH_SHORT).show()
-                return
+        } else if (selectedImageUri == null) {
+            Toast.makeText(requireContext(), "Please upload a profile picture", Toast.LENGTH_SHORT)
+                .show()
+            return
         } else {
             val currentYear = Calendar.getInstance().get(Calendar.YEAR)
             val birthYear = year.toInt()
@@ -182,23 +194,40 @@ class SignUpFragment : Fragment() {
             }
         }
     }
+
     fun validateFragmentTwo() {
         val phone = viewModel.phone
         val barangay = viewModel.barangay
         val municipality = viewModel.address
 
         if (phone.isEmpty()) {
-            Toast.makeText(requireContext(), "Please add your Contact Number to continue", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "Please add your Contact Number to continue",
+                Toast.LENGTH_SHORT
+            ).show()
             return
         } else if (!phone.startsWith("09")) {
-            Toast.makeText(requireContext(), "Phone number must start with '09'. Adjusting the number.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "Phone number must start with '09'. Adjusting the number.",
+                Toast.LENGTH_SHORT
+            ).show()
             viewModel.phone = "09${phone.trimStart('0')}"
             return
         } else if (barangay.isEmpty()) {
-            Toast.makeText(requireContext(), "Please add your Barangay to continue", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "Please add your Barangay to continue",
+                Toast.LENGTH_SHORT
+            ).show()
             return
         } else if (municipality.isEmpty()) {
-            Toast.makeText(requireContext(), "Please add your Municipality to continue", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "Please add your Municipality to continue",
+                Toast.LENGTH_SHORT
+            ).show()
             return
         } else {
             nextItem()
@@ -214,24 +243,20 @@ class SignUpFragment : Fragment() {
         if (email.isEmpty()) {
             Toast.makeText(requireContext(), "Email cannot be empty", Toast.LENGTH_SHORT).show()
             return
-        }
-        else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             Toast.makeText(requireContext(), "Invalid email format", Toast.LENGTH_SHORT).show()
             return
-        }
-        else if (password.isEmpty()) {
+        } else if (password.isEmpty()) {
             Toast.makeText(requireContext(), "Password cannot be empty", Toast.LENGTH_SHORT).show()
             return
-        }
-        else if (confirmPass.isEmpty()) {
-            Toast.makeText(requireContext(), "Please confirm your password", Toast.LENGTH_SHORT).show()
+        } else if (confirmPass.isEmpty()) {
+            Toast.makeText(requireContext(), "Please confirm your password", Toast.LENGTH_SHORT)
+                .show()
             return
-        }
-        else if (password != confirmPass) {
+        } else if (password != confirmPass) {
             Toast.makeText(requireContext(), "Passwords do not match", Toast.LENGTH_SHORT).show()
             return
-        }
-        else{
+        } else {
             createUserAccount()
         }
 
@@ -264,7 +289,8 @@ class SignUpFragment : Fragment() {
             }
         }
     }
-    private fun uploadImage( token: String) {
+
+    private fun uploadImage(token: String) {
         loadingDialog = DialogUtils.showLoading(requireActivity())
         loadingDialog.show()
 
@@ -287,6 +313,7 @@ class SignUpFragment : Fragment() {
             }
         }
     }
+
     private fun uploadToFirebase(token: String?, imageUrl: String) {
 
         val firstName = viewModel.firstName
@@ -297,7 +324,7 @@ class SignUpFragment : Fragment() {
         val day = viewModel.day
         val year = viewModel.year
         val uid = auth.uid
-        val timestamp = System.currentTimeMillis()/1000
+        val timestamp = System.currentTimeMillis() / 1000
 
 
         val user: HashMap<String, Any?> = hashMapOf(
@@ -324,7 +351,11 @@ class SignUpFragment : Fragment() {
                 .addOnCompleteListener { task ->
 
                     loadingDialog.dismiss()
-                    successDialog = DialogUtils.showSuccessMessage(requireActivity(), "Success", "Account created successfully")
+                    successDialog = DialogUtils.showSuccessMessage(
+                        requireActivity(),
+                        "Success",
+                        "Account created successfully"
+                    )
                     successDialog.show()
                     if (task.isSuccessful) {
                         findNavController().apply {
@@ -349,6 +380,7 @@ class SignUpFragment : Fragment() {
             ).show()
         }
     }
+
     private fun verifyEmail(user: FirebaseUser?) {
         loadingDialog.dismiss()
         if (user == null) {
@@ -359,10 +391,17 @@ class SignUpFragment : Fragment() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Log.d("EmailVerification", "Verification email sent to ${user.email}")
-                  //  showVerificationDialog(user)
+                    //  showVerificationDialog(user)
                 } else {
-                    Log.e("EmailVerification", "Failed to send verification email to ${user.email}. Task failed.")
-                    Toast.makeText(requireContext(), "Error sending verification email", Toast.LENGTH_SHORT).show()
+                    Log.e(
+                        "EmailVerification",
+                        "Failed to send verification email to ${user.email}. Task failed."
+                    )
+                    Toast.makeText(
+                        requireContext(),
+                        "Error sending verification email",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
             .addOnFailureListener { exception ->
@@ -387,7 +426,7 @@ class SignUpFragment : Fragment() {
 
         btnContinue.isEnabled = false
         btnResend.setOnClickListener {
-          //  verifyEmail(user)
+            //  verifyEmail(user)
         }
 
         lifecycleScope.launch {
@@ -413,7 +452,11 @@ class SignUpFragment : Fragment() {
             if (auth.currentUser?.isEmailVerified == true) {
                 dialog.dismiss()
             } else {
-                Toast.makeText(requireContext(), "Please verify your email before proceeding.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Please verify your email before proceeding.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
