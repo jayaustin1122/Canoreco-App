@@ -57,6 +57,7 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
     private val previousLocations = mutableSetOf<String>()
     private lateinit var loadingDialog: SweetAlertDialog
 
+
     private fun resetFragmentWithProgress() {
             reloadFragment()
     }
@@ -278,7 +279,7 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
                 }
             }
             Handler(Looper.getMainLooper()).postDelayed({
-                loadingDialog.dismiss()
+
             }, 1000)
 
            // getCurrentLocation()
@@ -314,6 +315,10 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
         super.onViewCreated(view, savedInstanceState)
         loadingDialog = DialogUtils.showLoading(requireActivity())
         loadingDialog.show()
+        Log.d("LoadingDialog", "Loading dialog shown from Current()")
+        Handler(Looper.getMainLooper()).postDelayed({
+            loadingDialog.dismiss()
+        },1000)
         checkPermissionLocation()
         binding.fabRefresh.setOnClickListener{
             resetFragmentWithProgress()
@@ -379,9 +384,7 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
         showPolygonsBasedOnFirestore()
         showDataInRealTime()
 
-        Handler(Looper.getMainLooper()).postDelayed({
-            loadingDialog.dismiss()
-        }, 1000)
+
 
     }
 

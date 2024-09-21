@@ -108,6 +108,7 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:hint="Password"
+            android:maxLines="1"
             android:scrollbars="vertical"
             android:imeOptions="actionDone"
             app:boxStrokeWidth="1dp"

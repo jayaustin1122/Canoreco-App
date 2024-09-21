@@ -2,7 +2,9 @@ package com.example.canorecoapp.views.user.outages
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.location.Geocoder
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -12,8 +14,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.example.canorecoapp.R
 import com.example.canorecoapp.adapter.ViewPagerAdapter
 import com.example.canorecoapp.databinding.FragmentOutagesBinding
@@ -29,6 +34,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.tabs.TabLayout
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.io.IOException
 import java.util.Locale
@@ -44,24 +50,11 @@ class OutagesFragment : Fragment() {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        loadUsersInfo()
 
-        binding.backButton.setOnClickListener {
-            val bundle = Bundle().apply {
-                putInt("selectedFragmentId", selectedFragmentId ?: R.id.navigation_services)
-            }
-            findNavController().navigate(R.id.userHolderFragment, bundle)
-        }
-        // Handle back button press
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                val bundle = Bundle().apply {
-                    putInt("selectedFragmentId", selectedFragmentId ?: R.id.navigation_services)
-                }
-                findNavController().navigate(R.id.userHolderFragment, bundle)
-            }
-        })
         // Set up the tabs
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Current Outages"))
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Future Outages"))
@@ -94,6 +87,85 @@ class OutagesFragment : Fragment() {
         childFragmentManager.beginTransaction()
             .replace(R.id.map_fragment_container, fragment)
             .commit()
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun loadUsersInfo() {
+        val db = FirebaseFirestore.getInstance()
+        val currentUser = FirebaseAuth.getInstance().currentUser
+
+        currentUser?.let { user ->
+            db.collection("users").document(user.uid).get()
+                .addOnSuccessListener { document ->
+                    val userType = document.getString("userType")
+
+                    when (userType) {
+                        "member" -> {
+                            binding.backButton.setOnClickListener {
+                                val bundle = Bundle().apply {
+                                    putInt(
+                                        "selectedFragmentId",
+                                        selectedFragmentId ?: R.id.navigation_services
+                                    )
+                                }
+                                findNavController().navigate(R.id.userHolderFragment, bundle)
+                            }
+                            requireActivity().onBackPressedDispatcher.addCallback(
+                                viewLifecycleOwner,
+                                object : OnBackPressedCallback(true) {
+                                    override fun handleOnBackPressed() {
+                                        val bundle = Bundle().apply {
+                                            putInt(
+                                                "selectedFragmentId",
+                                                selectedFragmentId ?: R.id.navigation_services
+                                            )
+                                        }
+                                        findNavController().navigate(
+                                            R.id.userHolderFragment,
+                                            bundle
+                                        )
+                                    }
+                                })
+                        }
+
+                        "linemen" -> {
+                            binding.backButton.setOnClickListener {
+                                val bundle = Bundle().apply {
+                                    findNavController().navigate(R.id.adminHolderFragment)
+                                }
+                                findNavController().navigate(R.id.adminHolderFragment, bundle)
+                            }
+                            requireActivity().onBackPressedDispatcher.addCallback(
+                                viewLifecycleOwner,
+                                object : OnBackPressedCallback(true) {
+                                    override fun handleOnBackPressed() {
+                                        findNavController().navigate(R.id.adminHolderFragment)
+                                    }
+                                })
+                        }
+
+                        else -> {
+                            Toast.makeText(
+                                requireContext(),
+                                "Unknown user type",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Toast.makeText(
+                        requireContext(),
+                        "Error Loading User Data: ${exception.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+        } ?: run {
+            Toast.makeText(
+                requireContext(),
+                "User not authenticated",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
 }
