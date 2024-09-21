@@ -23,6 +23,7 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentReportBinding
+import com.example.canorecoapp.utils.DialogUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -174,20 +175,44 @@ class ReportFragment : Fragment() {
             selectedFragmentId = it.getInt("selectedFragmentId", R.id.navigation_services)
         }
         binding.backButton.setOnClickListener {
-            val bundle = Bundle().apply {
-                putInt("selectedFragmentId", selectedFragmentId ?: R.id.navigation_services)
+            val report = binding.reportTypeSpinner.text.toString().trim()
+            val concern = binding.concernSpinner.text.toString().trim()
+            val concernDescription = binding.concernDescription.text.toString().trim()
+
+            if (report.isNotEmpty() || concern.isNotEmpty() || concernDescription.isNotEmpty()) {
+                DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to exit? Changes will not be saved.") { sweetAlertDialog ->
+                    sweetAlertDialog.dismissWithAnimation()
+                    val bundle = Bundle().apply {
+                        putInt("selectedFragmentId", selectedFragmentId ?: R.id.navigation_services)
+                    }
+                    findNavController().navigate(R.id.userHolderFragment, bundle)
+                }
+            } else {
+                findNavController().navigateUp()
             }
-            findNavController().navigate(R.id.userHolderFragment, bundle)
         }
-        // Handle back button press
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                val bundle = Bundle().apply {
-                    putInt("selectedFragmentId", selectedFragmentId ?: R.id.navigation_services)
+                val report = binding.reportTypeSpinner.text.toString().trim()
+                val concern = binding.concernSpinner.text.toString().trim()
+                val concernDescription = binding.concernDescription.text.toString().trim()
+
+                if (report.isNotEmpty() || concern.isNotEmpty() || concernDescription.isNotEmpty()) {
+                    DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to exit? Changes will not be saved.") { sweetAlertDialog ->
+                        sweetAlertDialog.dismissWithAnimation()
+                        val bundle = Bundle().apply {
+                            putInt("selectedFragmentId", selectedFragmentId ?: R.id.navigation_services)
+                        }
+                        findNavController().navigate(R.id.userHolderFragment, bundle)
+                    }
+                } else {
+                    findNavController().navigateUp()
                 }
-                findNavController().navigate(R.id.userHolderFragment, bundle)
             }
         })
+
+
         auth = FirebaseAuth.getInstance()
         storage = FirebaseStorage.getInstance()
         progressDialog = ProgressDialog(this.requireContext())

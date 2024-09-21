@@ -16,15 +16,18 @@ import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.canorecoapp.R
 import com.example.canorecoapp.adapter.SignUpAdapters
 import com.example.canorecoapp.databinding.FragmentSignUpBinding
 import com.example.canorecoapp.utils.DateTimeUtils.Companion.getCurrentDate
 import com.example.canorecoapp.utils.DateTimeUtils.Companion.getCurrentTime
+import com.example.canorecoapp.utils.DialogUtils
 import com.example.canorecoapp.utils.FirebaseUtils
 import com.example.canorecoapp.viewmodels.SignUpViewModel
 import com.google.firebase.FirebaseException
@@ -56,7 +59,9 @@ class SignUpFragment : Fragment() {
     private lateinit var adapter: SignUpAdapters
     private lateinit var stepView: StepView
     private lateinit var viewModel: SignUpViewModel
-    private lateinit var progressDialog : ProgressDialog
+    private lateinit var loadingDialog: SweetAlertDialog
+    private lateinit var successDialog: SweetAlertDialog
+    private lateinit var warningMessage: SweetAlertDialog
     private lateinit var storage : FirebaseStorage
     private lateinit var fireStore : FirebaseFirestore
     private lateinit var storedVerificationId: String
@@ -82,12 +87,13 @@ class SignUpFragment : Fragment() {
         adapter = SignUpAdapters(requireActivity())
         storage = FirebaseStorage.getInstance()
         fireStore = FirebaseFirestore.getInstance()
-        progressDialog = ProgressDialog(this.requireContext())
-        progressDialog.setTitle("Please wait")
-        progressDialog.setCanceledOnTouchOutside(false)
         auth = FirebaseAuth.getInstance()
         viewPager.adapter = adapter
-
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                backItem()
+            }
+        })
         adapter.addFragment(StepOneFragment())
         adapter.addFragment(StepTwoFragment())
         adapter.addFragment(StepThreeFragment())
@@ -107,21 +113,30 @@ class SignUpFragment : Fragment() {
             }
         }
         binding.backButton.setOnClickListener {
-            findNavController().navigateUp()
+            DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to exit? Changes will not be saved."
+            ) { sweetAlertDialog ->
+                sweetAlertDialog.dismissWithAnimation()
+                findNavController().navigate(R.id.signInFragment)
+            }
         }
-
     }
 
+    fun backItem() {
+        val currentItem = viewPager.currentItem
+        val nextItem = currentItem - 1
+        if (nextItem >= 0) {
+            viewPager.currentItem = nextItem
+        }
+    }
 
-
-    fun nextItem(){
+    fun nextItem() {
         val currentItem = viewPager.currentItem
         val nextItem = currentItem + 1
         if (nextItem < adapter.itemCount) {
             viewPager.currentItem = nextItem
-
         }
     }
+
     fun validateFragmentOne(){
         val firstName = viewModel.firstName
         val lastName = viewModel.lastName
@@ -206,7 +221,6 @@ class SignUpFragment : Fragment() {
             return
         }
         else{
-            progressDialog.dismiss()
             createUserAccount()
         }
 
@@ -214,15 +228,14 @@ class SignUpFragment : Fragment() {
     }
 
     private fun createUserAccount() {
-        progressDialog.setMessage("Creating Account...")
-        progressDialog.show()
+        loadingDialog = DialogUtils.showLoading(requireActivity())
+        loadingDialog.show()
         val email = viewModel.email
         val password = viewModel.password
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val authResult = auth.createUserWithEmailAndPassword(email, password).await()
-                val user = auth.currentUser
-                verifyEmail(user)
+
                 val fcmToken = FirebaseMessaging.getInstance().token.await()
 
                 withContext(Dispatchers.Main) {
@@ -230,7 +243,7 @@ class SignUpFragment : Fragment() {
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    progressDialog.dismiss()
+                    loadingDialog.dismiss()
                     Toast.makeText(
                         this@SignUpFragment.requireContext(),
                         "Failed Creating Account or ${e.message}",
@@ -241,8 +254,8 @@ class SignUpFragment : Fragment() {
         }
     }
     private fun uploadImage( token: String) {
-        progressDialog.setMessage("Uploading Image...")
-        progressDialog.show()
+        loadingDialog = DialogUtils.showLoading(requireActivity())
+        loadingDialog.show()
 
         val reference = storage.reference.child("profile")
             .child(token!!)
@@ -253,7 +266,7 @@ class SignUpFragment : Fragment() {
                         uploadToFirebase(token, image.toString())
                     }
                 } else {
-                    progressDialog.dismiss()
+                    loadingDialog.dismiss()
                     Toast.makeText(
                         this@SignUpFragment.requireContext(),
                         "Error uploading image",
@@ -264,8 +277,7 @@ class SignUpFragment : Fragment() {
         }
     }
     private fun uploadToFirebase(token: String?, imageUrl: String) {
-        progressDialog.setMessage("Saving Account...")
-        progressDialog.show()
+
         val firstName = viewModel.firstName
         val lastName = viewModel.lastName
         val email = viewModel.email
@@ -300,7 +312,9 @@ class SignUpFragment : Fragment() {
                 .set(user)
                 .addOnCompleteListener { task ->
 
-                    progressDialog.dismiss()
+                    loadingDialog.dismiss()
+                    successDialog = DialogUtils.showSuccessMessage(requireActivity(), "Success", "Account created successfully")
+                    successDialog.show()
                     if (task.isSuccessful) {
                         findNavController().apply {
                             popBackStack(R.id.signUpFragment, false)
@@ -316,7 +330,7 @@ class SignUpFragment : Fragment() {
                     }
                 }
         } catch (e: Exception) {
-            progressDialog.dismiss()
+            loadingDialog.dismiss()
             Toast.makeText(
                 this.requireContext(),
                 "Error uploading data: ${e.message}",
@@ -325,6 +339,7 @@ class SignUpFragment : Fragment() {
         }
     }
     private fun verifyEmail(user: FirebaseUser?) {
+        loadingDialog.dismiss()
         if (user == null) {
             Log.e("EmailVerification", "User is not logged in. Cannot send verification email.")
             return
@@ -333,7 +348,7 @@ class SignUpFragment : Fragment() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Log.d("EmailVerification", "Verification email sent to ${user.email}")
-                    showVerificationDialog(user)
+                  //  showVerificationDialog(user)
                 } else {
                     Log.e("EmailVerification", "Failed to send verification email to ${user.email}. Task failed.")
                     Toast.makeText(requireContext(), "Error sending verification email", Toast.LENGTH_SHORT).show()
@@ -361,7 +376,7 @@ class SignUpFragment : Fragment() {
 
         btnContinue.isEnabled = false
         btnResend.setOnClickListener {
-            verifyEmail(user)
+          //  verifyEmail(user)
         }
 
         lifecycleScope.launch {

@@ -45,11 +45,14 @@ object DialogUtils {
         val dialog = SweetAlertDialog(activity, SweetAlertDialog.WARNING_TYPE)
             .setTitleText(title)
             .setContentText(content)
-            .setConfirmText("Yes, delete it!")
+            .setConfirmText("Yes")
             .setConfirmClickListener(confirmListener)
+            .setCancelText("No")
+            .setCancelClickListener { it.dismissWithAnimation() }
         dialog.show()
-        return dialog // Return the dialog instance
+        return dialog
     }
+
 
     fun showSuccessMessage(activity: Activity?, title: String?, content: String?): SweetAlertDialog {
         val dialog = SweetAlertDialog(activity, SweetAlertDialog.SUCCESS_TYPE)

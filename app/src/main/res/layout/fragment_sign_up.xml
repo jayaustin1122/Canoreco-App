@@ -54,7 +54,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
-
         app:sv_animationType="Line"
         app:sv_doneCircleColor="@color/g_blue2"
         app:sv_doneCircleRadius="12dp"
