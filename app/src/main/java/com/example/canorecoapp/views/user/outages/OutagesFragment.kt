@@ -46,9 +46,7 @@ class OutagesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        arguments?.let {
-            selectedFragmentId = it.getInt("selectedFragmentId", R.id.navigation_services)
-        }
+
         binding.backButton.setOnClickListener {
             val bundle = Bundle().apply {
                 putInt("selectedFragmentId", selectedFragmentId ?: R.id.navigation_services)

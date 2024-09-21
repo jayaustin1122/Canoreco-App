@@ -60,12 +60,8 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
         return binding.root
     }
 
-    private fun resetFragmentWithProgress() {
-            reloadFragment()
-    }
-    private fun reloadFragment() {
-        findNavController().navigateUp()
-    }
+
+
     private fun loadJsonFromRaw(resourceId: Int): String? {
         return if (isAdded) {
             try {
@@ -182,8 +178,10 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
         checkPermissionLocation()
         loadingDialog = DialogUtils.showLoading(requireActivity())
         loadingDialog.show()
-        binding.fabRefresh.setOnClickListener{
-            resetFragmentWithProgress()
+        binding.fabRefresh.setOnClickListener {
+            loadingDialog = DialogUtils.showLoading(requireActivity())
+            loadingDialog.show()
+            showPolygonsBasedOnFirestore()
         }
         binding.viewListButton.setOnClickListener {
             val detailsFragment = ListOfFutureAndCurrentOutagesFragment()

@@ -159,4 +159,13 @@
         android:name="com.example.canorecoapp.views.user.bayadcenterandbusinesscenter.ViewMapMarkerClickFragment"
         android:label="fragment_view_map_marker_click"
         tools:layout="@layout/fragment_view_map_marker_click" />
+    <fragment
+        android:id="@+id/futureOutagesMapFragment"
+        android:name="com.example.canorecoapp.views.user.outages.FutureOutagesMapFragment"
+        android:label="fragment_future_outages_map"
+        tools:layout="@layout/fragment_future_outages_map" >
+        <action
+            android:id="@+id/action_futureOutagesMapFragment_to_outagesFragment"
+            app:destination="@id/outagesFragment" />
+    </fragment>
 </navigation>
