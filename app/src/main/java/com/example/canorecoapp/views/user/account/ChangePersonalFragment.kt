@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.example.canorecoapp.R
 
 import com.example.canorecoapp.databinding.FragmentChangePersonalBinding
 import com.example.canorecoapp.utils.DialogUtils
@@ -69,7 +70,10 @@ class ChangePersonalFragment : Fragment() {
             DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to exit? Changes will not be saved."
             ) { sweetAlertDialog ->
                 sweetAlertDialog.dismissWithAnimation()
-                findNavController().navigateUp()
+                val bundle = Bundle().apply {
+                    putInt("selectedFragmentId", null ?: R.id.navigation_account)
+                }
+                findNavController().navigate(R.id.userHolderFragment, bundle)
             }
         }
 

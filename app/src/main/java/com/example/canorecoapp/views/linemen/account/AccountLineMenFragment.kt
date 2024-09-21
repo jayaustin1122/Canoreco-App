@@ -27,6 +27,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog
 import com.bumptech.glide.Glide
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentAccountLineMenBinding
+import com.example.canorecoapp.utils.DialogUtils
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.textfield.TextInputEditText
@@ -58,23 +59,29 @@ class AccountLineMenFragment : Fragment() {
         Handler(Looper.getMainLooper()).postDelayed({
             loadUsersInfo()
         }, 600)
-
         binding.logoutCard.setOnClickListener {
-            val progressDialog = SweetAlertDialog(requireContext(), SweetAlertDialog.PROGRESS_TYPE)
-            progressDialog.titleText = "Logging out..."
-            progressDialog.show()
-
-            auth.signOut()
-            Handler(Looper.getMainLooper()).postDelayed({
-                progressDialog.changeAlertType(SweetAlertDialog.SUCCESS_TYPE)
-                progressDialog.titleText = "Logged Out!"
-                progressDialog.confirmText = "OK"
-                progressDialog.setCanceledOnTouchOutside(false)
-                progressDialog.setConfirmClickListener {
-                    findNavController().navigate(R.id.signInFragment)
-                    progressDialog.dismiss()
-                }
-            }, 1000)
+            DialogUtils.showWarningMessage(requireActivity(), "Logout", "Are you sure you want to Logout?"
+            ) { sweetAlertDialog ->
+                sweetAlertDialog.dismissWithAnimation()
+                auth.signOut()
+                findNavController().navigate(R.id.signInFragment)
+            }
+        }
+        binding.logout.setOnClickListener {
+            DialogUtils.showWarningMessage(requireActivity(), "Logout", "Are you sure you want to Logout?"
+            ) { sweetAlertDialog ->
+                sweetAlertDialog.dismissWithAnimation()
+                auth.signOut()
+                findNavController().navigate(R.id.signInFragment)
+            }
+        }
+        binding.logoutIcon.setOnClickListener {
+            DialogUtils.showWarningMessage(requireActivity(), "Logout", "Are you sure you want to Logout?"
+            ) { sweetAlertDialog ->
+                sweetAlertDialog.dismissWithAnimation()
+                auth.signOut()
+                findNavController().navigate(R.id.signInFragment)
+            }
         }
         binding.updateProfile.setOnClickListener {
             findNavController().navigate(R.id.changePersonalFragment)

@@ -35,7 +35,10 @@ class ChangePasswordFragment : Fragment() {
             DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to exit? Changes will not be saved."
             ) { sweetAlertDialog ->
                 sweetAlertDialog.dismissWithAnimation()
-                findNavController().navigateUp()
+                val bundle = Bundle().apply {
+                    putInt("selectedFragmentId", null ?: R.id.navigation_account)
+                }
+                findNavController().navigate(R.id.userHolderFragment, bundle)
             }
         }
     }
