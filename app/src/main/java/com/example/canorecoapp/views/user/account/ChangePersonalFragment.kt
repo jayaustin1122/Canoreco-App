@@ -22,6 +22,7 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 
 import com.example.canorecoapp.databinding.FragmentChangePersonalBinding
+import com.example.canorecoapp.utils.DialogUtils
 import com.example.canorecoapp.utils.FirebaseUtils
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.firebase.auth.FirebaseAuth
@@ -65,8 +66,13 @@ class ChangePersonalFragment : Fragment() {
             showImagePickerDialog()
         }
         binding.backButton.setOnClickListener {
-            findNavController().navigateUp()
+            DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to exit? Changes will not be saved."
+            ) { sweetAlertDialog ->
+                sweetAlertDialog.dismissWithAnimation()
+                findNavController().navigateUp()
+            }
         }
+
         binding.btnSave.setOnClickListener {
 
             uploadImage()

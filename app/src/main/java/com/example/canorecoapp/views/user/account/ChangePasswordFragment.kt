@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentChangePasswordBinding
+import com.example.canorecoapp.utils.DialogUtils
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
@@ -31,7 +32,11 @@ class ChangePasswordFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
        loadUsersInfo()
         binding.backButton.setOnClickListener {
-            findNavController().navigateUp()
+            DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to exit? Changes will not be saved."
+            ) { sweetAlertDialog ->
+                sweetAlertDialog.dismissWithAnimation()
+                findNavController().navigateUp()
+            }
         }
     }
 
