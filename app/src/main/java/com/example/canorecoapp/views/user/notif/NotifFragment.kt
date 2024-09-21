@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.canorecoapp.adapter.NotifDetailsAdapter
 import com.example.canorecoapp.databinding.FragmentNotifBinding
 import com.example.canorecoapp.models.Notif
+import com.example.canorecoapp.utils.ProgressDialogUtils
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -70,7 +71,7 @@ class NotifFragment : Fragment() {
 
     }
 
-    private fun clearAllNotifications(notifyDataSetChanged: Unit) {
+    private fun clearAllNotifications() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val notificationsRef = db.collection("users")
             .document(userId)
@@ -91,7 +92,9 @@ class NotifFragment : Fragment() {
                         document.reference.delete()
                             .addOnSuccessListener {
                                 Log.d("NotificationService", "Notification ${document.id} deleted successfully")
-                                notifyDataSetChanged
+                                getAllNews()
+                                ProgressDialogUtils.dismissProgressDialog()
+                                
                             }
                             .addOnFailureListener { e ->
                                 Log.e("NotificationService", "Failed to delete notification ${document.id}", e)
@@ -223,7 +226,11 @@ class NotifFragment : Fragment() {
                         }
                         notifList.reverse()
                         Log.d("NewsFragment", "Fetched ${notifList.size} news items")
+                        binding.tvClearAll.setOnClickListener {
+                            ProgressDialogUtils.showProgressDialog(requireContext(),"Clearing Your Notification")
+                            clearAllNotifications()
 
+                        }
                         binding.recyclerNews.visibility = View.VISIBLE
 
                         lifecycleScope.launchWhenResumed {

@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,6 +31,7 @@ import java.util.Locale
 class BayadCentersFragment : Fragment() {
     private lateinit var binding : FragmentBayadCentersBinding
     private val firestore = FirebaseFirestore.getInstance()
+    private var selectedFragmentId: Int? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -41,9 +43,24 @@ class BayadCentersFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.backButton.setOnClickListener {
-            findNavController().navigateUp()
+        arguments?.let {
+            selectedFragmentId = it.getInt("selectedFragmentId", R.id.navigation_services)
         }
+        binding.backButton.setOnClickListener {
+            val bundle = Bundle().apply {
+                putInt("selectedFragmentId", selectedFragmentId ?: R.id.navigation_services)
+            }
+            findNavController().navigate(R.id.userHolderFragment, bundle)
+        }
+        // Handle back button press
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val bundle = Bundle().apply {
+                    putInt("selectedFragmentId", selectedFragmentId ?: R.id.navigation_services)
+                }
+                findNavController().navigate(R.id.userHolderFragment, bundle)
+            }
+        })
         // Set up the tabs
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Bayad Centers"))
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Business Centers"))

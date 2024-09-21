@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import android.widget.Toolbar
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.OptIn
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -65,9 +66,7 @@ class UserHolderFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         auth = FirebaseAuth.getInstance()
         fragmentManager = childFragmentManager
-        val homeFragment = HomeUserFragment()
-        val serviceFragment = ServicesUserFragment()
-        val accountUserFragment = AccountUserFragment()
+
         val sharedPreferences: SharedPreferences = requireActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
         val areGuidesShown = sharedPreferences.getBoolean("areGuidesShown", false)
         val areFinish = sharedPreferences.getBoolean("areFinish", false)
@@ -83,11 +82,6 @@ class UserHolderFragment : Fragment() {
         loadUsersInfo()
         val toolbar = binding.toolbar
 
-
-        // Restore the selected fragment ID if available
-        savedInstanceState?.let {
-            selectedFragmentId = it.getInt("selectedFragmentId", R.id.navigation_Home)
-        }
         toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.notif -> {
@@ -99,17 +93,39 @@ class UserHolderFragment : Fragment() {
             }
         }
 
+        // Check if arguments contain the selectedFragmentId and retrieve it
+        arguments?.let {
+            selectedFragmentId = it.getInt("selectedFragmentId", R.id.navigation_Home)
+        }
 
+// Restore the selected fragment ID from savedInstanceState (on configuration change)
+        savedInstanceState?.let {
+            selectedFragmentId = it.getInt("selectedFragmentId", R.id.navigation_Home)
+        }
+
+// Initialize your fragments
+        val homeFragment = HomeUserFragment()
+        val serviceFragment = ServicesUserFragment()
+        val accountUserFragment = AccountUserFragment()
+
+// Set up the BottomNavigationView and handle fragment transactions
         val bottomNavigationView: BottomNavigationView? = binding.bottomNavigationUser
         bottomNavigationView?.setOnNavigationItemSelectedListener { item ->
             selectedFragmentId = item.itemId
-            val selectedFragment: Fragment = when (item.itemId) {
 
+            val selectedFragment: Fragment = when (item.itemId) {
                 R.id.navigation_Home -> homeFragment
                 R.id.navigation_services -> serviceFragment
                 R.id.navigation_account -> accountUserFragment
                 else -> return@setOnNavigationItemSelectedListener false
             }
+
+            // Pass the selectedFragmentId to the fragment via a Bundle
+            val bundle = Bundle().apply {
+                putInt("selectedFragmentId", selectedFragmentId)
+            }
+            selectedFragment.arguments = bundle
+
             fragmentManager.beginTransaction()
                 .replace(R.id.fragment_containerUser, selectedFragment)
                 .commit()
@@ -117,6 +133,7 @@ class UserHolderFragment : Fragment() {
             true
         }
 
+// Set the initial fragment if savedInstanceState is null (first load)
         if (savedInstanceState == null) {
             val initialFragment = when (selectedFragmentId) {
                 R.id.navigation_Home -> homeFragment
@@ -125,16 +142,27 @@ class UserHolderFragment : Fragment() {
                 else -> homeFragment
             }
 
+            // Pass the initial item ID to the first fragment
+            val bundle = Bundle().apply {
+                putInt("selectedFragmentId", selectedFragmentId)
+            }
+            initialFragment.arguments = bundle
+
             fragmentManager.beginTransaction()
                 .replace(R.id.fragment_containerUser, initialFragment)
                 .commit()
 
-            bottomNavigationView?.selectedItemId =
-                selectedFragmentId
+            // Update the BottomNavigationView to reflect the selected item
+            bottomNavigationView?.selectedItemId = selectedFragmentId
         }
+
         loadNotificationBadge()
 
-
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                isEnabled = false
+            }
+        })
     }
 
 

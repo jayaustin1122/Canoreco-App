@@ -5,6 +5,8 @@ import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -15,10 +17,12 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.canorecoapp.R
 import com.example.canorecoapp.adapter.MaintenanceAdapter
 import com.example.canorecoapp.databinding.FragmentViewMapsWithAreasBinding
 import com.example.canorecoapp.models.Maintenance
+import com.example.canorecoapp.utils.DialogUtils
 import com.example.canorecoapp.utils.ProgressDialogUtils
 import com.example.canorecoapp.utils.ProgressDialogUtils.dismissProgressDialog
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -46,6 +50,7 @@ class ViewMapsWithAreasFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
     private lateinit var binding: FragmentViewMapsWithAreasBinding
     private var gMap: GoogleMap? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var loadingDialog: SweetAlertDialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,7 +65,8 @@ class ViewMapsWithAreasFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ProgressDialogUtils.showProgressDialog(requireContext(),"Loading...")
+        loadingDialog = DialogUtils.showLoading(requireActivity())
+        loadingDialog.show()
         binding.backButton.setOnClickListener {
             findNavController().navigateUp()
         }
@@ -166,7 +172,9 @@ class ViewMapsWithAreasFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
                     }
                 }
             }
-            dismissProgressDialog()
+            Handler(Looper.getMainLooper()).postDelayed({
+                loadingDialog.dismiss()
+            }, 1000)
 
         } catch (e: JSONException) {
             Log.e("JSON", "Error parsing JSON data: ${e.message}")

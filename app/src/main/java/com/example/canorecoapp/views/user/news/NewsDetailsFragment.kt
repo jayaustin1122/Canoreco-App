@@ -9,16 +9,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.canorecoapp.R
 import com.example.canorecoapp.adapter.NewsImagesAdapter
 import com.example.canorecoapp.databinding.FragmentNewsDetailsBinding
+import com.example.canorecoapp.utils.DialogUtils
 import com.example.canorecoapp.utils.ProgressDialogUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
@@ -30,6 +34,7 @@ import java.util.Locale
 class NewsDetailsFragment : Fragment() {
     private lateinit var binding: FragmentNewsDetailsBinding
     private var db  = Firebase.firestore
+    private lateinit var loadingDialog: SweetAlertDialog
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,7 +49,8 @@ class NewsDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val title = arguments?.getString("title")
         val from = arguments?.getString("from")
-        ProgressDialogUtils.showProgressDialog(requireContext(),"PLease Wait...")
+        loadingDialog = DialogUtils.showLoading(requireActivity())
+        loadingDialog.show()
         Log.d("Firestoress", "Querying document with category of: $from")
 
         getNewsDetailsByTimestamp(title,from)
@@ -121,7 +127,7 @@ class NewsDetailsFragment : Fragment() {
                             binding.ss.visibility = View.GONE
                         }
                         setupRecyclerView(images)
-                        ProgressDialogUtils.dismissProgressDialog()
+                        loadingDialog.dismissWithAnimation()
                     }
                 } else {
                     Toast.makeText(

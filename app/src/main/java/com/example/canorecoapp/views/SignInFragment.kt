@@ -6,6 +6,7 @@ import android.app.Dialog
 import android.app.ProgressDialog
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.util.Patterns
 import androidx.fragment.app.Fragment
@@ -20,9 +21,11 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.DialogReviewBinding
 import com.example.canorecoapp.databinding.FragmentSignInBinding
+import com.example.canorecoapp.utils.DialogUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
@@ -42,7 +45,8 @@ import kotlinx.coroutines.withContext
 class SignInFragment : Fragment() {
     private lateinit var binding : FragmentSignInBinding
     private lateinit var auth : FirebaseAuth
-    private lateinit var progressDialog : ProgressDialog
+    private lateinit var loadingDialog: SweetAlertDialog
+    private lateinit var successDialog: SweetAlertDialog
     private var backPressTime = 0L
     private var doubleBackToExitPressedOnce = false
     private val handler = Handler()
@@ -60,9 +64,7 @@ class SignInFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         auth = FirebaseAuth.getInstance()
         fireStore = FirebaseFirestore.getInstance()
-        progressDialog = ProgressDialog(this.requireContext())
-        progressDialog.setTitle("Please wait")
-        progressDialog.setCanceledOnTouchOutside(false)
+
         handler.postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
         binding.buttonLoginLogin.setOnClickListener {
             validateData()
@@ -82,6 +84,8 @@ class SignInFragment : Fragment() {
     var pass = ""
 
     private fun validateData() {
+        loadingDialog = DialogUtils.showLoading(requireActivity())
+        loadingDialog.show()
         email = binding.etUsernameLogin.text.toString().trim()
         pass = binding.etPass.text.toString().trim()
 
@@ -124,8 +128,6 @@ class SignInFragment : Fragment() {
     private fun loginUser() {
         val email = binding.etUsernameLogin.text.toString()
         val password = binding.etPass.text.toString()
-        progressDialog.setMessage("Logging In...")
-        progressDialog.show()
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 auth.signInWithEmailAndPassword(email,password).await()
@@ -136,7 +138,7 @@ class SignInFragment : Fragment() {
             }
             catch (e : Exception){
                 withContext(Dispatchers.Main){
-                    progressDialog.dismiss()
+                    loadingDialog.dismiss()
                     Toast.makeText(
                         this@SignInFragment.requireContext(),
                         "${e.message}",
@@ -148,24 +150,23 @@ class SignInFragment : Fragment() {
         }
     }
     private fun checkUser() {
-        progressDialog.setTitle("Checking user")
-        progressDialog.setMessage("Signing In...")
-        progressDialog.show()
+
 
         val firebaseUser = auth.currentUser
 
         if (firebaseUser != null) {
             val dbref = FirebaseFirestore.getInstance().collection("users").document(firebaseUser.uid)
             dbref.get().addOnCompleteListener { task ->
-                progressDialog.dismiss()
                 if (task.isSuccessful) {
                     val snapshot = task.result
                     if (snapshot != null && snapshot.exists()) {
                         val userType = snapshot.getString("userType")
                         val access = snapshot.getBoolean("access")
+                        val name = snapshot.getString("firstName")
                         when (userType) {
                             "linemen" -> {
                                 if (access == false) {
+                                    loadingDialog.dismiss()
                                     val dialogBinding = DialogReviewBinding.inflate(layoutInflater)
                                     val dialog = Dialog(this@SignInFragment.requireContext())
                                     dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -174,24 +175,25 @@ class SignInFragment : Fragment() {
                                     auth.signOut()
                                 }
                                 else{
-
+                                    loadingDialog.dismiss()
+                                    successDialog = DialogUtils.showSuccessMessage(requireActivity(), "Log In Successful", "Welcome $name")
+                                    successDialog.show()
                                 Toast.makeText(
                                     this@SignInFragment.requireContext(),
                                     "Login Successfully",
                                     Toast.LENGTH_SHORT
                                 ).show()
-                                progressDialog.setMessage("Redirecting...")
-                                progressDialog.show()
                                 findNavController().apply {
                                     popBackStack(R.id.splashFragment, false)
                                     navigate(R.id.adminHolderFragment)
                                 }
 
-                                progressDialog.dismiss()
+                                loadingDialog.dismiss()
                             }
 
                             }
                             "member" -> {
+                                loadingDialog.dismiss()
                                 if (auth.currentUser?.isEmailVerified == true) {
                                     findNavController().apply {
                                         popBackStack(R.id.splashFragment, false)
@@ -214,7 +216,7 @@ class SignInFragment : Fragment() {
                 }
             }
         } else {
-            progressDialog.dismiss()
+            loadingDialog.dismiss()
             Toast.makeText(this@SignInFragment.requireContext(), "User not authenticated.", Toast.LENGTH_SHORT).show()
         }
     }

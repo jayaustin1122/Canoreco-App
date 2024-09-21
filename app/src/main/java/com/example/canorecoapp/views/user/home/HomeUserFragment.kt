@@ -26,6 +26,7 @@ import com.example.canorecoapp.adapter.NewsAdapter
 import com.example.canorecoapp.databinding.FragmentHomeUserBinding
 import com.example.canorecoapp.models.Maintenance
 import com.example.canorecoapp.models.News
+import com.example.canorecoapp.utils.DialogUtils
 import com.example.canorecoapp.utils.ProgressDialogUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -45,6 +46,7 @@ import java.util.Locale
     private lateinit var adapter: NewsAdapter
     private lateinit var adapter2: MaintenanceAdapter
      private lateinit var auth: FirebaseAuth
+     private lateinit var loadingDialog: SweetAlertDialog
 
      override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,10 +59,10 @@ import java.util.Locale
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ProgressDialogUtils.showProgressDialog(requireContext(),"PLease Wait...")
+        loadingDialog = DialogUtils.showLoading(requireActivity())
         auth = FirebaseAuth.getInstance()
         val sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
-
+        loadingDialog.show()
         loadUsersInfo()
         getNews()
         getMaintenances()
@@ -198,19 +200,29 @@ import java.util.Locale
                      val imageList = document.get("image") as? List<String> ?: emptyList()
                      val firstImage = imageList.getOrNull(0) ?: ""
 
+                     // Use a local drawable image if the image list is empty
+                     val imageToUse = if (firstImage.isEmpty()) {
+                         // Get the resource ID of the drawable
+                         R.drawable.icon_home
+                     } else {
+                         firstImage
+                     }
+
                      freeItems.add(News(
                          title,
                          shortDesc,
                          "",
-                         firstImage,
+                         imageToUse.toString(), // Ensure the image is passed as a string for the adapter
                          timestampString,
                          formattedDate,
                          "",
                          "",
                          "",
                          "",
-                         category))
+                         category
+                     ))
                  }
+
 
                  lifecycleScope.launchWhenResumed {
                      adapter = NewsAdapter(this@HomeUserFragment.requireContext(), findNavController(), freeItems)
@@ -281,7 +293,9 @@ import java.util.Locale
                         category))
                     itemCount++
                 }
-                ProgressDialogUtils.dismissProgressDialog()
+                if (loadingDialog.isShowing) {
+                    loadingDialog.dismissWithAnimation()
+                }
                 lifecycleScope.launchWhenResumed {
                     adapter2 = MaintenanceAdapter(this@HomeUserFragment.requireContext(), findNavController(), freeItems)
                     binding.rvMaintenanceActivities.setHasFixedSize(true)

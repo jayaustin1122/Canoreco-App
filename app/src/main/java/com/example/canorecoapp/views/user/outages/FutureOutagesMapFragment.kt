@@ -15,8 +15,10 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.findNavController
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentFutureOutagesMapBinding
+import com.example.canorecoapp.utils.DialogUtils
 import com.example.canorecoapp.utils.ProgressDialogUtils
 import com.example.canorecoapp.utils.ProgressDialogUtils.dismissProgressDialog
 import com.example.canorecoapp.views.user.news.DetailsOutageFragment
@@ -46,6 +48,7 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
     private lateinit var binding : FragmentFutureOutagesMapBinding
     private var gMap: GoogleMap? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var loadingDialog: SweetAlertDialog
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -57,16 +60,8 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
         return binding.root
     }
 
-    private fun resetFragmentWithProgress() {
-        ProgressDialogUtils.showProgressDialog(requireContext(),"Loading...")
-        Handler(Looper.getMainLooper()).post {
-            reloadFragment()
-            dismissProgressDialog()
-        }
-    }
-    private fun reloadFragment() {
-        findNavController().navigateUp()
-    }
+
+
     private fun loadJsonFromRaw(resourceId: Int): String? {
         return if (isAdded) {
             try {
@@ -169,7 +164,9 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
                     }
                 }
             }
-            ProgressDialogUtils.dismissProgressDialog()
+            Handler(Looper.getMainLooper()).postDelayed({
+                loadingDialog.dismiss()
+            }, 1000)
             getCurrentLocation()
         } catch (e: JSONException) {
             Log.e("JSON", "Error parsing JSON data: ${e.message}")
@@ -178,10 +175,13 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ProgressDialogUtils.showProgressDialog(requireContext(),"Loading...")
         checkPermissionLocation()
-        binding.fabRefresh.setOnClickListener{
-            resetFragmentWithProgress()
+        loadingDialog = DialogUtils.showLoading(requireActivity())
+        loadingDialog.show()
+        binding.fabRefresh.setOnClickListener {
+            loadingDialog = DialogUtils.showLoading(requireActivity())
+            loadingDialog.show()
+            showPolygonsBasedOnFirestore()
         }
         binding.viewListButton.setOnClickListener {
             val detailsFragment = ListOfFutureAndCurrentOutagesFragment()

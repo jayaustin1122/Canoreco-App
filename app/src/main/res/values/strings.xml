@@ -16,6 +16,8 @@
     <string name="birth_date">Birth Date</string>
     <string name="update">Update</string>
     <string name="devices">Devices</string>
+    <string name="your_account_is_under_review">Your account is under review</string>
+    <string name="account_review_details">Your account details has been submitted and will be reviewed by the administrators. You will received an email if the process has been completed.</string>
     <string-array name="municipalities_camarines_norte">
         <item>Angas, Basud</item>
         <item>Bactas, Basud</item>

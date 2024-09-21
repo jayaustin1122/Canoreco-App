@@ -52,16 +52,12 @@
         android:id="@+id/outagesFragment"
         android:name="com.example.canorecoapp.views.user.outages.OutagesFragment"
         android:label="fragment_outages"
-        tools:layout="@layout/fragment_outages" />
-    <fragment
-        android:id="@+id/billingInformationFragment"
-        android:name="com.example.canorecoapp.views.user.billing.BillingInformationFragment"
-        tools:layout="@layout/fragment_billing_information"
-        android:label="BillingInformationFragment" >
+        tools:layout="@layout/fragment_outages" >
         <action
-            android:id="@+id/action_billingInformationFragment_to_outagesFragment"
-            app:destination="@id/outagesFragment" />
+            android:id="@+id/action_outagesFragment_to_userHolderFragment"
+            app:destination="@id/userHolderFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/reportFragment"
         android:name="com.example.canorecoapp.views.user.complaints.ReportFragment"
@@ -114,7 +110,11 @@
         android:id="@+id/listOfFutureAndCurrentOutagesFragment"
         android:name="com.example.canorecoapp.views.user.outages.ListOfFutureAndCurrentOutagesFragment"
         android:label="fragment_list_of_future_and_current_outages"
-        tools:layout="@layout/fragment_list_of_future_and_current_outages" />
+        tools:layout="@layout/fragment_list_of_future_and_current_outages" >
+        <action
+            android:id="@+id/action_listOfFutureAndCurrentOutagesFragment_to_outagesFragment"
+            app:destination="@id/outagesFragment" />
+    </fragment>
     <fragment
         android:id="@+id/listOfMyComplaintsFragment"
         android:name="com.example.canorecoapp.views.user.complaints.ListOfMyComplaintsFragment"
@@ -159,4 +159,13 @@
         android:name="com.example.canorecoapp.views.user.bayadcenterandbusinesscenter.ViewMapMarkerClickFragment"
         android:label="fragment_view_map_marker_click"
         tools:layout="@layout/fragment_view_map_marker_click" />
+    <fragment
+        android:id="@+id/futureOutagesMapFragment"
+        android:name="com.example.canorecoapp.views.user.outages.FutureOutagesMapFragment"
+        android:label="fragment_future_outages_map"
+        tools:layout="@layout/fragment_future_outages_map" >
+        <action
+            android:id="@+id/action_futureOutagesMapFragment_to_outagesFragment"
+            app:destination="@id/outagesFragment" />
+    </fragment>
 </navigation>
