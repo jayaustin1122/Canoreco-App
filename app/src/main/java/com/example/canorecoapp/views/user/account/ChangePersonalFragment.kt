@@ -83,7 +83,6 @@ class ChangePersonalFragment : Fragment() {
     }
     private fun uploadImage() {
         if (selectedImage == Uri.EMPTY) {
-            // No new image selected, just update Firestore with the existing data
             val currentUser = FirebaseAuth.getInstance().currentUser
             currentUser?.let { user ->
                 val db = FirebaseFirestore.getInstance()
