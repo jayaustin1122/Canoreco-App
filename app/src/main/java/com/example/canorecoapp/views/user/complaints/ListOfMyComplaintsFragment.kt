@@ -1,5 +1,6 @@
 package com.example.canorecoapp.views.user.complaints
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -81,6 +82,7 @@ class ListOfMyComplaintsFragment : Fragment() {
 
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun retrieveAllComplaints() {
         val userId = Firebase.auth.currentUser?.uid
         if (userId == null) {
@@ -121,7 +123,10 @@ class ListOfMyComplaintsFragment : Fragment() {
                     binding.rvListOutages.adapter = adapter
                 }
             } else {
-                Log.d("NewsFragment", "No documents found")
+                newsList.clear()
+                adapter.notifyDataSetChanged()
+                binding.tvEmpty.visibility = View.VISIBLE
+                binding.imgEmpty.visibility = View.VISIBLE
             }
         }
     }

@@ -52,8 +52,17 @@ class NewsAdapter(private val context: Context,
         holder.shortDescription.text = newsDesc
         holder.date.text = date
 
+        val imageSource = if (image.isEmpty()) {
+            Log.d("NewsDetailsAdapter", "Image URL is empty. Loading placeholder image.")
+            R.drawable.icon_canoreco
+        } else {
+            Log.d("NewsDetailsAdapter", "Image URL found: $image")
+            image
+        }
+
         Glide.with(this@NewsAdapter.context)
-            .load(image ?: R.drawable.img_item_placeholder_small)
+            .load(imageSource)
+            .error(R.drawable.icon_canoreco)
             .into(holder.image)
 
         holder.itemView.setOnClickListener {

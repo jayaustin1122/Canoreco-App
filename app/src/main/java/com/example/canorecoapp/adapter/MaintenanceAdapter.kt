@@ -51,8 +51,17 @@ class MaintenanceAdapter(private val context: Context,
         holder.title.text = newsTitle
         holder.shortDescription.text = newsDesc
         holder.date.text = date
+        val imageSource = if (image.isEmpty()) {
+            Log.d("NewsDetailsAdapter", "Image URL is empty. Loading placeholder image.")
+            R.drawable.icon_canoreco
+        } else {
+            Log.d("NewsDetailsAdapter", "Image URL found: $image")
+            image
+        }
+
         Glide.with(this@MaintenanceAdapter.context)
-            .load(image ?: R.drawable.img_item_placeholder)
+            .load(imageSource)
+            .error(R.drawable.icon_canoreco)
             .into(holder.image)
 
         holder.itemView.setOnClickListener {

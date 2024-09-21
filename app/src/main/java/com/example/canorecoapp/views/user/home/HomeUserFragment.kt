@@ -200,19 +200,29 @@ import java.util.Locale
                      val imageList = document.get("image") as? List<String> ?: emptyList()
                      val firstImage = imageList.getOrNull(0) ?: ""
 
+                     // Use a local drawable image if the image list is empty
+                     val imageToUse = if (firstImage.isEmpty()) {
+                         // Get the resource ID of the drawable
+                         R.drawable.icon_home
+                     } else {
+                         firstImage
+                     }
+
                      freeItems.add(News(
                          title,
                          shortDesc,
                          "",
-                         firstImage,
+                         imageToUse.toString(), // Ensure the image is passed as a string for the adapter
                          timestampString,
                          formattedDate,
                          "",
                          "",
                          "",
                          "",
-                         category))
+                         category
+                     ))
                  }
+
 
                  lifecycleScope.launchWhenResumed {
                      adapter = NewsAdapter(this@HomeUserFragment.requireContext(), findNavController(), freeItems)

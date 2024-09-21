@@ -162,6 +162,11 @@ class ListOfFutureAndCurrentOutagesFragment : Fragment() {
             val selectedLocations = mutableListOf<String>()
 
             for (document in querySnapshot.documents) {
+                if (document == null) {
+                    binding.tvEmpty.visibility = View.VISIBLE
+                    binding.imgEmpty.visibility = View.VISIBLE
+                    continue
+                }
                 val date = document.getString("date") ?: ""
                 val startTime = document.getString("startTime") ?: ""
                 val endTime = document.getString("endTime") ?: ""
@@ -202,16 +207,24 @@ class ListOfFutureAndCurrentOutagesFragment : Fragment() {
     private fun updateRecyclerView() {
         lifecycleScope.launchWhenResumed {
             val combinedList = (barangaysWithDamagedDevices + firestoreOutages).toList().sorted()
-            adapter = ListOfOutagesAdapter(
-                this@ListOfFutureAndCurrentOutagesFragment.requireContext(),
-                findNavController(),
-                combinedList,
-                from
-            )
-            binding.rvListOutages.setHasFixedSize(true)
-            val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-            binding.rvListOutages.layoutManager = layoutManager
-            binding.rvListOutages.adapter = adapter
+
+            if (combinedList.isNullOrEmpty()) {
+                binding.tvEmpty.visibility = View.VISIBLE
+                binding.imgEmpty.visibility = View.VISIBLE
+            } else {
+
+                adapter = ListOfOutagesAdapter(
+                    this@ListOfFutureAndCurrentOutagesFragment.requireContext(),
+                    findNavController(),
+                    combinedList,
+                    from
+                )
+                binding.rvListOutages.setHasFixedSize(true)
+                val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                binding.rvListOutages.layoutManager = layoutManager
+                binding.rvListOutages.adapter = adapter
+            }
         }
     }
+
 }

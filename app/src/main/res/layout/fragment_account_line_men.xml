@@ -166,6 +166,7 @@
                 android:layout_marginVertical="@dimen/dimen_10dp"
                 android:layout_marginHorizontal="@dimen/dimen_20dp"
                 app:cardCornerRadius="8dp"
+                android:elevation="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
