@@ -116,6 +116,17 @@ class SignUpFragment : Fragment() {
             DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to exit? Changes will not be saved."
             ) { sweetAlertDialog ->
                 sweetAlertDialog.dismissWithAnimation()
+                viewModel.firstName = ""
+                viewModel.lastName
+                viewModel.month
+                viewModel.day
+                viewModel.year
+                viewModel.phone
+                viewModel.barangay
+                viewModel.address
+                viewModel.email
+                viewModel.password
+                viewModel.confirmPass
                 findNavController().navigate(R.id.signInFragment)
             }
         }
