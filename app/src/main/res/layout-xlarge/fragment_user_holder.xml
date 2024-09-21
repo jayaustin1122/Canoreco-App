@@ -29,6 +29,15 @@
                 android:layout_height="40dp"
                 android:src="@drawable/logo"
                 android:layout_gravity="start"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CANORECO"
+                android:paddingStart="14sp"
+                android:elevation="@dimen/dimen_10dp"
+                android:fontFamily="@font/roboto_bold"
+                android:textColor="@color/text_light_color"
+                android:textSize="@dimen/dimen_24dp"/>
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
