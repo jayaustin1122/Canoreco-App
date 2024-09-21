@@ -14,7 +14,7 @@
         android:layout_marginBottom="20dp"
         android:backgroundTint="@color/background_color"
         android:src="@drawable/icon_refresh"
-        app:layout_constraintBottom_toTopOf="@+id/view_list_button"
+        app:layout_constraintBottom_toTopOf="@+id/bottomLinearLayout"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <fragment
@@ -23,23 +23,30 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
 
-        app:layout_constraintBottom_toTopOf="@+id/view_list_button"
+        app:layout_constraintBottom_toTopOf="@+id/bottomLinearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/view_list_button"
+    <LinearLayout
+        android:id="@+id/bottomLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/primary_main_color"
-        android:fontFamily="@font/roboto_medium"
-        android:text="View List"
-        android:textColor="@color/primary_light_color"
-        app:cornerRadius="10dp"
+        android:paddingTop="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/view_list_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/primary_main_color"
+            android:fontFamily="@font/roboto_medium"
+            android:text="View List"
+            android:textColor="@color/primary_light_color"
+            app:cornerRadius="10dp"/>
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

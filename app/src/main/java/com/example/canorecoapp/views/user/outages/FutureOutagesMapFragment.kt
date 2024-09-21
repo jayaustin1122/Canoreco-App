@@ -192,6 +192,7 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
             findNavController().navigate(R.id.listOfFutureAndCurrentOutagesFragment, bundle)
         }
     }
+
     private fun calculateCentroid(latLngList: List<LatLng>): LatLng {
         var area = 0.0
         var centroidLat = 0.0
@@ -214,6 +215,7 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
 
         return LatLng(centroidLat, centroidLng)
     }
+
     private fun zoomIn(location: LatLng? = null) {
         gMap?.let {
             val cameraPosition = it.cameraPosition
@@ -299,13 +301,12 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
 
     override fun onMapReady(googleMap: GoogleMap) {
         gMap = googleMap
-        val sanVicenteCamarinesNorte = LatLng(14.08446, 122.88797)
-        val zoomLevel = 5.0f
+        val camarinesNorte = LatLng(14.222795, 122.689153)
+        val zoomLevel = 9.4f
         gMap?.setOnMarkerClickListener(this)
         gMap?.setOnPolygonClickListener(this)
-        gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(sanVicenteCamarinesNorte, zoomLevel))
+        gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(camarinesNorte, zoomLevel))
         showPolygonsBasedOnFirestore()
-
     }
 
     companion object {
