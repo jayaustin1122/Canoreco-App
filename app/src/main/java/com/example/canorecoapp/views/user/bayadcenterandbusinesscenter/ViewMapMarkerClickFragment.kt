@@ -103,8 +103,8 @@ class ViewMapMarkerClickFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnM
             throw IllegalArgumentException("Resource not found: $vectorResId")
         }
 
-        val width = dpToPx(context, 60)
-        val height = dpToPx(context, 60)
+        val width = dpToPx(context, 44)
+        val height = dpToPx(context, 57)
         vectorDrawable.setBounds(0, 0, width, height)
 
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
@@ -209,14 +209,11 @@ class ViewMapMarkerClickFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnM
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
     override fun onMapReady(googleMap: GoogleMap) {
-
         gMap = googleMap
-
-        val sanVicenteCamarinesNorte = LatLng(14.08446, 122.88797)
-        val zoomLevel = 5.0f
-
+        val camarinesNorte = LatLng(14.222795, 122.689153)
+        val zoomLevel = 9.4f
         gMap?.setOnMarkerClickListener(this)
-        gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(sanVicenteCamarinesNorte, zoomLevel))
+        gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(camarinesNorte, zoomLevel))
 
         val from = arguments?.getString("from")
 
@@ -237,6 +234,7 @@ class ViewMapMarkerClickFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnM
             }
         }
     }
+
     fun showAllDataOnMapsBusiness() {
         val firestoreReference = FirebaseFirestore.getInstance().collection("business_centers")
 
@@ -252,7 +250,7 @@ class ViewMapMarkerClickFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnM
                     lifecycleScope.launchWhenResumed {
                         val smallMarker = Bitmap.createScaledBitmap(
                             BitmapFactory.decodeResource(resources, R.drawable.icon_business_center),
-                            114, 92, false
+                            134, 92, false
                         )
 
                         val marker = gMap?.addMarker(

@@ -74,11 +74,11 @@ class ViewMapsWithAreasFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
 
     override fun onMapReady(googleMap: GoogleMap) {
         gMap = googleMap
-        val sanVicenteCamarinesNorte = LatLng(14.08446, 122.88797)
-        val zoomLevel = 10.0f
+        val camarinesNorte = LatLng(14.222795, 122.689153)
+        val zoomLevel = 9.4f
         gMap?.setOnMarkerClickListener(this)
         gMap?.setOnPolygonClickListener(this)
-        gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(sanVicenteCamarinesNorte, zoomLevel))
+        gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(camarinesNorte, zoomLevel))
 
         arguments?.let {
             val areas = it.getString("Areas")
@@ -202,9 +202,6 @@ class ViewMapsWithAreasFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
 
         return LatLng(centroidLat, centroidLng)
     }
-
-
-
 
     private fun loadJsonFromRaw(resourceId: Int): String? {
         return try {

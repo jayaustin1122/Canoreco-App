@@ -84,6 +84,9 @@ class BayadFragmentOne : Fragment() , OnMapReadyCallback, GoogleMap.OnMarkerClic
             bundle.putString("id", "bayadCenters")
             addDataDialog.arguments = bundle
             addDataDialog.show(childFragmentManager, "DetailsCenterFragment")
+
+            zoomIn(marker.position)
+
             return true
         } else {
             // Handle the case when marker.tag is null
@@ -96,8 +99,8 @@ class BayadFragmentOne : Fragment() , OnMapReadyCallback, GoogleMap.OnMarkerClic
             throw IllegalArgumentException("Resource not found: $vectorResId")
         }
 
-        val width = dpToPx(context, 60)
-        val height = dpToPx(context, 60)
+        val width = dpToPx(context, 44)
+        val height = dpToPx(context, 57)
         vectorDrawable.setBounds(0, 0, width, height)
 
         val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
@@ -233,10 +236,10 @@ class BayadFragmentOne : Fragment() , OnMapReadyCallback, GoogleMap.OnMarkerClic
     }
     override fun onMapReady(googleMap: GoogleMap) {
         gMap = googleMap
-        val sanVicenteCamarinesNorte = LatLng(14.08446, 122.88797)
-        val zoomLevel = 5.0f
+        val camarinesNorte = LatLng(14.222795, 122.689153)
+        val zoomLevel = 9.4f
         gMap?.setOnMarkerClickListener(this)
-        gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(sanVicenteCamarinesNorte, zoomLevel))
+        gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(camarinesNorte, zoomLevel))
 
         getCurrentLocation()
     }

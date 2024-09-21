@@ -53,6 +53,16 @@ class BusinessCenterFragmentTwo : Fragment() , OnMapReadyCallback, GoogleMap.OnM
         mapFragment.getMapAsync(this)
         showAllDataOnMaps()
     }
+    private fun zoomIn(location: LatLng? = null) {
+        gMap?.let {
+            val cameraPosition = it.cameraPosition
+            val targetLocation = location ?: cameraPosition.target
+            val newZoom = cameraPosition.zoom + 5.0f
+            val newCameraPosition = CameraUpdateFactory.newLatLngZoom(targetLocation, newZoom)
+            it.animateCamera(newCameraPosition)
+        }
+    }
+
     override fun onMarkerClick(marker: Marker): Boolean {
         val dataKey = marker.tag as? String
         if (dataKey != null) {
@@ -62,6 +72,7 @@ class BusinessCenterFragmentTwo : Fragment() , OnMapReadyCallback, GoogleMap.OnM
             bundle.putString("id", "businessCenters")
             addDataDialog.arguments = bundle
             addDataDialog.show(childFragmentManager, "DetailsCenterFragment")
+            zoomIn(marker.position)
             return true
         } else {
             // Handle the case when marker.tag is null
@@ -87,7 +98,7 @@ class BusinessCenterFragmentTwo : Fragment() , OnMapReadyCallback, GoogleMap.OnM
                     lifecycleScope.launchWhenResumed {
                         val smallMarker = Bitmap.createScaledBitmap(
                             BitmapFactory.decodeResource(resources, R.drawable.icon_business_center),
-                            114, 92, false
+                            134, 92, false
                         )
 
                         // Add a marker for each item
@@ -199,12 +210,12 @@ class BusinessCenterFragmentTwo : Fragment() , OnMapReadyCallback, GoogleMap.OnM
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
+
     override fun onMapReady(googleMap: GoogleMap) {
         gMap = googleMap
         val camarinesNorte = LatLng(14.222795, 122.689153)
-        val zoomLevel = 9.5f // Adjust the zoom level as needed
+        val zoomLevel = 9.4f
         gMap?.setOnMarkerClickListener(this)
-        // Move the camera to the initial position
         gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(camarinesNorte, zoomLevel))
 
         getCurrentLocation()

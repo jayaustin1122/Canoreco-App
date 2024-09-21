@@ -60,6 +60,7 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
     private lateinit var binding : FragmentHomeLineMenBinding
     private var gMap: GoogleMap? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -71,6 +72,7 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         return binding.root
     }
+
     private fun resetFragmentWithProgress() {
         ProgressDialogUtils.showProgressDialog(requireContext(),"Loading...")
         Handler(Looper.getMainLooper()).post {
@@ -78,9 +80,11 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
             ProgressDialogUtils.dismissProgressDialog()
         }
     }
+
     private fun reloadFragment() {
         findNavController().navigate(R.id.outagesFragment)
     }
+
     private fun loadJsonFromRaw(resourceId: Int): String? {
         return if (isAdded) {
             try {
@@ -140,6 +144,7 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
             Log.e("MapData", "Error retrieving data from Firestore: ${exception.message}")
         }
     }
+
     private fun parseAndDrawPolygons(jsonData: String, selectedLocations: Set<String>, devices: String) {
         try {
             val jsonObject = JSONObject(jsonData)
@@ -220,7 +225,6 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
         return LatLng(centroidLat, centroidLng)
     }
 
-
     override fun onPolygonClick(polygon: Polygon) {
         Log.d("PolygonClick", "$polygon clicked")
         val barangayName = polygon.tag as? String
@@ -250,8 +254,6 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
             findNavController().navigate(R.id.listOfFutureAndCurrentOutagesFragment, bundle)
         }
     }
-
-
 
     override fun onMarkerClick(marker: Marker): Boolean {
         val dataKey = marker.tag as? String
@@ -301,9 +303,6 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
                 Toast.makeText(requireContext(), "Error fetching data", Toast.LENGTH_SHORT).show()
             }
     }
-
-
-
 
     private fun checkPermissionLocation() {
         if (ActivityCompat.checkSelfPermission(
@@ -380,8 +379,6 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
         })
     }
 
-
-
     private fun bitmapFromVector(context: Context, vectorResId: Int, @ColorInt color: Int): BitmapDescriptor {
         val vectorDrawable = ContextCompat.getDrawable(context, vectorResId)
         vectorDrawable?.setBounds(
@@ -389,8 +386,6 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
             vectorDrawable.intrinsicWidth,
             vectorDrawable.intrinsicHeight
         )
-
-
         vectorDrawable?.setTint(color)
 
         val bitmap = Bitmap.createBitmap(
@@ -403,13 +398,12 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
         return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 
-
     override fun onMapReady(googleMap: GoogleMap) {
         gMap = googleMap
-        val sanVicenteCamarinesNorte = LatLng(14.08446, 122.88797)
-        val zoomLevel = 5.0f
+        val camarinesNorte = LatLng(14.222795, 122.689153)
+        val zoomLevel = 9.4f
         gMap?.setOnMarkerClickListener(this)
-        gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(sanVicenteCamarinesNorte, zoomLevel))
+        gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(camarinesNorte, zoomLevel))
         showAllDevicesLocations()
 
     }

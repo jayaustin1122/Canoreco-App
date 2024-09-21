@@ -32,7 +32,6 @@ class LinemenCurrentFurtureFragment : Fragment() {
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Current Outages"))
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Future Outages"))
 
-
         if (savedInstanceState == null) {
             replaceFragment(HomeLineMenFragment())
         }

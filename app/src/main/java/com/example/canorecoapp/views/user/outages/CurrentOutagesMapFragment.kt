@@ -60,6 +60,7 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
     private fun resetFragmentWithProgress() {
             reloadFragment()
     }
+
     private fun reloadFragment() {
         findNavController().navigate(R.id.outagesFragment)
     }
@@ -89,7 +90,6 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
             null
         }
     }
-
 
     private fun showPolygonsBasedOnFirestore() {
         val firestoreReference = FirebaseFirestore.getInstance().collection("outages")
@@ -150,6 +150,7 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
             Log.d("PolygonClick", "Polygon tag is null")
         }
     }
+
     private fun showDataInRealTime() {
         val db = FirebaseDatabase.getInstance().reference.child("devices")
 
@@ -225,8 +226,6 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
             }
         })
     }
-
-
 
     private fun parseAndDrawPolygons(jsonData: String, selectedLocations: Set<String>, devices: String) {
         try {
@@ -311,9 +310,6 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
         return LatLng(centroidLat, centroidLng)
     }
 
-
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         loadingDialog = DialogUtils.showLoading(requireActivity())
@@ -332,7 +328,6 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
         }
 
     }
-
 
     override fun onMarkerClick(marker: Marker): Boolean {
         val tagData = marker.tag as? String
@@ -358,9 +353,6 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
         }
     }
 
-
-
-
     private fun checkPermissionLocation() {
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
@@ -377,18 +369,16 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
         }
     }
 
-
-
     override fun onMapReady(googleMap: GoogleMap) {
-
         gMap = googleMap
-        val sanVicenteCamarinesNorte = LatLng(14.08446, 122.88797)
-        val zoomLevel = 5.0f
+        val camarinesNorte = LatLng(14.222795, 122.689153)
+        val zoomLevel = 9.4f
         gMap?.setOnMarkerClickListener(this)
         gMap?.setOnPolygonClickListener(this)
-        gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(sanVicenteCamarinesNorte, zoomLevel))
+        gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(camarinesNorte, zoomLevel))
         showPolygonsBasedOnFirestore()
         showDataInRealTime()
+
         Handler(Looper.getMainLooper()).postDelayed({
             loadingDialog.dismiss()
         }, 1000)
