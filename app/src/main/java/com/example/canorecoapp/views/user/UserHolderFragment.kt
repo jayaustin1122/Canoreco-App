@@ -3,6 +3,8 @@ package com.example.canorecoapp.views.user
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -20,11 +22,17 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentUserHolderBinding
+import com.example.canorecoapp.viewmodels.UserViewModel
 import com.example.canorecoapp.views.user.account.AccountUserFragment
 import com.example.canorecoapp.views.user.home.HomeUserFragment
 import com.example.canorecoapp.views.user.service.ServicesUserFragment
@@ -50,7 +58,7 @@ class UserHolderFragment : Fragment() {
     private lateinit var fragmentManager: FragmentManager
     private var isUserInfoLoaded = false
     private var selectedFragmentId: Int = R.id.navigation_Home
-
+    private val viewModel: UserViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -76,13 +84,13 @@ class UserHolderFragment : Fragment() {
         }
 
 
-        if (!isUserInfoLoaded) {
-            loadUsersInfo()
-        }
-        loadUsersInfo()
-        val toolbar = binding.toolbar
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            viewModel.loadUserInfo()
 
-        toolbar.setOnMenuItemClickListener { item ->
+        }
+        val toolbars = binding.toolbar
+
+        toolbars.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.notif -> {
                     findNavController().navigate(R.id.notifFragment)
@@ -163,6 +171,33 @@ class UserHolderFragment : Fragment() {
                 isEnabled = false
             }
         })
+        viewModel.userInfo.observe(viewLifecycleOwner, Observer { userInfo ->
+            userInfo?.let {
+                binding.apply {
+                    // Set the user's profile image
+                    val toolbar = binding.toolbar
+                    val menuItem = toolbar.menu.findItem(R.id.imgProfiled)
+                    val iconBell = toolbar.menu.findItem(R.id.notif)
+                    val whiteColor = ContextCompat.getColor(requireContext(), R.color.white)
+                    val colorStateList = ColorStateList.valueOf(whiteColor)
+                    iconBell.iconTintList = colorStateList
+                    Glide.with(requireContext())
+                        .load(userInfo.image)
+                        .error(R.drawable.logo)
+                        .transform(CircleCrop())
+                        .into(object : CustomTarget<Drawable>() {
+                            override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
+                                menuItem.icon = resource
+                            }
+
+                            override fun onLoadCleared(placeholder: Drawable?) {
+
+                            }
+                        })
+                }
+            }
+        })
+
     }
 
 
@@ -277,55 +312,5 @@ class UserHolderFragment : Fragment() {
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun loadUsersInfo() {
-        val db = FirebaseFirestore.getInstance()
-        val currentUser = FirebaseAuth.getInstance().currentUser
-
-        currentUser?.let { user ->
-            db.collection("users").document(user.uid).get()
-                .addOnSuccessListener { document ->
-                    val userName = document.getString("fullName")
-                    val image = document.getString("image")
-                    val token = document.getString("token")
-                    val toolbar = binding.toolbar
-                    val menuItem = toolbar.menu.findItem(R.id.imgProfiled)
-                    val iconBell = toolbar.menu.findItem(R.id.notif)
-                    val whiteColor = ContextCompat.getColor(requireContext(), R.color.white)
-                    val colorStateList = ColorStateList.valueOf(whiteColor)
-                    iconBell.iconTintList = colorStateList
-                    Glide.with(requireContext())
-                        .load(image)
-                        .error(R.drawable.logo)
-                        .transform(com.bumptech.glide.load.resource.bitmap.CircleCrop())
-                        .into(object : com.bumptech.glide.request.target.CustomTarget<android.graphics.drawable.Drawable>() {
-                            override fun onResourceReady(resource: android.graphics.drawable.Drawable, transition: com.bumptech.glide.request.transition.Transition<in android.graphics.drawable.Drawable>?) {
-                                menuItem.icon = resource
-                            }
-
-                            override fun onLoadCleared(placeholder: android.graphics.drawable.Drawable?) {
-
-                            }
-                        })
-
-                    isUserInfoLoaded = true
-
-                }
-                .addOnFailureListener { exception ->
-                    Toast.makeText(
-                        requireContext(),
-                        "Error Loading User Data: ${exception.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-        } ?: run {
-            Toast.makeText(
-                requireContext(),
-                "User not authenticated",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-    }
 }
 

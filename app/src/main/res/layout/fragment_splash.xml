@@ -9,6 +9,7 @@
 
     <!-- TODO: Update blank fragment layout -->
     <ImageView
+        android:id="@+id/splash_image"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:src="@drawable/icon_canoreco"

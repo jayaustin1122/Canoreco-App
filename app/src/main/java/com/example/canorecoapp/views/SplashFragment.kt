@@ -12,25 +12,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.DialogReviewBinding
 import com.example.canorecoapp.databinding.FragmentSplashBinding
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
 
 class SplashFragment : Fragment() {
@@ -42,12 +35,16 @@ class SplashFragment : Fragment() {
     ): View? {
         binding = FragmentSplashBinding.inflate(inflater, container, false)
         auth = FirebaseAuth.getInstance()
+        val animZoomIn = AnimationUtils.loadAnimation(requireContext(),
+            R.anim.zoom_out)
         Handler().postDelayed({
             if (onBoardingFinished()) {
+                binding.splashImage.startAnimation(animZoomIn)
                 GlobalScope.launch(Dispatchers.Main) {
-                    checkUser()
+                    checkUser(animZoomIn)
                 }
             } else {
+                binding.splashImage.startAnimation(animZoomIn)
                 findNavController().navigate(R.id.onBoardingMainFragment)
             }
         }, 5000)
@@ -61,7 +58,8 @@ class SplashFragment : Fragment() {
         return sharedPref.getBoolean("Finished", false)
     }
 
-    private fun checkUser() {
+    private fun checkUser(animZoomIn: Animation) {
+
         GlobalScope.launch(Dispatchers.Main) {
             if (isNetworkAvailable()) {
                 val firebaseUser = auth.currentUser
@@ -69,7 +67,7 @@ class SplashFragment : Fragment() {
                     findNavController().navigate(R.id.signInFragment)
                 } else {
                     try {
-                        handleUserInfo()
+                        handleUserInfo(animZoomIn)
                     } catch (e: Exception) {
                         // Handle exceptions, e.g., database errors
                         showToast("Error fetching user information")
@@ -82,7 +80,7 @@ class SplashFragment : Fragment() {
         }
     }
 
-    private fun handleUserInfo() {
+    private fun handleUserInfo(animZoomIn: Animation) {
         val userId = FirebaseAuth.getInstance().currentUser!!.uid
         val dbref = FirebaseFirestore.getInstance().collection("users")
 
@@ -90,13 +88,13 @@ class SplashFragment : Fragment() {
             if (document != null && document.exists()) {
                 val userType = document.getString("userType")
                 val access = document.getBoolean("access")
-
                 when (userType) {
                     "linemen" -> {
                         findNavController().apply {
                             popBackStack(R.id.splashFragment, false)
                             navigate(R.id.adminHolderFragment)
                         }
+
                     }
                     "member" -> {
                         if (access == false) {
@@ -152,6 +150,8 @@ class SplashFragment : Fragment() {
     }
 
     private fun showNoInternetDialog() {
+        val animZoomIn = AnimationUtils.loadAnimation(requireContext(),
+            R.anim.zoom_out)
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("No Internet Connection")
             .setMessage("Please connect to the internet to continue.")
@@ -161,7 +161,7 @@ class SplashFragment : Fragment() {
             }
             .setNegativeButton("Retry") { _, _ ->
 
-                checkUser()
+                checkUser(animZoomIn)
             }
             .setCancelable(false)
             .show()

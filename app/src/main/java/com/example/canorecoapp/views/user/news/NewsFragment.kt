@@ -65,7 +65,7 @@ class NewsFragment : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val bundle = Bundle().apply {
-                    putInt("selectedFragmentId", null ?: R.id.navigation_services)
+                    putInt("selectedFragmentId", null ?: R.id.navigation_Home)
                 }
                 findNavController().navigate(R.id.userHolderFragment, bundle)
             }
