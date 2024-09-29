@@ -92,9 +92,11 @@ class SignInFragment : Fragment() {
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
             //invalid email
             Toast.makeText(this.requireContext(),"Email Invalid", Toast.LENGTH_SHORT).show()
+            loadingDialog.dismiss()
         }
         else if (pass.isEmpty()){
             Toast.makeText(this.requireContext(),"Empty Fields are not allowed", Toast.LENGTH_SHORT).show()
+            loadingDialog.dismiss()
         }
         else{
             loginUser()
