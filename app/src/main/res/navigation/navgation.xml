@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navgation"
-    app:startDestination="@id/splashFragment">
+    app:startDestination="@id/billingInformationFragment">
 
     <fragment
         android:id="@+id/splashFragment"
@@ -168,4 +168,9 @@
             android:id="@+id/action_futureOutagesMapFragment_to_outagesFragment"
             app:destination="@id/outagesFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/billingInformationFragment"
+        android:name="BillingInformationFragment"
+        tools:layout="@layout/fragment_billing_information"
+        android:label="BillingInformationFragment" />
 </navigation>

@@ -7,11 +7,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp">
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/tv"/>
-    <!-- Outstanding Balance Section -->
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,30 +23,30 @@
             android:padding="20dp"
             android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout1"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Outstanding Balance"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="@color/black"/>
+                android:layout_marginTop="3dp"
+                app:hintEnabled="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/firstNameTextView">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="₱ 937.00"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:layout_marginTop="8dp"/>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPayment"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:hint="Add Amount"
+                    android:inputType="numberDecimal"
+                    android:lines="1"
+                    android:scrollbars="horizontal"
+                    android:singleLine="true"
+                    app:boxStrokeWidth="1dp"
+                    app:boxStrokeWidthFocused="2dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Due March 16, 2024"
-                android:textSize="14sp"
-                android:textColor="@color/black"
-                android:layout_marginTop="4dp"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>
