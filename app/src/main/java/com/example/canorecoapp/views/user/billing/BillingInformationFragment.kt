@@ -6,9 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentBillingInformationBinding
+import com.example.canorecoapp.utils.DialogUtils
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -35,6 +40,38 @@ class BillingInformationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.backButton.setOnClickListener {
+
+            val bundle = Bundle().apply {
+                putInt("selectedFragmentId", null ?: R.id.navigation_services)
+            }
+            findNavController().navigate(R.id.userHolderFragment, bundle)
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    val report = binding.etPayment.text.toString().trim()
+                    if (report.isNotEmpty()) {
+                        // Show warning dialog
+                        DialogUtils.showWarningMessage(
+                            requireActivity(),
+                            "Warning",
+                            "Are you sure you want to exit? Changes will not be saved."
+                        ) { sweetAlertDialog ->
+                            sweetAlertDialog.dismissWithAnimation()
+                            // Navigate to userHolderFragment
+                            val bundle = Bundle().apply {
+                                putInt("selectedFragmentId", R.id.navigation_services) // Set your selectedFragmentId here
+                            }
+                            findNavController().navigate(R.id.userHolderFragment, bundle)
+                        }
+                    } else {
+                        findNavController().navigateUp()
+                    }
+                }
+            })
+
 
         binding.buttonPayBill.setOnClickListener {
             val payment = binding.etPayment.text.toString().trim()
@@ -46,7 +83,10 @@ class BillingInformationFragment : Fragment() {
                         amount < 100 -> (amount * 100).toInt() // For whole number amounts below 100 (like 1, 2)
                         else -> (amount * 100).toInt() // For amounts 100 and above
                     }
-                    Log.d("BillingInformation", "Converted amount: $amountInCents cents for input: $payment") // Log the conversion
+                    Log.d(
+                        "BillingInformation",
+                        "Converted amount: $amountInCents cents for input: $payment"
+                    ) // Log the conversion
                     makeRequest(amountInCents) // Pass the calculated amount
                 } catch (e: NumberFormatException) {
                     Toast.makeText(context, "Invalid amount format", Toast.LENGTH_SHORT).show()
@@ -57,14 +97,16 @@ class BillingInformationFragment : Fragment() {
         }
 
 
-
     }
 
 
-        private fun makeRequest(amount: Int) {
+    private fun makeRequest(amount: Int) {
         val client = OkHttpClient()
         val mediaType = "application/json".toMediaTypeOrNull()
-        val body = RequestBody.create(mediaType, "{\"data\":{\"attributes\":{\"amount\":$amount,\"description\":\"sds\",\"remarks\":\"sd\"}}}")
+        val body = RequestBody.create(
+            mediaType,
+            "{\"data\":{\"attributes\":{\"amount\":$amount,\"description\":\"sds\",\"remarks\":\"sd\"}}}"
+        )
 
         val request = Request.Builder()
             .url("https://api.paymongo.com/v1/links")
@@ -88,7 +130,10 @@ class BillingInformationFragment : Fragment() {
                         displayCheckoutLink(checkoutUrl)
                     } ?: Log.e("BillingInformation", "Response body is null")
                 } else {
-                    Log.e("BillingInformation", "Unexpected code: ${response.code}, Message: ${response.message}")
+                    Log.e(
+                        "BillingInformation",
+                        "Unexpected code: ${response.code}, Message: ${response.message}"
+                    )
 
                 }
             } catch (e: IOException) {

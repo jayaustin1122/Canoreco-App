@@ -23,7 +23,6 @@ class ServicesUserFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         super.onViewCreated(view, savedInstanceState)
         arguments?.let {
             selectedFragmentId = it.getInt("selectedFragmentId", R.id.navigation_services)
@@ -56,6 +55,14 @@ class ServicesUserFragment : Fragment() {
                     putInt("selectedFragmentId", selectedFragmentId ?: R.id.navigation_services)
                 }
                 navigate(R.id.bayadCentersFragment, bundle)
+            }
+        }
+        binding.billingInformation.setOnClickListener {
+            findNavController().apply {
+                val bundle = Bundle().apply {
+                    putInt("selectedFragmentId", selectedFragmentId ?: R.id.navigation_services)
+                }
+                navigate(R.id.billingInformationFragment, bundle)
             }
         }
         binding.track.setOnClickListener {

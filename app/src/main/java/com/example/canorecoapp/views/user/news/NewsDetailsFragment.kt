@@ -130,6 +130,8 @@ class NewsDetailsFragment : Fragment() {
                         loadingDialog.dismissWithAnimation()
                     }
                 } else {
+                    ProgressDialogUtils.dismissProgressDialog()
+                    loadingDialog.dismiss()
                     Toast.makeText(
                         requireContext(),
                         "Notification from device",
