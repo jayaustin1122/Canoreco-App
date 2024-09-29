@@ -86,4 +86,5 @@ class UserViewModel : ViewModel() {
             _errorMessage.value = "User not authenticated"
         }
     }
+
 }

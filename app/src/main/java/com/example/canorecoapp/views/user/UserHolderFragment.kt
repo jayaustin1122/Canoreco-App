@@ -106,17 +106,17 @@ class UserHolderFragment : Fragment() {
             selectedFragmentId = it.getInt("selectedFragmentId", R.id.navigation_Home)
         }
 
-// Restore the selected fragment ID from savedInstanceState (on configuration change)
+        // Restore the selected fragment ID from savedInstanceState (on configuration change)
         savedInstanceState?.let {
             selectedFragmentId = it.getInt("selectedFragmentId", R.id.navigation_Home)
         }
 
-// Initialize your fragments
+        // Initialize your fragments
         val homeFragment = HomeUserFragment()
         val serviceFragment = ServicesUserFragment()
         val accountUserFragment = AccountUserFragment()
 
-// Set up the BottomNavigationView and handle fragment transactions
+        // Set up the BottomNavigationView and handle fragment transactions
         val bottomNavigationView: BottomNavigationView? = binding.bottomNavigationUser
         bottomNavigationView?.setOnNavigationItemSelectedListener { item ->
             selectedFragmentId = item.itemId
@@ -141,7 +141,7 @@ class UserHolderFragment : Fragment() {
             true
         }
 
-// Set the initial fragment if savedInstanceState is null (first load)
+        // Set the initial fragment if savedInstanceState is null (first load)
         if (savedInstanceState == null) {
             val initialFragment = when (selectedFragmentId) {
                 R.id.navigation_Home -> homeFragment

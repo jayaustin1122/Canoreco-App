@@ -3,6 +3,8 @@ package com.example.canorecoapp.views.user.home
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -15,6 +17,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,6 +32,7 @@ import com.example.canorecoapp.models.Maintenance
 import com.example.canorecoapp.models.News
 import com.example.canorecoapp.utils.DialogUtils
 import com.example.canorecoapp.utils.ProgressDialogUtils
+import com.example.canorecoapp.viewmodels.UserViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -47,7 +52,7 @@ import java.util.Locale
     private lateinit var adapter2: MaintenanceAdapter
      private lateinit var auth: FirebaseAuth
      private lateinit var loadingDialog: SweetAlertDialog
-
+     private val viewModel: UserViewModel by viewModels()
      override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -63,12 +68,19 @@ import java.util.Locale
         auth = FirebaseAuth.getInstance()
         val sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
         loadingDialog.show()
-        loadUsersInfo()
         getNews()
         getMaintenances()
         val areFinish = sharedPreferences.getBoolean("areFinish", false)
         val areGuidesShown = sharedPreferences.getBoolean("areGuidesShown", false)
+        viewModel.errorMessage.observe(viewLifecycleOwner, Observer { errorMessage ->
+            if (errorMessage != null) {
+                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+            }
+        })
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            viewModel.loadUserInfo()
+        }
         if (!areGuidesShown) {
             binding.scrollView.setOnTouchListener { _, event ->
                 if (event.action == MotionEvent.ACTION_MOVE) {
@@ -90,7 +102,19 @@ import java.util.Locale
                 navigate(R.id.maintenanceListFragment)
             }
         }
-
+        viewModel.userInfo.observe(viewLifecycleOwner, Observer { userInfo ->
+            userInfo?.let {
+                binding.apply {
+                    // Set the user's profile image
+                    binding.textViewUser.text = userInfo.firstName
+                    binding.imageViewProfile?.let {
+                        Glide.with(requireContext())
+                            .load(userInfo.image)
+                            .into(it)
+                    }
+                }
+            }
+        })
 
 
     }
@@ -136,51 +160,6 @@ import java.util.Locale
      private fun hideShimmerEffect() {
          binding.shimmerViewContainer.stopShimmerAnimation()
      }
-     private fun loadUsersInfo() {
-         val db = FirebaseFirestore.getInstance()
-         val currentUser = FirebaseAuth.getInstance().currentUser
-
-         currentUser?.let { user ->
-             db.collection("users").document(user.uid).get()
-                 .addOnSuccessListener { document ->
-                     // Log all data users inside this current usersssssssssssss
-                     Log.d("UserInfo", "Document data: ${document.data}")
-
-                     val userName = document.getString("firstName")
-                     val image = document.getString("image")
-
-                     if (userName.isNullOrEmpty()) {
-                         Log.w("UserInfo", "First name is null or empty")
-                     }
-
-                     binding.textViewUser.text = userName
-                     val context = context ?: return@addOnSuccessListener
-                     binding.imageViewProfile?.let {
-                         Glide.with(context)
-                             .load(image)
-                             .into(it)
-                     }
-                     hideShimmerEffect()
-
-                 }
-                 .addOnFailureListener { exception ->
-                     Toast.makeText(
-                         requireContext(),
-                         "Error Loading User Data: ${exception.message}",
-                         Toast.LENGTH_SHORT
-                     ).show()
-                 }
-         } ?: run {
-             Toast.makeText(
-                 requireContext(),
-                 "User not authenticated",
-                 Toast.LENGTH_SHORT
-             ).show()
-         }
-     }
-
-
-
 
      private fun getNews() {
          val freeItems = ArrayList<News>()

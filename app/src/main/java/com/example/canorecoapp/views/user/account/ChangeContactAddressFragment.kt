@@ -1,5 +1,6 @@
 package com.example.canorecoapp.views.user.account
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,18 +9,22 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentChangeContactAddressBinding
 import com.example.canorecoapp.utils.DialogUtils
 import com.example.canorecoapp.utils.MunicipalityData.municipalitiesWithBarangays
+import com.example.canorecoapp.viewmodels.UserViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 
 class ChangeContactAddressFragment : Fragment() {
     private lateinit var binding : FragmentChangeContactAddressBinding
+    private val viewModel: UserViewModel by viewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -32,7 +37,25 @@ class ChangeContactAddressFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadUsersInfo()
+        viewModel.errorMessage.observe(viewLifecycleOwner, Observer { errorMessage ->
+            if (errorMessage != null) {
+                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            viewModel.loadUserInfo()
+        }
+        viewModel.userInfo.observe(viewLifecycleOwner, Observer { userInfo ->
+            userInfo?.let {
+                binding.apply {
+
+                    binding.etContactNumber.setText(userInfo.phone)
+                    binding.tvMunicipality.setText(userInfo.municipality)
+                    binding.tvBrgy.setText(userInfo.barangay)
+                }
+            }
+        })
         binding.backButton.setOnClickListener {
             DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to exit? Changes will not be saved."
             ) { sweetAlertDialog ->
@@ -118,50 +141,6 @@ class ChangeContactAddressFragment : Fragment() {
                 }
         } ?: run {
             Toast.makeText(requireContext(), "User not authenticated", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-
-    private fun loadUsersInfo() {
-        val db = FirebaseFirestore.getInstance()
-        val currentUser = FirebaseAuth.getInstance().currentUser
-
-        currentUser?.let { user ->
-            db.collection("users").document(user.uid).get()
-                .addOnSuccessListener { document ->
-
-                    val userName = document.getString("firstName")
-                    val lastName = document.getString("lastName")
-                    val contact = document.getString("phone")
-                    val image = document.getString("image")
-                    val email = document.getString("email")
-                    val municipality = document.getString("municipality")
-                    val barangay = document.getString("barangay")
-                    val password = document.getString("password")
-                    val street = document.getString("street")
-
-                    binding.etContactNumber.setText(contact)
-                    binding.tvMunicipality.setText(municipality)
-                    binding.tvBrgy.setText(barangay)
-                    binding.etStreet.setText(contact)
-
-
-                }
-                .addOnFailureListener { exception ->
-
-                    Toast.makeText(
-                        requireContext(),
-                        "Error Loading User Data: ${exception.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-        } ?: run {
-
-            Toast.makeText(
-                requireContext(),
-                "User not authenticated",
-                Toast.LENGTH_SHORT
-            ).show()
         }
     }
 
