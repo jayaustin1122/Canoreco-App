@@ -1,5 +1,3 @@
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,14 +5,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentBillingInformationBinding
+import com.example.canorecoapp.models.PaymentInfo
 import com.example.canorecoapp.utils.DialogUtils
-import okhttp3.MediaType.Companion.toMediaType
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -22,14 +22,15 @@ import okhttp3.Response
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.json.JSONObject
 import java.io.IOException
 
 class BillingInformationFragment : Fragment() {
     private lateinit var binding: FragmentBillingInformationBinding
-
+    private var loadingDialog: SweetAlertDialog? = null
+    val db = FirebaseFirestore.getInstance()
+    val currentUser = FirebaseAuth.getInstance().currentUser
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -40,8 +41,8 @@ class BillingInformationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.backButton.setOnClickListener {
 
+        binding.backButton.setOnClickListener {
             val bundle = Bundle().apply {
                 putInt("selectedFragmentId", null ?: R.id.navigation_services)
             }
@@ -53,16 +54,14 @@ class BillingInformationFragment : Fragment() {
                 override fun handleOnBackPressed() {
                     val report = binding.etPayment.text.toString().trim()
                     if (report.isNotEmpty()) {
-                        // Show warning dialog
                         DialogUtils.showWarningMessage(
                             requireActivity(),
                             "Warning",
                             "Are you sure you want to exit? Changes will not be saved."
                         ) { sweetAlertDialog ->
                             sweetAlertDialog.dismissWithAnimation()
-                            // Navigate to userHolderFragment
                             val bundle = Bundle().apply {
-                                putInt("selectedFragmentId", R.id.navigation_services) // Set your selectedFragmentId here
+                                putInt("selectedFragmentId", R.id.navigation_services)
                             }
                             findNavController().navigate(R.id.userHolderFragment, bundle)
                         }
@@ -72,40 +71,64 @@ class BillingInformationFragment : Fragment() {
                 }
             })
 
-
         binding.buttonPayBill.setOnClickListener {
+
             val payment = binding.etPayment.text.toString().trim()
-            if (payment.isNotEmpty()) {
+            val accountNumber = binding.etAccountNumber.text.toString().trim()
+            if (payment.isNotEmpty() || accountNumber.isNotEmpty()) {
                 try {
-                    val amount = payment.toDouble() // Parse the input as a double
+                    val amount = payment.toDouble()
                     val amountInCents = when {
-                        amount < 1.00 -> (amount * 10000).toInt() // For values less than 1.00
-                        amount < 100 -> (amount * 100).toInt() // For whole number amounts below 100 (like 1, 2)
-                        else -> (amount * 100).toInt() // For amounts 100 and above
+                        amount < 1.00 -> (amount * 10000).toInt()
+                        amount < 100 -> (amount * 100).toInt()
+                        else -> (amount * 100).toInt()
                     }
                     Log.d(
                         "BillingInformation",
                         "Converted amount: $amountInCents cents for input: $payment"
-                    ) // Log the conversion
-                    makeRequest(amountInCents) // Pass the calculated amount
+                    )
+                    DialogUtils.showWarningMessage(
+                        requireActivity(),
+                        "Warning",
+                        "Are you sure you want to pay this bill?"
+                    ) { sweetAlertDialog ->
+                        sweetAlertDialog.dismissWithAnimation()
+                        showLoadingDialog() // Show loading
+                        makeRequest(amountInCents, accountNumber)
+                    }
+
                 } catch (e: NumberFormatException) {
                     Toast.makeText(context, "Invalid amount format", Toast.LENGTH_SHORT).show()
                 }
+
             } else {
-                Toast.makeText(context, "Please enter a valid amount", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    "Please enter a valid amount or account number",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
+
         }
-
-
     }
 
+    private fun showLoadingDialog() {
+        if (loadingDialog == null) {
+            loadingDialog = DialogUtils.showLoading(requireActivity())
+        }
+    }
 
-    private fun makeRequest(amount: Int) {
+    private fun dismissLoadingDialog() {
+        loadingDialog?.dismiss()
+        loadingDialog = null
+    }
+
+    private fun makeRequest(amount: Int, accountNumber: String) {
         val client = OkHttpClient()
         val mediaType = "application/json".toMediaTypeOrNull()
         val body = RequestBody.create(
             mediaType,
-            "{\"data\":{\"attributes\":{\"amount\":$amount,\"description\":\"sds\",\"remarks\":\"sd\"}}}"
+            "{\"data\":{\"attributes\":{\"amount\":$amount,\"description\":\"Payment for This Month Bill - $accountNumber\",\"remarks\":\"$accountNumber\"}}}"
         )
 
         val request = Request.Builder()
@@ -127,17 +150,21 @@ class BillingInformationFragment : Fragment() {
                         Log.d("BillingInformation", "Response: $responseData")
                         val checkoutUrl = extractCheckoutUrl(responseData)
                         Log.d("BillingInformation", "Checkout URL: $checkoutUrl")
+                        dismissLoadingDialog() // Dismiss loading once successful
                         displayCheckoutLink(checkoutUrl)
+                        uploadPaymentDataToFirestore(responseData, accountNumber)
+
                     } ?: Log.e("BillingInformation", "Response body is null")
                 } else {
                     Log.e(
                         "BillingInformation",
                         "Unexpected code: ${response.code}, Message: ${response.message}"
                     )
-
+                    dismissLoadingDialog() // Dismiss on failure
                 }
             } catch (e: IOException) {
                 Log.e("BillingInformation", "Request Failed: ${e.message}")
+                dismissLoadingDialog() // Dismiss on exception
             }
         }
     }
@@ -151,12 +178,69 @@ class BillingInformationFragment : Fragment() {
 
     private fun displayCheckoutLink(checkoutUrl: String?) {
         if (checkoutUrl != null) {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(checkoutUrl))
-            val chooser = Intent.createChooser(intent, "Open with")
-            startActivity(chooser)
+            val webViewBottomSheet = WebViewBottomSheetDialogFragment(checkoutUrl)
+            webViewBottomSheet.show(parentFragmentManager, "WebViewBottomSheetDialog")
         } else {
             Log.e("BillingInformation", "Checkout URL is null")
         }
     }
+    private fun uploadPaymentDataToFirestore(responseData: String, accountNumber: String) {
+        currentUser?.let { user ->
+            try {
+                val jsonObject = JSONObject(responseData)
+                val dataObject = jsonObject.getJSONObject("data")
+                val attributesObject = dataObject.getJSONObject("attributes")
+
+                // Extract the `id` separately
+                val paymentId = dataObject.getString("id")
+
+                // Extracting other values from the JSON
+                val paymentInfo = PaymentInfo(
+                    id = paymentId,
+                    type = dataObject.getString("type"),
+                    amount = attributesObject.getInt("amount"),
+                    currency = attributesObject.getString("currency"),
+                    description = attributesObject.getString("description"),
+                    status = attributesObject.getString("status"),
+                    checkoutUrl = attributesObject.getString("checkout_url"),
+                    referenceNumber = attributesObject.getString("reference_number"),
+                    createdAt = attributesObject.getLong("created_at"),
+                    updatedAt = attributesObject.getLong("updated_at")
+                )
+
+                // Create a map to store in Firestore for the payment data
+                val paymentData = hashMapOf(
+                    "amount" to paymentInfo.amount,
+                    "accountNumber" to accountNumber,
+                    "description" to paymentInfo.description,
+                    "status" to paymentInfo.status,
+                    "checkoutUrl" to paymentInfo.checkoutUrl,
+                    "referenceNumber" to paymentInfo.referenceNumber,
+                    "createdAt" to paymentInfo.createdAt,
+                    "updatedAt" to paymentInfo.updatedAt,
+                    "response" to responseData,
+                    "timestamp" to System.currentTimeMillis(),
+                    "paymentIds" to paymentId
+                )
+
+                // Upload to user payments path
+                db.collection("users")
+                    .document(user.uid)
+                    .collection("myPayments")
+                    .add(paymentData)
+                    .addOnSuccessListener {
+                        Log.d("BillingInformation", "Payment data uploaded successfully")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("BillingInformation", "Failed to upload payment data: ${e.message}")
+                    }
+
+            } catch (e: Exception) {
+                Log.e("BillingInformation", "Error parsing response data: ${e.message}")
+            }
+        } ?: Log.e("BillingInformation", "User is not logged in")
+    }
+
+
 
 }
