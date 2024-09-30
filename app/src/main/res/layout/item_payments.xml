@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
+    android:layout_height="220dp"
     android:layout_margin="8dp"
     app:cardCornerRadius="8dp"
     app:cardElevation="4dp">
@@ -34,7 +34,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Paid"
-                android:layout_marginStart="150dp"
+                android:layout_marginStart="10dp"
                 android:textColor="#4CAF50"
                 android:textStyle="bold"
                 android:layout_gravity="left"
@@ -68,6 +68,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dimen_12dp"
             android:orientation="vertical">
             <LinearLayout
                 android:layout_width="match_parent"
@@ -89,7 +90,8 @@
             <!-- Account Number Value -->
             <TextView
                 android:id="@+id/tvAccountNumberValue"
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
+                android:maxLines="2"
                 android:layout_height="wrap_content"
                 android:text="25-2504-2920"
                 android:textColor="#000"
@@ -127,7 +129,7 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="180dp"
+            android:layout_marginStart="100dp"
             android:orientation="vertical">
             <LinearLayout
                 android:layout_width="match_parent"

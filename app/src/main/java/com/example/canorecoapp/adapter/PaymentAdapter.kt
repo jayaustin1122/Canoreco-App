@@ -26,13 +26,20 @@ class PaymentAdapter(private val paymentList: List<PaymentAttributes>) :
         holder.binding.apply {
             tvCurrentBillValue.text = "${payment.amount / 100}"
             tvModeOfPaymentValue.text = payment.source.type.capitalize()
-            tvAccountNumberValue.text = payment.description.takeIf { it.isNotBlank() }
-                ?: "Wala Pa, di pa Na seset"
+            tvAmountAfterDueValue.text = "Wala Pa, di pa Na seset"
             tvStatus.text = payment.status.capitalize()
-            tvPaymentDate.text = formatTimestamp(payment.created_at)
+            tvPaymentDate.text = "Payment Date - ${formatTimestamp(payment.created_at)}"
             tvBillMonth.text = getBillMonth(payment.created_at)
+            val accountNumber = extractAccountNumber(payment.description)
+            tvAccountNumberValue.text = accountNumber ?: "Account number not found"
         }
     }
+    private fun extractAccountNumber(description: String): String? {
+        val regex = Regex("""- (\d+)""")
+        val matchResult = regex.find(description)
+        return matchResult?.groups?.get(1)?.value
+    }
+
 
     private fun formatTimestamp(timestamp: Long): String {
         val sdf = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault())
