@@ -42,7 +42,10 @@ class NewsFragment : Fragment() {
         binding.recyclerNews.adapter = newsAdapter
         getAllNews()
         binding.backButton.setOnClickListener {
-            findNavController().navigate(R.id.userHolderFragment)
+            val bundle = Bundle().apply {
+                putInt("selectedFragmentId", null ?: R.id.navigation_Home)
+            }
+            findNavController().navigate(R.id.userHolderFragment, bundle)
         }
         binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -61,7 +64,10 @@ class NewsFragment : Fragment() {
         })
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                findNavController().navigate(R.id.userHolderFragment)
+                val bundle = Bundle().apply {
+                    putInt("selectedFragmentId", null ?: R.id.navigation_Home)
+                }
+                findNavController().navigate(R.id.userHolderFragment, bundle)
             }
         })
     }

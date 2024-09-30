@@ -4,7 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navgation"
     app:startDestination="@id/splashFragment">
-
+    <fragment
+        android:id="@+id/fullScreenImageFragment"
+        tools:layout="@layout/fragment_full_screen_image"
+        android:name="com.example.canorecoapp.views.user.news.FullScreenImageFragment"
+        android:label="FullScreenImageFragment">
+    </fragment>
     <fragment
         android:id="@+id/splashFragment"
         android:name="com.example.canorecoapp.views.SplashFragment"
