@@ -64,7 +64,6 @@ class SignInFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         auth = FirebaseAuth.getInstance()
         fireStore = FirebaseFirestore.getInstance()
-        loadingDialog.dismiss()
         handler.postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
         binding.buttonLoginLogin.setOnClickListener {
             validateData()

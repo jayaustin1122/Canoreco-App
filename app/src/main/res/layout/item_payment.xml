@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:padding="@dimen/dimen_16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Amount Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="Amount" />
+
+        <!-- Amount Value -->
+        <TextView
+            android:id="@+id/tvAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="₱1000.00" />
+
+        <!-- Email Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="Email" />
+
+        <!-- Email Value -->
+        <TextView
+            android:id="@+id/tvEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="example@example.com" />
+
+        <!-- Phone Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="Phone" />
+
+        <!-- Phone Value -->
+        <TextView
+            android:id="@+id/tvPhone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+63 912 345 6789" />
+
+        <!-- Status Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="Status" />
+
+        <!-- Status Value -->
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Paid"
+            android:textSize="14sp"
+            android:textColor="@android:color/white"
+            android:background="@color/g_green" />
+
+        <!-- Description Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="Description" />
+
+        <!-- Description Value -->
+        <TextView
+            android:id="@+id/tvDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Payment for order #1234" />
+
+        <!-- Reference Number Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="Reference Number" />
+
+        <!-- Reference Number Value -->
+        <TextView
+            android:id="@+id/tvReferenceNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ABC123456789" />
+
+        <!-- Payment Date Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="Payment Date" />
+
+        <!-- Payment Date Value -->
+        <TextView
+            android:id="@+id/tvCreatedAt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2024-09-30" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

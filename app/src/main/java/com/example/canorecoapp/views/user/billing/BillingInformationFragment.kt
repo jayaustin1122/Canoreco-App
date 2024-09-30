@@ -1,4 +1,6 @@
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -8,19 +10,26 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.canorecoapp.R
+import com.example.canorecoapp.adapter.PaymentAdapter
 import com.example.canorecoapp.databinding.FragmentBillingInformationBinding
 import com.example.canorecoapp.models.PaymentInfo
+import com.example.canorecoapp.utils.ApiResponse
 import com.example.canorecoapp.utils.DialogUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.json.JSONObject
@@ -31,6 +40,7 @@ class BillingInformationFragment : Fragment() {
     private var loadingDialog: SweetAlertDialog? = null
     val db = FirebaseFirestore.getInstance()
     val currentUser = FirebaseAuth.getInstance().currentUser
+    private lateinit var adapter: PaymentAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -110,6 +120,14 @@ class BillingInformationFragment : Fragment() {
             }
 
         }
+        retrieveLinkPayment()
+        showLoadingDialog()
+        Handler(Looper.getMainLooper()).postDelayed({
+
+           dismissLoadingDialog()
+        }, 2000)
+
+
     }
 
     private fun showLoadingDialog() {
@@ -122,13 +140,92 @@ class BillingInformationFragment : Fragment() {
         loadingDialog?.dismiss()
         loadingDialog = null
     }
+    private fun retrieveLinkPayment() {
+
+        val db = FirebaseFirestore.getInstance()
+        val currentUser = FirebaseAuth.getInstance().currentUser
+
+        if (currentUser != null) {
+            lifecycleScope.launch(Dispatchers.IO) {
+                try {
+                    val querySnapshot = db.collection("users")
+                        .document(currentUser.uid)
+                        .collection("myPayments")
+                        .get()
+                        .await()
+                    if (!querySnapshot.isEmpty) {
+                        val document = querySnapshot.documents.firstOrNull()
+
+                        document?.let {
+                            val paymentIds = it.getString("paymentIds") ?: ""
+                            Log.d("BillingInformation", "Retrieved paymentIds: $paymentIds")
+                            val retrievedData = retrieveData(paymentIds)
+                            if (retrievedData != null) {
+                                Log.d("BillingInformation", "Retrieved data: $retrievedData")
+                                withContext(Dispatchers.Main) {
+
+                                    lifecycleScope.launch {
+                                        val apiResponse = retrieveData(paymentIds)
+                                        apiResponse?.data?.attributes?.payments?.let { payments ->
+                                            val paymentList = payments.map { it.data.attributes }
+                                            adapter = PaymentAdapter(paymentList)
+                                            binding.recyclerPayments.adapter = adapter
+                                            binding.recyclerPayments.layoutManager = LinearLayoutManager(requireContext())
+                                        }
+                                    } }
+                            }
+                        } ?: run {
+                            Log.d("BillingInformation", "No documents found in myPayments")
+                        }
+                    } else {
+                        Log.d("BillingInformation", "No payments found for user")
+                    }
+                } catch (e: Exception) {
+                    Log.e("BillingInformation", "Error retrieving data: ${e.message}")
+                }
+            }
+        } else {
+            Log.e("BillingInformation", "User is not logged in")
+        }
+    }
+    private suspend fun retrieveData(paymentIds: String): ApiResponse? {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("https://api.paymongo.com/v1/links/$paymentIds")
+            .get()
+            .addHeader("accept", "application/json")
+            .addHeader("authorization", "Basic c2tfdGVzdF9vVEJzbUJjdjhxZ1A5UXpBbmJld2prZUs6")
+            .build()
+
+        return withContext(Dispatchers.IO) {
+            try {
+                client.newCall(request).execute().use { response ->
+                    if (response.isSuccessful) {
+                        response.body?.string()?.let { body ->
+                            Log.d("BillingInformation", "retrieveData successful: $body")
+                            // Parse the JSON using Gson
+
+                            val gson = Gson()
+                            return@withContext gson.fromJson(body, ApiResponse::class.java)
+                        }
+                    } else {
+                        Log.e("BillingInformation", "retrieveData failed: ${response.code}, Message: ${response.message}")
+                        null
+                    }
+                }
+            } catch (e: IOException) {
+                Log.e("BillingInformation", "retrieveData IOException: ${e.message}")
+                null
+            }
+        }
+    }
 
     private fun makeRequest(amount: Int, accountNumber: String) {
         val client = OkHttpClient()
         val mediaType = "application/json".toMediaTypeOrNull()
         val body = RequestBody.create(
             mediaType,
-            "{\"data\":{\"attributes\":{\"amount\":$amount,\"description\":\"Payment for This Month Bill - $accountNumber\",\"remarks\":\"$accountNumber\"}}}"
+            "{\"data\":{\"attributes\":{\"amount\":$amount,\"description\":\"Payment Bill - $accountNumber\",\"remarks\":\"$accountNumber\"}}}"
         )
 
         val request = Request.Builder()
