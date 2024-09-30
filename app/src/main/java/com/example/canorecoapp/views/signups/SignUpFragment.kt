@@ -363,6 +363,7 @@ class SignUpFragment : Fragment() {
                             navigate(R.id.signInFragment)
                         }
                         auth.signOut()
+                        loadingDialog.dismiss()
                     } else {
                         Toast.makeText(
                             this@SignUpFragment.requireContext(),
@@ -381,84 +382,5 @@ class SignUpFragment : Fragment() {
         }
     }
 
-    private fun verifyEmail(user: FirebaseUser?) {
-        loadingDialog.dismiss()
-        if (user == null) {
-            Log.e("EmailVerification", "User is not logged in. Cannot send verification email.")
-            return
-        }
-        user.sendEmailVerification()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Log.d("EmailVerification", "Verification email sent to ${user.email}")
-                    //  showVerificationDialog(user)
-                } else {
-                    Log.e(
-                        "EmailVerification",
-                        "Failed to send verification email to ${user.email}. Task failed."
-                    )
-                    Toast.makeText(
-                        requireContext(),
-                        "Error sending verification email",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.e("EmailVerification", "Error sending verification email: ${exception.message}")
-                Toast.makeText(requireContext(), exception.message, Toast.LENGTH_SHORT).show()
-            }
-    }
-
-
-    @SuppressLint("MissingInflatedId")
-    private fun showVerificationDialog(user: FirebaseUser) {
-        val dialogBuilder = AlertDialog.Builder(requireContext())
-        val inflater = layoutInflater
-        val dialogView = inflater.inflate(R.layout.dialog_verification, null)
-        dialogBuilder.setView(dialogView)
-        val btnContinue = dialogView.findViewById<Button>(R.id.btnContinue)
-        val btnResend = dialogView.findViewById<TextView>(R.id.btnResend)
-
-        val dialog = dialogBuilder.create()
-        dialog.setCancelable(false)
-        dialog.show()
-
-        btnContinue.isEnabled = false
-        btnResend.setOnClickListener {
-            //  verifyEmail(user)
-        }
-
-        lifecycleScope.launch {
-            while (auth.currentUser?.isEmailVerified == false) {
-                try {
-                    auth.currentUser?.reload()?.addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            if (auth.currentUser?.isEmailVerified == true) {
-                                btnContinue.isEnabled = true
-                            }
-                        } else {
-                            Log.e("VerificationDialog", "Failed to reload user", task.exception)
-                        }
-                    }
-                } catch (e: Exception) {
-                    Log.e("VerificationDialog", "Error during email verification", e)
-                }
-                delay(5000)
-            }
-        }
-
-        btnContinue.setOnClickListener {
-            if (auth.currentUser?.isEmailVerified == true) {
-                dialog.dismiss()
-            } else {
-                Toast.makeText(
-                    requireContext(),
-                    "Please verify your email before proceeding.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-    }
 
 }

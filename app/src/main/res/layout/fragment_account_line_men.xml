@@ -75,8 +75,8 @@
                 android:id="@+id/app_security_card"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen_15dp"
                 android:layout_marginHorizontal="@dimen/dimen_20dp"
+                android:layout_marginTop="@dimen/dimen_15dp"
                 app:cardCornerRadius="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -92,10 +92,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="5dp"
+                        android:fontFamily="@font/roboto_bold"
                         android:text="App Settings"
-                        android:textSize="@dimen/dimen_16sp"
                         android:textColor="@color/text_dark_color"
-                        android:fontFamily="@font/roboto_bold"/>
+                        android:textSize="@dimen/dimen_16sp" />
 
                     <TextView
                         android:id="@+id/update_profile"
@@ -103,16 +103,16 @@
                         android:layout_height="wrap_content"
                         android:clickable="true"
                         android:focusable="true"
+                        android:fontFamily="@font/roboto_regular"
                         android:paddingVertical="12dp"
                         android:text="Update Personal Details"
-                        android:textSize="14sp"
                         android:textColor="@color/text_dark_color"
-                        android:fontFamily="@font/roboto_regular"/>
+                        android:textSize="14sp" />
 
                     <com.google.android.material.divider.MaterialDivider
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        app:dividerColor="@color/stroke_light_color"/>
+                        app:dividerColor="@color/stroke_light_color" />
 
                     <TextView
                         android:id="@+id/update_contact_address"
@@ -120,16 +120,16 @@
                         android:layout_height="wrap_content"
                         android:clickable="true"
                         android:focusable="true"
+                        android:fontFamily="@font/roboto_regular"
                         android:paddingVertical="12dp"
                         android:text="Update Contact and Address"
-                        android:textSize="14sp"
                         android:textColor="@color/text_dark_color"
-                        android:fontFamily="@font/roboto_regular" />
+                        android:textSize="14sp" />
 
                     <com.google.android.material.divider.MaterialDivider
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        app:dividerColor="@color/stroke_light_color"/>
+                        app:dividerColor="@color/stroke_light_color" />
 
                     <TextView
                         android:id="@+id/change_password"
@@ -137,40 +137,29 @@
                         android:layout_height="wrap_content"
                         android:clickable="true"
                         android:focusable="true"
+                        android:fontFamily="@font/roboto_regular"
                         android:paddingVertical="12dp"
                         android:text="Change Password"
-                        android:textSize="14sp"
                         android:textColor="@color/text_dark_color"
-                        android:fontFamily="@font/roboto_regular" />
+                        android:textSize="14sp" />
 
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/notifications_card"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dimen_10dp"
-                android:layout_marginHorizontal="@dimen/dimen_20dp"
-                app:cardCornerRadius="8dp"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/app_security_card"/>
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/logout_card"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="@dimen/dimen_10dp"
                 android:layout_marginHorizontal="@dimen/dimen_20dp"
-                app:cardCornerRadius="8dp"
+                android:layout_marginVertical="@dimen/dimen_10dp"
                 android:elevation="10dp"
+                app:cardCornerRadius="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/notifications_card"> <!-- Constrained to notifications_card -->
+                app:layout_constraintTop_toBottomOf="@+id/app_security_card"> <!-- Constrained to notifications_card -->
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -184,10 +173,10 @@
                         android:layout_height="wrap_content"
                         android:clickable="true"
                         android:focusable="true"
+                        android:fontFamily="@font/roboto_bold"
                         android:text="Logout"
                         android:textColor="@color/text_dark_color"
                         android:textSize="@dimen/dimen_16sp"
-                        android:fontFamily="@font/roboto_bold"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/logout_icon"
                         app:layout_constraintStart_toStartOf="parent"
@@ -199,10 +188,10 @@
                         android:layout_height="24dp"
                         android:layout_gravity="end"
                         android:src="@drawable/icon_logout"
-                        app:tint="@color/text_dark_color"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="@color/text_dark_color" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

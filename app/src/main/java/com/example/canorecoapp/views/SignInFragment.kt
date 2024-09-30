@@ -64,7 +64,7 @@ class SignInFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         auth = FirebaseAuth.getInstance()
         fireStore = FirebaseFirestore.getInstance()
-
+        loadingDialog.dismiss()
         handler.postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
         binding.buttonLoginLogin.setOnClickListener {
             validateData()
@@ -238,6 +238,7 @@ class SignInFragment : Fragment() {
         btnContinue.isEnabled = false
         btnResend.setOnClickListener {
             verifyEmail(user)
+            auth.signOut()
         }
 
         lifecycleScope.launch {
@@ -247,6 +248,7 @@ class SignInFragment : Fragment() {
                         if (task.isSuccessful) {
                             if (auth.currentUser?.isEmailVerified == true) {
                                 btnContinue.isEnabled = true
+                                auth.signOut()
                             }
                         } else {
                             Log.e("VerificationDialog", "Failed to reload user", task.exception)
@@ -262,6 +264,7 @@ class SignInFragment : Fragment() {
         btnContinue.setOnClickListener {
             if (auth.currentUser?.isEmailVerified == true) {
                 dialog.dismiss()
+                Toast.makeText(requireContext(), "Account Verified", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(requireContext(), "Please verify your email before proceeding.", Toast.LENGTH_SHORT).show()
             }
@@ -270,12 +273,14 @@ class SignInFragment : Fragment() {
     private fun verifyEmail(user: FirebaseUser?) {
         if (user == null) {
             Log.e("EmailVerification", "User is not logged in. Cannot send verification email.")
+            auth.signOut()
             return
         }
         user.sendEmailVerification()
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Log.d("EmailVerification", "Verification email sent to ${user.email}")
+                    Toast.makeText(requireContext(), "Check your email for verification", Toast.LENGTH_SHORT).show();
                     showVerificationDialog(user)
                 } else {
                     Log.e("EmailVerification", "Failed to send verification email to ${user.email}. Task failed.")
