@@ -18,6 +18,7 @@ import com.example.canorecoapp.databinding.FragmentBillingInformationBinding
 import com.example.canorecoapp.models.PaymentInfo
 import com.example.canorecoapp.utils.ApiResponse
 import com.example.canorecoapp.utils.DialogUtils
+import com.example.canorecoapp.utils.PaymentAttributes
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
@@ -141,7 +142,6 @@ class BillingInformationFragment : Fragment() {
         loadingDialog = null
     }
     private fun retrieveLinkPayment() {
-
         val db = FirebaseFirestore.getInstance()
         val currentUser = FirebaseAuth.getInstance().currentUser
 
@@ -153,29 +153,27 @@ class BillingInformationFragment : Fragment() {
                         .collection("myPayments")
                         .get()
                         .await()
+
                     if (!querySnapshot.isEmpty) {
-                        val document = querySnapshot.documents.firstOrNull()
-
-                        document?.let {
-                            val paymentIds = it.getString("paymentIds") ?: ""
+                        val paymentList = mutableListOf<PaymentAttributes>()
+                        for (document in querySnapshot.documents) {
+                            val paymentIds = document.getString("paymentIds") ?: ""
                             Log.d("BillingInformation", "Retrieved paymentIds: $paymentIds")
-                            val retrievedData = retrieveData(paymentIds)
-                            if (retrievedData != null) {
-                                Log.d("BillingInformation", "Retrieved data: $retrievedData")
-                                withContext(Dispatchers.Main) {
 
-                                    lifecycleScope.launch {
-                                        val apiResponse = retrieveData(paymentIds)
-                                        apiResponse?.data?.attributes?.payments?.let { payments ->
-                                            val paymentList = payments.map { it.data.attributes }
-                                            adapter = PaymentAdapter(paymentList)
-                                            binding.recyclerPayments.adapter = adapter
-                                            binding.recyclerPayments.layoutManager = LinearLayoutManager(requireContext())
-                                        }
-                                    } }
+                            val retrievedData = retrieveData(paymentIds)
+                            retrievedData?.data?.attributes?.payments?.let { payments ->
+                                paymentList.addAll(payments.map { it.data.attributes })
                             }
-                        } ?: run {
-                            Log.d("BillingInformation", "No documents found in myPayments")
+                        }
+
+                        if (paymentList.isNotEmpty()) {
+                            withContext(Dispatchers.Main) {
+                                adapter = PaymentAdapter(paymentList)
+                                binding.recyclerPayments.adapter = adapter
+                                binding.recyclerPayments.layoutManager = LinearLayoutManager(requireContext())
+                            }
+                        } else {
+                            Log.d("BillingInformation", "No paid payments found")
                         }
                     } else {
                         Log.d("BillingInformation", "No payments found for user")
@@ -188,6 +186,7 @@ class BillingInformationFragment : Fragment() {
             Log.e("BillingInformation", "User is not logged in")
         }
     }
+
     private suspend fun retrieveData(paymentIds: String): ApiResponse? {
         val client = OkHttpClient()
         val request = Request.Builder()
@@ -203,10 +202,15 @@ class BillingInformationFragment : Fragment() {
                     if (response.isSuccessful) {
                         response.body?.string()?.let { body ->
                             Log.d("BillingInformation", "retrieveData successful: $body")
-                            // Parse the JSON using Gson
-
                             val gson = Gson()
-                            return@withContext gson.fromJson(body, ApiResponse::class.java)
+                            val apiResponse = gson.fromJson(body, ApiResponse::class.java)
+
+                            if (apiResponse.data?.attributes?.status == "paid") {
+                                return@withContext apiResponse
+                            } else {
+                                Log.d("BillingInformation", "Payment status is not 'paid'. Skipping retrieval.")
+                                return@withContext null
+                            }
                         }
                     } else {
                         Log.e("BillingInformation", "retrieveData failed: ${response.code}, Message: ${response.message}")
@@ -219,6 +223,8 @@ class BillingInformationFragment : Fragment() {
             }
         }
     }
+
+
 
     private fun makeRequest(amount: Int, accountNumber: String) {
         val client = OkHttpClient()
@@ -310,11 +316,7 @@ class BillingInformationFragment : Fragment() {
                     "amount" to paymentInfo.amount,
                     "accountNumber" to accountNumber,
                     "description" to paymentInfo.description,
-                    "status" to paymentInfo.status,
                     "checkoutUrl" to paymentInfo.checkoutUrl,
-                    "referenceNumber" to paymentInfo.referenceNumber,
-                    "createdAt" to paymentInfo.createdAt,
-                    "updatedAt" to paymentInfo.updatedAt,
                     "response" to responseData,
                     "timestamp" to System.currentTimeMillis(),
                     "paymentIds" to paymentId

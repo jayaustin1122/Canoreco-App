@@ -1,121 +1,191 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_marginBottom="16dp"
-    android:padding="16dp"
-    app:cardCornerRadius="20dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="8dp"
     app:cardElevation="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="20dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="16dp">
 
+        <!-- Row 1: Payment Date and Bill Month -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-    >
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Payment Date - Feb 12, 2024"
-                    android:textSize="14sp"
-                    android:textColor="@color/black"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Bill Month: February 2024"
-                    android:textSize="12sp"
-                    android:textColor="@color/gray"/>
-
-            </LinearLayout>
+            android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/tvPaymentDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Payment Date - Feb 12, 2024"
+                android:textColor="#000"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Paid"
-                android:textSize="14sp"
-                android:textColor="@android:color/white"
-                android:background="@color/g_green"
+                android:layout_marginStart="150dp"
+                android:textColor="#4CAF50"
+                android:textStyle="bold"
+                android:layout_gravity="left"
+                android:gravity=""
+                android:background="@drawable/paid_background"
                 android:padding="4dp"
-                android:gravity="center"/>
-
+                android:textSize="14sp"
+                tools:ignore="RtlHardcoded" />
         </LinearLayout>
 
+        <!-- Bill Month -->
         <TextView
+            android:id="@+id/tvBillMonth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Account Number"
+            android:text="Bill Month: February 2024"
+            android:textColor="#666"
             android:textSize="12sp"
-            android:textColor="@color/gray"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="4dp"/>
 
-        <TextView
+        <!-- Divider Line -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="8dp"
+            android:background="@android:color/darker_gray" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="25-2504-2920"
-            android:textSize="14sp"
-            android:textColor="@color/black"
-            android:textStyle="bold"/>
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-        <TextView
+                <TextView
+                    android:id="@+id/tvAccountNumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Account Number"
+                    android:textColor="#000"
+                    android:textStyle="bold"
+                    android:textSize="14sp" />
+
+
+            </LinearLayout>
+
+            <!-- Account Number Value -->
+            <TextView
+                android:id="@+id/tvAccountNumberValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="25-2504-2920"
+                android:textColor="#000"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp"/>
+
+            <!-- Row 3: Mode of Payment and Amount After Due -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvModeOfPayment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mode of Payment"
+                    android:textColor="#000"
+                    android:textStyle="bold"
+                    android:textSize="14sp" />
+
+
+            </LinearLayout>
+
+            <!-- Mode of Payment Value -->
+            <TextView
+                android:id="@+id/tvModeOfPaymentValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Over the Counter"
+                android:textColor="#000"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp"/>
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Current Bill"
-            android:textSize="12sp"
-            android:textColor="@color/gray"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginStart="180dp"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="₱ 1500.00"
-            android:textSize="14sp"
-            android:textColor="@color/black"
-            android:textStyle="bold"/>
+                <TextView
+                    android:id="@+id/tvCurrentBill"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Current Bill"
+                    android:textColor="#000"
+                    android:textStyle="bold"
+                    android:textSize="14sp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Mode of Payment"
-            android:textSize="12sp"
-            android:textColor="@color/gray"
-            android:layout_marginTop="8dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Over the Counter"
-            android:textSize="14sp"
-            android:textColor="@color/black"
-            android:textStyle="bold"/>
+            </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Amount After Due"
-            android:textSize="12sp"
-            android:textColor="@color/gray"
-            android:layout_marginTop="8dp"/>
+            <!-- Account Number Value -->
+            <TextView
+                android:id="@+id/tvCurrentBillValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="25-2504-2920"
+                android:textColor="#000"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="₱ 1586.00"
-            android:textSize="14sp"
-            android:textColor="@color/black"
-            android:textStyle="bold"/>
+            <!-- Row 3: Mode of Payment and Amount After Due -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvAmountAfterDue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Amount After Due"
+                    android:textColor="#000"
+                    android:textStyle="bold"
+                    android:textSize="14sp" />
+
+
+            </LinearLayout>
+
+            <!-- Mode of Payment Value -->
+            <TextView
+                android:id="@+id/tvAmountAfterDueValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Over the Counter"
+                android:textColor="#000"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>
