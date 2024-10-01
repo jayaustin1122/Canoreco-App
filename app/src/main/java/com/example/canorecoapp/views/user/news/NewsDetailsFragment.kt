@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -55,8 +56,19 @@ class NewsDetailsFragment : Fragment() {
 
         getNewsDetailsByTimestamp(title,from)
         binding.backArrow.setOnClickListener {
-            findNavController().navigateUp()
+            val bundle = Bundle().apply {
+                putInt("selectedFragmentId", null ?: R.id.navigation_Home)
+            }
+            findNavController().navigate(R.id.userHolderFragment, bundle)
         }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val bundle = Bundle().apply {
+                    putInt("selectedFragmentId", null ?: R.id.navigation_Home)
+                }
+                findNavController().navigate(R.id.userHolderFragment, bundle)
+            }
+        })
     }
     private fun setupRecyclerView(images: List<String>) {
         val recyclerView = binding.imagesRV
