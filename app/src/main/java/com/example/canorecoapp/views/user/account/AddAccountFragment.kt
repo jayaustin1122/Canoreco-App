@@ -1,60 +1,158 @@
 package com.example.canorecoapp.views.user.account
 
+import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import com.example.canorecoapp.R
+import com.example.canorecoapp.databinding.FragmentAddAccountBinding
+import com.example.canorecoapp.viewmodels.UserViewModel
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.firestore.FirebaseFirestore
+import org.bouncycastle.asn1.isismtt.x509.DeclarationOfMajority.dateOfBirth
+import org.bouncycastle.cms.RecipientId.password
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [AddAccountFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class AddAccountFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
-
+    private lateinit var binding: FragmentAddAccountBinding
+    private val viewModel: UserViewModel by viewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_add_account, container, false)
+        binding = FragmentAddAccountBinding.inflate(layoutInflater)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment AddAccountFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AddAccountFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.errorMessage.observe(viewLifecycleOwner, Observer { errorMessage ->
+            if (errorMessage != null) {
+                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            viewModel.loadUserInfo()
+        }
+
+        binding.etAccountNumber.addTextChangedListener(object : TextWatcher {
+            private var isFormatting: Boolean = false
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // No action needed here
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // No action needed here
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (isFormatting) return
+
+                isFormatting = true
+
+                // Get the original text
+                val originalText = s.toString()
+                // Remove non-digit characters
+                val digits = originalText.replace(Regex("[^\\d]"), "")
+                // Format the digits
+                val formattedText = formatAccountNumber(digits)
+
+                // Set the formatted text and update the cursor position
+                binding.etAccountNumber.setText(formattedText)
+
+                // Move cursor to the end of the text
+                binding.etAccountNumber.setSelection(formattedText.length)
+
+                isFormatting = false
+            }
+        })
+        binding.btnSave.setOnClickListener {
+            validateInputs()
+        }
+    }
+
+    private fun validateInputs() {
+        val accountNumber = binding.etAccountNumber.text.toString().trim()
+        val accountName = binding.etAccountName.text.toString().trim()
+       if (accountNumber.isEmpty()) {
+            Toast.makeText(requireContext(), "PLease add or Complete Account Number", Toast.LENGTH_SHORT).show()
+            return
+        }
+        else if (accountName.isEmpty()) {
+            Toast.makeText(requireContext(), "Please add your Account Name", Toast.LENGTH_SHORT).show()
+            return
+        }
+        else {
+            bindInDb(accountNumber,accountName)
+        }
+    }
+
+    private fun bindInDb(accountNumber: String, accountName: String) {
+        val firestore = FirebaseFirestore.getInstance()
+        val accountsRef = firestore.collection("accounts")
+
+        accountsRef.document(accountNumber).get()
+            .addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    val consumerAccount = document.getString("consumerAccount")
+
+                    if (consumerAccount.isNullOrEmpty()) {
+                        val requestsRef = accountsRef.document(accountNumber).collection("requests")
+
+                        viewModel.userInfo.observe(viewLifecycleOwner, Observer { userInfo ->
+                            userInfo?.let {
+                                val timestamp = System.currentTimeMillis() / 1000
+
+                                val requestData = mapOf(
+                                    "accountNumber" to accountNumber,
+                                    "firstName" to userInfo.firstName,
+                                    "lastName" to userInfo.lastName,
+                                    "municipality" to userInfo.municipality,
+                                    "barangay" to userInfo.barangay,
+                                    "uid" to userInfo.uid,
+                                    "timestamp" to timestamp.toString(),
+                                    "status" to "pending"
+                                )
+
+                                requestsRef.document(timestamp.toString()).set(requestData)
+                                    .addOnSuccessListener {
+                                        Snackbar.make(requireView(), "Request added successfully", Snackbar.LENGTH_LONG).show()
+                                        Log.d("Firestore", "Request added successfully with timestamp: $timestamp")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.w("Firestore", "Error adding request: ${e.message}")
+                                    }
+                            }
+                        })
+                    } else {
+                        Snackbar.make(requireView(), "This Account Number is Already in Use", Snackbar.LENGTH_LONG).show()
+                    }
+                } else {
+                    Log.w("Firestore", "No such document with account number: $accountNumber")
                 }
             }
+            .addOnFailureListener { e ->
+                Log.w("Firestore", "Error getting document: ${e.message}")
+            }
     }
+
+
+
+    private fun formatAccountNumber(digits: String): String {
+        return when {
+            digits.length >= 10 -> "${digits.substring(0, 2)}-${digits.substring(2, 6)}-${digits.substring(6, 10)}"
+            digits.length >= 6 -> "${digits.substring(0, 2)}-${digits.substring(2)}"
+            else -> digits
+        }
+    }
+
 }
