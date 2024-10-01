@@ -96,6 +96,13 @@ class UserHolderFragment : Fragment() {
                     findNavController().navigate(R.id.notifFragment)
                     true
                 }
+                R.id.imgProfiled -> {
+                    val bundle = Bundle().apply {
+                        putInt("selectedFragmentId", null ?: R.id.navigation_account)
+                    }
+                    findNavController().navigate(R.id.userHolderFragment, bundle)
+                    true
+                }
 
                 else -> false
             }

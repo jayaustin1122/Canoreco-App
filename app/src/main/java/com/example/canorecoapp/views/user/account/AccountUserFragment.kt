@@ -36,6 +36,7 @@ import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentAccountLineMenBinding
 import com.example.canorecoapp.utils.DialogUtils
 import com.example.canorecoapp.viewmodels.UserViewModel
+import com.example.canorecoapp.views.user.news.FullScreenImageFragment
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.EmailAuthProvider
@@ -65,6 +66,25 @@ class AccountUserFragment : Fragment() {
         fireStore = FirebaseFirestore.getInstance()
         selectedImage = Uri.EMPTY
         loadingDialog = DialogUtils.showLoading(requireActivity())
+
+        //image
+        binding.imgUserProfile.setOnClickListener {
+            viewModel.userInfo.observe(viewLifecycleOwner, Observer { userInfo ->
+                userInfo?.let {
+                    binding.apply {
+                        val detailsFragment = FullScreenImageFragment()
+                        val bundle = Bundle().apply {
+                            putStringArrayList("imageList", arrayListOf(userInfo.image))
+                            putInt("initialPosition", 0)
+                        }
+                        detailsFragment.arguments = bundle
+                        findNavController().navigate(R.id.fullScreenImageFragment, bundle)
+                    }
+                }
+            })
+        }
+
+
         lifecycleScope.launch {
             loadingDialog.show()
             Handler(Looper.getMainLooper()).postDelayed({
@@ -82,15 +102,7 @@ class AccountUserFragment : Fragment() {
                 })
             }, 600)
         }
-        viewModel.errorMessage.observe(viewLifecycleOwner, Observer { errorMessage ->
-            if (errorMessage != null) {
-                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
-            }
-        })
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            viewModel.loadUserInfo()
-        }
         binding.addAccount.setOnClickListener {
             findNavController().navigate(R.id.addAccountFragment)
         }
@@ -131,7 +143,14 @@ class AccountUserFragment : Fragment() {
             findNavController().navigate(R.id.changePasswordFragment)
         }
 
-
+        viewModel.errorMessage.observe(viewLifecycleOwner, Observer { errorMessage ->
+            if (errorMessage != null) {
+                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+            }
+        })
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            viewModel.loadUserInfo()
+        }
     }
 
 }

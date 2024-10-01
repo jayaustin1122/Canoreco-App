@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -56,6 +57,23 @@ class ChangeContactAddressFragment : Fragment() {
                 }
             }
         })
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    val navController = findNavController()
+                    if (navController.currentDestination?.id == R.id.userHolderFragment) {
+                        navController.popBackStack()
+                    } else {
+                        val bundle = Bundle().apply {
+                            putInt("selectedFragmentId", R.id.navigation_account)
+                        }
+                        navController.navigate(R.id.userHolderFragment, bundle)
+                    }
+                }
+            }
+        )
+
         binding.backButton.setOnClickListener {
             DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to exit? Changes will not be saved."
             ) { sweetAlertDialog ->
