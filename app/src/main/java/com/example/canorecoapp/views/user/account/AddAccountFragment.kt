@@ -12,6 +12,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentAddAccountBinding
 import com.example.canorecoapp.viewmodels.UserViewModel
@@ -77,6 +78,9 @@ class AddAccountFragment : Fragment() {
         })
         binding.btnSave.setOnClickListener {
             validateInputs()
+        }
+        binding.backButton.setOnClickListener {
+            findNavController().navigateUp()
         }
     }
 

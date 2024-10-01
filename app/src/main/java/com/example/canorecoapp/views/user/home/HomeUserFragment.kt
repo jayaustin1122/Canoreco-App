@@ -77,6 +77,9 @@ import java.util.Locale
                 Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
             }
         })
+        binding.fabBtnBind.setOnClickListener {
+            findNavController().navigate(R.id.addAccountFragment)
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             viewModel.loadUserInfo()
