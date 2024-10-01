@@ -82,9 +82,10 @@
                 android:id="@+id/report_type_input_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_marginBottom="10dp">
 
-                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                <AutoCompleteTextView
                     android:id="@+id/report_type_spinner"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
@@ -98,9 +99,10 @@
                 android:id="@+id/concern_input_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_marginBottom="10dp">
 
-                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                <AutoCompleteTextView
                     android:id="@+id/concern_spinner"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
