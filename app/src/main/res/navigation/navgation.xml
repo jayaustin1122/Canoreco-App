@@ -178,4 +178,14 @@
         android:name="BillingInformationFragment"
         tools:layout="@layout/fragment_billing_information"
         android:label="BillingInformationFragment" />
+    <fragment
+        android:id="@+id/addAccountFragment"
+        android:name="com.example.canorecoapp.views.user.account.AddAccountFragment"
+        android:label="fragment_add_account"
+        tools:layout="@layout/fragment_add_account" />
+    <fragment
+        android:id="@+id/dataPrivacyFragment"
+        android:name="com.example.canorecoapp.views.signups.DataPrivacyFragment"
+        android:label="fragment_data_privacy"
+        tools:layout="@layout/fragment_data_privacy" />
 </navigation>

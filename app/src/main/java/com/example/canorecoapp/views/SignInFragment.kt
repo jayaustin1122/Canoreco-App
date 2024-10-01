@@ -56,7 +56,6 @@ class SignInFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentSignInBinding.inflate(layoutInflater)
-        // Inflate the layout for this fragment
         return binding.root
     }
 
@@ -75,7 +74,7 @@ class SignInFragment : Fragment() {
         }
         binding.register.setOnClickListener {
             findNavController().apply {
-                navigate(R.id.signUpFragment)
+                navigate(R.id.dataPrivacyFragment)
             }
         }
     }

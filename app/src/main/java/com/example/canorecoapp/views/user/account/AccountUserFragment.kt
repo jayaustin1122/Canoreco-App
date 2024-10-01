@@ -91,7 +91,9 @@ class AccountUserFragment : Fragment() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             viewModel.loadUserInfo()
         }
-
+        binding.addAccount.setOnClickListener {
+            findNavController().navigate(R.id.addAccountFragment)
+        }
         binding.logoutCard.setOnClickListener {
             DialogUtils.showWarningMessage(
                 requireActivity(), "Logout", "Are you sure you want to Logout?"

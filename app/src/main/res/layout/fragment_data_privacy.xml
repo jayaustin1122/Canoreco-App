@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/background_color"
     android:orientation="vertical"
-    tools:context=".DataPrivacyFragment">
+    tools:context=".views.signups.DataPrivacyFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -171,17 +171,10 @@
                     android:id="@+id/checkBoxAllowData"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="I allow the collection and processing of my personal data."
                     android:buttonTint="@color/primary_main_color"/>
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="10dp"
-                    android:text="I allow the collection and processing of my personal data."
-                    android:textSize="15sp"
-                    android:textColor="@color/text_dark_color"
-                    android:fontFamily="@font/roboto_regular"/>
+
 
             </LinearLayout>
 
