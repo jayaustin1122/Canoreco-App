@@ -30,7 +30,7 @@
             android:text="Your email will be used as your login credential together with your password."
             android:textSize="15sp"
             android:textColor="#777777"
-            android:fontFamily="@font/roboto_medium"
+            android:fontFamily="@font/roboto_regular"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
 

@@ -98,6 +98,23 @@
                         android:fontFamily="@font/roboto_bold"/>
 
                     <TextView
+                        android:id="@+id/add_account"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:fontFamily="@font/roboto_regular"
+                        android:paddingVertical="12dp"
+                        android:text="Add Consumer Account"
+                        android:textColor="@color/text_dark_color"
+                        android:textSize="14sp" />
+
+                    <com.google.android.material.divider.MaterialDivider
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        app:dividerColor="@color/stroke_light_color" />
+
+                    <TextView
                         android:id="@+id/update_profile"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

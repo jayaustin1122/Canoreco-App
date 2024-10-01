@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_color"
-    android:orientation="vertical">
+    android:background="@color/background_color">
 
     <!-- AppBar Layout -->
     <com.google.android.material.appbar.AppBarLayout
@@ -30,7 +29,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/roboto_bold"
-                android:text="Billing"
+                android:text="Billing Information"
                 android:textColor="@color/text_light_color"
                 android:textSize="22sp" />
 
@@ -45,82 +44,102 @@
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- TextView for Important Info -->
-    <TextView
-        android:id="@+id/tvImportantInfo"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/dimen_16dp"
-        android:layout_marginTop="@dimen/dimen_16dp"
-        android:fontFamily="@font/roboto_regular"
-        android:text="Important: Pay only an exact amount for this biller."
-        android:textColor="@color/black"
-        android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
-        tools:layout_editor_absoluteX="16dp" />
-
-    <!-- Input for Additional Payment -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout2"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/dimen_20dp"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout1">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etAccountNumber"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:hint="Account Number eg - 120-20-200"
-            android:inputType="numberDecimal"
-            android:singleLine="true" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <!-- Input for Additional Payment -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout1"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/dimen_20dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintTop_toBottomOf="@+id/tvImportantInfo">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etPayment"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:hint="Add Amount"
-            android:inputType="numberDecimal"
-            android:singleLine="true" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_payments"
-        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:padding="@dimen/dimen_14dp"
-        app:layout_constraintBottom_toTopOf="@+id/buttonPayBill"
+        app:layout_constraintBottom_toTopOf="@+id/bottomLinearLayout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout2"
-        tools:listitem="@layout/item_payment" />
-    <!-- Pay Bill Button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/buttonPayBill"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- TextView for Important Info -->
+            <TextView
+                android:id="@+id/tvImportantInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_regular"
+                android:text="Important: Pay only an exact amount for this biller."
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+            <!-- Input for Additional Payment -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout2"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etAccountNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:hint="Account Number eg - 120-20-200"
+                    android:inputType="numberDecimal"
+                    android:singleLine="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Input for Additional Payment -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout1"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPayment"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:hint="Add Amount"
+                    android:inputType="numberDecimal"
+                    android:singleLine="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:fontFamily="@font/roboto_medium"
+                android:text="Billing History"
+                android:textColor="@color/text_dark_color"
+                android:textSize="15sp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_payments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/item_payments" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/bottomLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/dimen_16dp"
-        android:backgroundTint="@color/primary_main_color"
-        android:text="Pay"
-        android:textColor="@color/primary_light_color"
-        app:cornerRadius="10dp"
-        android:layout_marginBottom="@dimen/dimen_12dp"
+        android:padding="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonPayBill"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/primary_main_color"
+            android:fontFamily="@font/roboto_medium"
+            android:text="Pay"
+            android:textColor="@color/primary_light_color"
+            app:cornerRadius="10dp"/>
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
