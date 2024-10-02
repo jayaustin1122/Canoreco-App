@@ -7,6 +7,9 @@ import android.app.ProgressDialog
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.Editable
+import android.text.InputType
+import android.text.TextWatcher
 import android.util.Log
 import android.util.Patterns
 import androidx.fragment.app.Fragment
@@ -45,8 +48,6 @@ import kotlinx.coroutines.withContext
 class SignInFragment : Fragment() {
     private lateinit var binding : FragmentSignInBinding
     private lateinit var auth : FirebaseAuth
-    private lateinit var loadingDialog: SweetAlertDialog
-    private lateinit var successDialog: SweetAlertDialog
     private var backPressTime = 0L
     private var doubleBackToExitPressedOnce = false
     private val handler = Handler()
@@ -63,6 +64,8 @@ class SignInFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         auth = FirebaseAuth.getInstance()
         fireStore = FirebaseFirestore.getInstance()
+        binding.etPass.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+
         handler.postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
         binding.buttonLoginLogin.setOnClickListener {
             validateData()
@@ -82,19 +85,17 @@ class SignInFragment : Fragment() {
     var pass = ""
 
     private fun validateData() {
-        loadingDialog = DialogUtils.showLoading(requireActivity())
-        loadingDialog.show()
         email = binding.etUsernameLogin.text.toString().trim()
         pass = binding.etPass.text.toString().trim()
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
             //invalid email
             Toast.makeText(this.requireContext(),"Email Invalid", Toast.LENGTH_SHORT).show()
-            loadingDialog.dismiss()
+            DialogUtils.showLoading(requireActivity()).dismiss()
         }
         else if (pass.isEmpty()){
             Toast.makeText(this.requireContext(),"Empty Fields are not allowed", Toast.LENGTH_SHORT).show()
-            loadingDialog.dismiss()
+            DialogUtils.showLoading(requireActivity()).dismiss()
         }
         else{
             loginUser()
@@ -138,7 +139,7 @@ class SignInFragment : Fragment() {
             }
             catch (e : Exception){
                 withContext(Dispatchers.Main){
-                    loadingDialog.dismiss()
+
                     Toast.makeText(
                         this@SignInFragment.requireContext(),
                         "${e.message}",
@@ -166,7 +167,7 @@ class SignInFragment : Fragment() {
                         when (userType) {
                             "linemen" -> {
                                 if (access == false) {
-                                    loadingDialog.dismiss()
+
                                     val dialogBinding = DialogReviewBinding.inflate(layoutInflater)
                                     val dialog = Dialog(this@SignInFragment.requireContext())
                                     dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -175,9 +176,7 @@ class SignInFragment : Fragment() {
                                     auth.signOut()
                                 }
                                 else{
-                                    loadingDialog.dismiss()
-                                    successDialog = DialogUtils.showSuccessMessage(requireActivity(), "Log In Successful", "Welcome $name")
-                                    successDialog.show()
+                                    DialogUtils.showSuccessMessage(requireActivity(), "Log In Successful", "Welcome $name").show()
                                 Toast.makeText(
                                     this@SignInFragment.requireContext(),
                                     "Login Successfully",
@@ -188,17 +187,19 @@ class SignInFragment : Fragment() {
                                     navigate(R.id.adminHolderFragment)
                                 }
 
-                                loadingDialog.dismiss()
+
                             }
 
                             }
                             "member" -> {
-                                loadingDialog.dismiss()
+
                                 if (auth.currentUser?.isEmailVerified == true) {
+                                    DialogUtils.showLoading(requireActivity()).dismiss()
                                     findNavController().apply {
                                         popBackStack(R.id.splashFragment, false)
                                         navigate(R.id.userHolderFragment)
                                     }
+
                                 } else if (auth.currentUser?.isEmailVerified == false) {
                                     verifyEmail(firebaseUser)
                                 }
@@ -216,12 +217,12 @@ class SignInFragment : Fragment() {
                 }
             }
         } else {
-            loadingDialog.dismiss()
             Toast.makeText(this@SignInFragment.requireContext(), "User not authenticated.", Toast.LENGTH_SHORT).show()
         }
     }
     @SuppressLint("MissingInflatedId")
     private fun showVerificationDialog(user: FirebaseUser) {
+        DialogUtils.showLoading(requireActivity()).dismiss()
         val dialogBuilder = AlertDialog.Builder(requireContext())
         val inflater = layoutInflater
         val dialogView = inflater.inflate(R.layout.dialog_verification, null)
@@ -262,9 +263,13 @@ class SignInFragment : Fragment() {
         btnContinue.setOnClickListener {
             if (auth.currentUser?.isEmailVerified == true) {
                 dialog.dismiss()
+                DialogUtils.showLoading(requireActivity()).dismiss()
                 Toast.makeText(requireContext(), "Account Verified", Toast.LENGTH_SHORT).show();
+                loginUser()
             } else {
-                Toast.makeText(requireContext(), "Please verify your email before proceeding.", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+                DialogUtils.showLoading(requireActivity()).dismiss()
+                loginUser()
             }
         }
     }

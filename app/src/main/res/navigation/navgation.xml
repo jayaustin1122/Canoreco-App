@@ -188,4 +188,14 @@
         android:name="com.example.canorecoapp.views.signups.DataPrivacyFragment"
         android:label="fragment_data_privacy"
         tools:layout="@layout/fragment_data_privacy" />
+    <fragment
+        android:id="@+id/newsDetailsListsFragment"
+        android:name="com.example.canorecoapp.views.user.news.NewsDetailsListsFragment"
+        android:label="fragment_news_details_lists"
+        tools:layout="@layout/fragment_news_details_lists" />
+    <fragment
+        android:id="@+id/maintenanceDetailsFragment"
+        android:name="com.example.canorecoapp.views.user.maintenance.MaintenanceDetailsFragment"
+        android:label="fragment_maintenance_details"
+        tools:layout="@layout/fragment_maintenance_details" />
 </navigation>

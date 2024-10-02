@@ -20,11 +20,15 @@ class UserViewModel : ViewModel() {
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
 
+    private val _loading = MutableLiveData<Boolean>()
+    val loading: LiveData<Boolean> get() = _loading
+
     fun loadUserInfo() {
         val db = FirebaseFirestore.getInstance()
         val currentUser = FirebaseAuth.getInstance().currentUser
 
         if (currentUser != null) {
+            _loading.postValue(true) // Start loading
             CoroutineScope(Dispatchers.IO).launch {
                 try {
                     val querySnapshot = db.collection("users")
@@ -35,55 +39,44 @@ class UserViewModel : ViewModel() {
                         val document = querySnapshot.documents.firstOrNull()
 
                         document?.let {
-                            val access = it.getBoolean("access") ?: false
-                            val barangay = it.getString("barangay") ?: ""
-                            val dateOfBirth = it.getString("dateOfBirth") ?: ""
-                            val email = it.getString("email") ?: ""
-                            val firstName = it.getString("firstName") ?: ""
-                            val image = it.getString("image") ?: ""
-                            val lastName = it.getString("lastName") ?: ""
-                            val municipality = it.getString("municipality") ?: ""
-                            val password = it.getString("password") ?: ""
-                            val phone = it.getString("phone") ?: ""
-                            val timestamp = it.getLong("timestamp") ?: 0L
-                            val token = it.getString("token") ?: ""
-                            val uid = it.getString("uid") ?: ""
-                            val userType = it.getString("userType") ?: ""
-
                             val user = Users(
-                                access = access,
-                                barangay = barangay,
-                                dateOfBirth = dateOfBirth,
-                                email = email,
-                                firstName = firstName,
-                                image = image,
-                                lastName = lastName,
-                                municipality = municipality,
-                                password = password,
-                                phone = phone,
-                                timestamp = timestamp,
-                                token = token,
-                                uid = uid,
-                                userType = userType
+                                access = it.getBoolean("access") ?: false,
+                                barangay = it.getString("barangay") ?: "",
+                                dateOfBirth = it.getString("dateOfBirth") ?: "",
+                                email = it.getString("email") ?: "",
+                                firstName = it.getString("firstName") ?: "",
+                                image = it.getString("image") ?: "",
+                                lastName = it.getString("lastName") ?: "",
+                                municipality = it.getString("municipality") ?: "",
+                                password = it.getString("password") ?: "",
+                                phone = it.getString("phone") ?: "",
+                                timestamp = it.getLong("timestamp") ?: 0L,
+                                token = it.getString("token") ?: "",
+                                uid = it.getString("uid") ?: "",
+                                userType = it.getString("userType") ?: ""
                             )
 
                             withContext(Dispatchers.Main) {
                                 _userInfo.value = user
+                                _loading.value = false // Stop loading
                             }
                         }
                     } else {
                         withContext(Dispatchers.Main) {
                             _errorMessage.value = "No user data found"
+                            _loading.value = false // Stop loading
                         }
                     }
                 } catch (e: Exception) {
                     withContext(Dispatchers.Main) {
                         _errorMessage.value = e.message
+                        _loading.value = false // Stop loading on error
                     }
                 }
             }
         } else {
             _errorMessage.value = "User not authenticated"
+            _loading.value = false // Stop loading if no user
         }
     }
 

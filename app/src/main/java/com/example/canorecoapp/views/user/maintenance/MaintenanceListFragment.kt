@@ -7,15 +7,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
+import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.canorecoapp.R
+import com.example.canorecoapp.adapter.MaintenanceDetailsListsAdapter
 import com.example.canorecoapp.adapter.MaintenanceListAdapter
 import com.example.canorecoapp.adapter.NewsDetailsAdapter
+import com.example.canorecoapp.adapter.NewsDetailsListsAdapter
 import com.example.canorecoapp.databinding.FragmentMaintenanceListBinding
 import com.example.canorecoapp.models.Maintenance
 import com.example.canorecoapp.models.News
+import com.example.canorecoapp.views.user.news.NewsDetailsListsFragment
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -23,8 +27,8 @@ import com.google.firebase.ktx.Firebase
 class MaintenanceListFragment : Fragment() {
 
     private lateinit var binding : FragmentMaintenanceListBinding
-    private lateinit var newsList: ArrayList<Maintenance>
-    private lateinit var newsAdapter: MaintenanceListAdapter
+    private lateinit var newsList: ArrayList<News>
+    private lateinit var newsAdapter: MaintenanceDetailsListsAdapter
     private var db  = Firebase.firestore
 
     override fun onCreateView(
@@ -40,13 +44,14 @@ class MaintenanceListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         newsList = ArrayList()
-        newsAdapter = MaintenanceListAdapter(requireContext(), findNavController(), newsList)
+        newsAdapter = MaintenanceDetailsListsAdapter(requireContext(), findNavController(), newsList)
         binding.recyclerNews.adapter = newsAdapter
         getListOfMaintenance()
         binding.backButton.setOnClickListener {
-            findNavController().apply {
-                navigateUp()
+            val bundle = Bundle().apply {
+                putInt("selectedFragmentId", null ?: R.id.navigation_Home)
             }
+            findNavController().navigate(R.id.userHolderFragment, bundle)
         }
         binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -61,6 +66,14 @@ class MaintenanceListFragment : Fragment() {
                     newsAdapter.filter.filter(newText)
                 }
                 return false
+            }
+        })
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val bundle = Bundle().apply {
+                    putInt("selectedFragmentId", null ?: R.id.navigation_Home)
+                }
+                findNavController().navigate(R.id.userHolderFragment, bundle)
             }
         })
     }
@@ -87,12 +100,12 @@ class MaintenanceListFragment : Fragment() {
                     val category = document.getString("category") ?: ""
 
 
-                    val maintenance = Maintenance(title, "", "", firstImage, timestamp, date, "", "", "", "", category)
+                    val maintenance = News(title, "", "", firstImage, timestamp, date, "", "", "", "", category)
                     newsList.add(maintenance)
                 }
 
                 lifecycleScope.launchWhenResumed {
-                    newsAdapter = MaintenanceListAdapter(this@MaintenanceListFragment.requireContext(), findNavController(), newsList)
+                    newsAdapter = MaintenanceDetailsListsAdapter(this@MaintenanceListFragment.requireContext(), findNavController(), newsList)
                     binding.recyclerNews.setHasFixedSize(true)
                     val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
                     binding.recyclerNews.layoutManager = layoutManager

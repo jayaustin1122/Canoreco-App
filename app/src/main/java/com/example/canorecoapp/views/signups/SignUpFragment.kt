@@ -291,8 +291,6 @@ class SignUpFragment : Fragment() {
     }
 
     private fun uploadImage(token: String) {
-        loadingDialog = DialogUtils.showLoading(requireActivity())
-        loadingDialog.show()
 
         val reference = storage.reference.child("profile")
             .child(token!!)

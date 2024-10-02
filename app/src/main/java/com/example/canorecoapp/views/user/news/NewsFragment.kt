@@ -15,7 +15,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.canorecoapp.R
 import com.example.canorecoapp.adapter.NewsAdapter
 import com.example.canorecoapp.adapter.NewsDetailsAdapter
+import com.example.canorecoapp.adapter.NewsDetailsListsAdapter
 import com.example.canorecoapp.databinding.FragmentNewsBinding
+import com.example.canorecoapp.models.Maintenance
 import com.example.canorecoapp.models.News
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -23,8 +25,8 @@ import com.google.firebase.ktx.Firebase
 
 class NewsFragment : Fragment() {
     private lateinit var binding : FragmentNewsBinding
-    private lateinit var newsList: ArrayList<News>
-    private lateinit var newsAdapter: NewsDetailsAdapter
+    private lateinit var newsList: ArrayList<Maintenance>
+    private lateinit var newsAdapter: NewsDetailsListsAdapter
     private var db  = Firebase.firestore
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,7 +40,7 @@ class NewsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         newsList = ArrayList()
-        newsAdapter = NewsDetailsAdapter(requireContext(), findNavController(), newsList)
+        newsAdapter = NewsDetailsListsAdapter(requireContext(), findNavController(), newsList)
         binding.recyclerNews.adapter = newsAdapter
         getAllNews()
         binding.backButton.setOnClickListener {
@@ -92,7 +94,7 @@ class NewsFragment : Fragment() {
                     val timestamp = document.getString("timestamp") ?: ""
 
                     // Create News object and add to the list
-                    val news = News(title, "", "", firstImage, timestamp, date, "", "", "", "", category)
+                    val news = Maintenance(title, "", "", firstImage, timestamp, date, "", "", "", "", category)
                     newsList.add(news)
                 }
 
@@ -100,7 +102,7 @@ class NewsFragment : Fragment() {
 
 
                 lifecycleScope.launchWhenResumed {
-                        newsAdapter = NewsDetailsAdapter(this@NewsFragment.requireContext(), findNavController(), newsList)
+                        newsAdapter = NewsDetailsListsAdapter(this@NewsFragment.requireContext(), findNavController(), newsList)
                         binding.recyclerNews.setHasFixedSize(true)
                         val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
                         binding.recyclerNews.layoutManager = layoutManager
