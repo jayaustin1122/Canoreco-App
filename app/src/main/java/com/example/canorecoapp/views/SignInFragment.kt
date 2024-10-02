@@ -3,16 +3,12 @@ package com.example.canorecoapp.views
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Dialog
-import android.app.ProgressDialog
 import android.os.Bundle
 import android.os.Handler
-import android.os.Looper
-import android.text.Editable
 import android.text.InputType
-import android.text.TextWatcher
 import android.util.Log
 import android.util.Patterns
-import androidx.fragment.app.Fragment
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,22 +17,21 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.annotation.OptIn
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.DialogReviewBinding
 import com.example.canorecoapp.databinding.FragmentSignInBinding
 import com.example.canorecoapp.utils.DialogUtils
+import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.badge.BadgeUtils
+import com.google.android.material.badge.ExperimentalBadgeUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.storage.FirebaseStorage
+import com.minibugdev.drawablebadge.DrawableBadge
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -60,6 +55,7 @@ class SignInFragment : Fragment() {
         return binding.root
     }
 
+    @OptIn(ExperimentalBadgeUtils::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         auth = FirebaseAuth.getInstance()
@@ -70,6 +66,7 @@ class SignInFragment : Fragment() {
         binding.buttonLoginLogin.setOnClickListener {
             validateData()
         }
+
         binding.tvForgotPasswordLogin.setOnClickListener {
             findNavController().apply {
                 navigate(R.id.forgotPasswordFragment)
@@ -90,7 +87,7 @@ class SignInFragment : Fragment() {
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
             //invalid email
-            Toast.makeText(this.requireContext(),"Email Invalid", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this.requireContext(),"Email Is Empty or Invalid Email Format", Toast.LENGTH_SHORT).show()
             DialogUtils.showLoading(requireActivity()).dismiss()
         }
         else if (pass.isEmpty()){

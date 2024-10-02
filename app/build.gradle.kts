@@ -41,7 +41,7 @@ android {
 }
 
 dependencies {
-
+    implementation ("com.github.minibugdev:drawablebadge:2.0.1")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
