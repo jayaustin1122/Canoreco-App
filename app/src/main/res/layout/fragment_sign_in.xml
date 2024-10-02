@@ -70,7 +70,9 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:hint="Email"
-            android:scrollbars="vertical"
+            android:scrollbars="horizontal"
+            android:lines="1"
+            android:singleLine="true"
             app:boxStrokeWidth="1dp"
             app:boxStrokeWidthFocused="2dp" />
 
@@ -121,13 +123,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="10dp"
         android:gravity="center"
         android:text="Forgot password?"
         android:textAlignment="center"
         android:textColor="@color/secondary_color"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/passwordInputLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/brgy_type_input_layout" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonLoginLogin"
