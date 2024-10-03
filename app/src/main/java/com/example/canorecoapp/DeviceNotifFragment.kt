@@ -62,6 +62,11 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                         val barangay = deviceSnapshot.child("barangay").getValue(String::class.java) ?: ""
                         handleDeviceDamage(barangay)
                     }
+                    if (status == "repaired") {
+                        val barangay = deviceSnapshot.child("barangay").getValue(String::class.java) ?: ""
+                        sendSmsRepaired(barangay)
+                        sendnotif(barangay)
+                    }
                 }
             }
 
@@ -80,6 +85,65 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 val userEmail = userDoc.getString("email") ?: "No Email"
                 val notificationTitle = "Electric Post Damaged in $barangay"
                 val notificationMessage = "A device in your Barangay: $barangay has been detected as damaged. Please check the app or news for more details."
+                val timestamp = System.currentTimeMillis() / 1000
+                val notificationData = mapOf(
+                    "title" to notificationTitle,
+                    "status" to false,
+                    "isRead" to false,
+                    "message" to notificationMessage,
+                    "timestamp" to timestamp.toString()
+                )
+
+                // Send SMS
+                if (!userPhone.isNullOrEmpty()) {
+                    sendSms(userPhone, notificationMessage)
+                }
+            }
+        }.addOnFailureListener { exception ->
+            Log.e("DeviceNotifFragment", "Failed to query users", exception)
+        }
+    }
+    private fun sendnotif(barangay: String) {
+        val usersRef = db.collection("users")
+        usersRef.whereEqualTo("barangay", barangay).get().addOnSuccessListener { querySnapshot ->
+            for (userDoc in querySnapshot.documents) {
+                val userId = userDoc.id
+                val userEmail = userDoc.getString("email") ?: "No Email"
+                val notificationTitle = "Electric in $barangay"
+                val notificationMessage = "A Electric post in $barangay has been repaired."
+                val timestamp = System.currentTimeMillis() / 1000
+                val notificationData = mapOf(
+                    "title" to notificationTitle,
+                    "status" to false,
+                    "isRead" to false,
+                    "message" to notificationMessage,
+                    "timestamp" to timestamp.toString()
+                )
+
+                db.collection("users").document(userId)
+                    .collection("notifications").document(timestamp.toString())
+                    .set(notificationData)
+                    .addOnSuccessListener {
+                        Log.d("DeviceNotifFragment", "Notification successfully added for user $userId")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("DeviceNotifFragment", "Failed to add notification for user $userId", e)
+                    }
+            }
+        }.addOnFailureListener { exception ->
+            Log.e("DeviceNotifFragment", "Failed to query users", exception)
+        }
+    }
+
+    private fun sendSmsRepaired(barangay: String) {
+        val usersRef = db.collection("users")
+        usersRef.whereEqualTo("barangay", barangay).get().addOnSuccessListener { querySnapshot ->
+            for (userDoc in querySnapshot.documents) {
+                val userId = userDoc.id
+                val userPhone = userDoc.getString("phone") // Assuming there's a 'phone' field
+                val userEmail = userDoc.getString("email") ?: "No Email"
+                val notificationTitle = "Electric Post Repaired in $barangay"
+                val notificationMessage = "A device in your Barangay: $barangay has been repaired"
                 val timestamp = System.currentTimeMillis() / 1000
                 val notificationData = mapOf(
                     "title" to notificationTitle,

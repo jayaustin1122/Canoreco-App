@@ -117,7 +117,7 @@ class NotificationService : Service() {
         }
         val intent = Intent(this, MainActivity::class.java).apply {
             updateIsRead(notificationsRef2,isRead)
-            putExtra("navigate_to_fragment", "YourFragmentTag") // Replace with your fragment tag
+            putExtra("navigate_to_fragment", "YourFragmentTag")
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
         }
