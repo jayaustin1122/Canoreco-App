@@ -79,5 +79,4 @@ class StepTwoFragment : Fragment() {
         val municipalityAdapter = ArrayAdapter(requireContext(), R.layout.address_item_views, municipalities)
         binding.tvMunicipality.setAdapter(municipalityAdapter)
     }
-
 }
