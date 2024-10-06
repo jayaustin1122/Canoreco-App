@@ -31,6 +31,7 @@ class ServicesUserFragment : Fragment() {
             findNavController().apply {
                 val bundle = Bundle().apply {
                     putInt("selectedFragmentId", selectedFragmentId ?: R.id.navigation_services)
+                    putString("from", "service")
                 }
                 navigate(R.id.outagesFragment, bundle)
             }
@@ -40,6 +41,7 @@ class ServicesUserFragment : Fragment() {
             findNavController().apply {
                 val bundle = Bundle().apply {
                     putInt("selectedFragmentId", selectedFragmentId ?: R.id.navigation_services)
+                    putString("from", "service")
                 }
                 navigate(R.id.reportFragment, bundle)
             }
@@ -53,6 +55,7 @@ class ServicesUserFragment : Fragment() {
             findNavController().apply {
                 val bundle = Bundle().apply {
                     putInt("selectedFragmentId", selectedFragmentId ?: R.id.navigation_services)
+                    putString("from", "service")
                 }
                 navigate(R.id.bayadCentersFragment, bundle)
             }

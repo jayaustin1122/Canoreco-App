@@ -38,6 +38,7 @@ class ListOfFutureAndCurrentOutagesFragment : Fragment() {
     private val barangaysWithDamagedDevices = mutableListOf<String>()
     private val firestoreOutages = mutableSetOf<String>()
     val from = arguments?.getString("from")
+    private var from2: String? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -50,7 +51,9 @@ class ListOfFutureAndCurrentOutagesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val from = arguments?.getString("from")
-
+        arguments?.let {
+            from2 = it.getString("from2")
+        }
         if (from == "current"){
             retrieveAllCurrentOutages()
             retrieveDeviceWithDamaged()
@@ -78,6 +81,15 @@ class ListOfFutureAndCurrentOutagesFragment : Fragment() {
         loadUsersInfo()
 
     }
+    private fun handleBackNavigation() {
+        val bundle = Bundle().apply {
+            putString("from", from2)
+            putInt("selectedFragmentId", null ?: R.id.navigation_Home)
+        }
+        findNavController().previousBackStackEntry?.savedStateHandle?.set("bundleKey", bundle)
+        findNavController().navigateUp()
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun loadUsersInfo() {
         val db = FirebaseFirestore.getInstance()
@@ -91,13 +103,13 @@ class ListOfFutureAndCurrentOutagesFragment : Fragment() {
                     when (userType) {
                         "member" -> {
                             binding.backButton.setOnClickListener {
-                                findNavController().navigate(R.id.outagesFragment)
+                             handleBackNavigation()
                             }
                             requireActivity().onBackPressedDispatcher.addCallback(
                                 viewLifecycleOwner,
                                 object : OnBackPressedCallback(true) {
                                     override fun handleOnBackPressed() {
-                                        findNavController().navigate(R.id.outagesFragment)
+                                    handleBackNavigation()
                                     }
                                 })
                         }

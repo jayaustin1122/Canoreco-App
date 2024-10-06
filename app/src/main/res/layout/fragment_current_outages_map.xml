@@ -6,16 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".views.user.outages.CurrentOutagesMapFragment">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabRefresh"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="20dp"
-        android:backgroundTint="@color/background_color"
-        android:src="@drawable/icon_refresh"
-        app:layout_constraintBottom_toTopOf="@+id/bottomLinearLayout"
-        app:layout_constraintEnd_toEndOf="parent" />
 
     <fragment
         android:id="@+id/fragmentMap"

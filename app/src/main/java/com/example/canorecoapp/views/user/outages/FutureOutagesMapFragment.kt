@@ -48,7 +48,7 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
     private lateinit var binding : FragmentFutureOutagesMapBinding
     private var gMap: GoogleMap? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var loadingDialog: SweetAlertDialog
+    private var from: String? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -164,9 +164,7 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
                     }
                 }
             }
-            Handler(Looper.getMainLooper()).postDelayed({
-                loadingDialog.dismiss()
-            }, 1000)
+
             getCurrentLocation()
         } catch (e: JSONException) {
             Log.e("JSON", "Error parsing JSON data: ${e.message}")
@@ -176,17 +174,15 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         checkPermissionLocation()
-        loadingDialog = DialogUtils.showLoading(requireActivity())
-        loadingDialog.show()
-        binding.fabRefresh.setOnClickListener {
-            loadingDialog = DialogUtils.showLoading(requireActivity())
-            loadingDialog.show()
-            showPolygonsBasedOnFirestore()
+        arguments?.let {
+            from = it.getString("from")
         }
+
         binding.viewListButton.setOnClickListener {
             val detailsFragment = ListOfFutureAndCurrentOutagesFragment()
             val bundle = Bundle().apply {
                 putString("from", "future")
+                putString("from2", from)
             }
             detailsFragment.arguments = bundle
             findNavController().navigate(R.id.listOfFutureAndCurrentOutagesFragment, bundle)

@@ -42,6 +42,7 @@ import java.util.Locale
 class OutagesFragment : Fragment() {
     private lateinit var binding: FragmentOutagesBinding
     private var selectedFragmentId: Int? = null
+    private var from: String? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -49,11 +50,36 @@ class OutagesFragment : Fragment() {
         binding = FragmentOutagesBinding.inflate(layoutInflater)
         return binding.root
     }
+    private fun handleBackNavigation() {
+        val bundle = Bundle().apply {
+            putInt("selectedFragmentId", null ?: R.id.navigation_Home)
+        }
+        when (from) {
+            "home" -> findNavController().navigate(R.id.userHolderFragment, bundle)
+            "service" -> {
+                bundle.putInt("selectedFragmentId", null ?: R.id.navigation_services)
+                findNavController().navigate(R.id.userHolderFragment, bundle)
+            }
+        }
+    }
+    private fun replaceFragment(fragment: Fragment, from: String?) {
+        val bundle = Bundle().apply {
+            putString("from", from)
+        }
+        fragment.arguments = bundle
 
+        childFragmentManager.beginTransaction()
+            .replace(R.id.map_fragment_container, fragment)
+            .commit()
+    }
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         loadUsersInfo()
+        arguments?.let {
+            from = it.getString("from")
+        }
+
 
         // Set up the tabs
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Current Outages"))
@@ -61,15 +87,15 @@ class OutagesFragment : Fragment() {
 
 
         if (savedInstanceState == null) {
-            replaceFragment(CurrentOutagesMapFragment())
+            replaceFragment(CurrentOutagesMapFragment(),from)
         }
 
         // Handle tab selection
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 when (tab.position) {
-                    0 -> replaceFragment(CurrentOutagesMapFragment())
-                    1 -> replaceFragment(FutureOutagesMapFragment())
+                    0 -> replaceFragment(CurrentOutagesMapFragment(),from)
+                    1 -> replaceFragment(FutureOutagesMapFragment(),from)
                 }
             }
 
@@ -83,11 +109,7 @@ class OutagesFragment : Fragment() {
         })
     }
 
-    private fun replaceFragment(fragment: Fragment) {
-        childFragmentManager.beginTransaction()
-            .replace(R.id.map_fragment_container, fragment)
-            .commit()
-    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun loadUsersInfo() {
         val db = FirebaseFirestore.getInstance()
@@ -101,28 +123,13 @@ class OutagesFragment : Fragment() {
                     when (userType) {
                         "member" -> {
                             binding.backButton.setOnClickListener {
-                                val bundle = Bundle().apply {
-                                    putInt(
-                                        "selectedFragmentId",
-                                        selectedFragmentId ?: R.id.navigation_services
-                                    )
-                                }
-                                findNavController().navigate(R.id.userHolderFragment, bundle)
+                              handleBackNavigation()
                             }
                             requireActivity().onBackPressedDispatcher.addCallback(
                                 viewLifecycleOwner,
                                 object : OnBackPressedCallback(true) {
                                     override fun handleOnBackPressed() {
-                                        val bundle = Bundle().apply {
-                                            putInt(
-                                                "selectedFragmentId",
-                                                selectedFragmentId ?: R.id.navigation_services
-                                            )
-                                        }
-                                        findNavController().navigate(
-                                            R.id.userHolderFragment,
-                                            bundle
-                                        )
+                                       handleBackNavigation()
                                     }
                                 })
                         }

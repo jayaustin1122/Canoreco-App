@@ -26,4 +26,7 @@
     </style>
 
     <style name="Theme.CanorecoApp" parent="Base.Theme.CanorecoApp" />
+    <style name="myToolbarTheme">
+        <item name="colorControlNormal">@color/white</item>
+    </style>
 </resources>

@@ -32,6 +32,7 @@ class BayadCentersFragment : Fragment() {
     private lateinit var binding : FragmentBayadCentersBinding
     private val firestore = FirebaseFirestore.getInstance()
     private var selectedFragmentId: Int? = null
+    private var from: String? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -40,25 +41,31 @@ class BayadCentersFragment : Fragment() {
         return binding.root
     }
 
-
+    private fun handleBackNavigation() {
+        val bundle = Bundle().apply {
+            putInt("selectedFragmentId", null ?: R.id.navigation_Home)
+        }
+        when (from) {
+            "home" -> findNavController().navigate(R.id.userHolderFragment, bundle)
+            "service" -> {
+                bundle.putInt("selectedFragmentId", null ?: R.id.navigation_services)
+                findNavController().navigate(R.id.userHolderFragment, bundle)
+            }
+        }
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         arguments?.let {
             selectedFragmentId = it.getInt("selectedFragmentId", R.id.navigation_services)
+            from = it.getString("from")
         }
         binding.backButton.setOnClickListener {
-            val bundle = Bundle().apply {
-                putInt("selectedFragmentId", selectedFragmentId ?: R.id.navigation_services)
-            }
-            findNavController().navigate(R.id.userHolderFragment, bundle)
+            handleBackNavigation()
         }
         // Handle back button press
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                val bundle = Bundle().apply {
-                    putInt("selectedFragmentId", selectedFragmentId ?: R.id.navigation_services)
-                }
-                findNavController().navigate(R.id.userHolderFragment, bundle)
+                handleBackNavigation()
             }
         })
         // Set up the tabs
@@ -67,15 +74,15 @@ class BayadCentersFragment : Fragment() {
 
         // Display the first fragment by default
         if (savedInstanceState == null) {
-            replaceFragment(BayadFragmentOne())
+            replaceFragment(BayadFragmentOne(),from)
         }
 
         // Handle tab selection
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 when (tab.position) {
-                    0 -> replaceFragment(BayadFragmentOne())
-                    1 -> replaceFragment(BusinessCenterFragmentTwo())
+                    0 -> replaceFragment(BayadFragmentOne(),from)
+                    1 -> replaceFragment(BusinessCenterFragmentTwo(),from)
                 }
             }
 
@@ -96,7 +103,12 @@ class BayadCentersFragment : Fragment() {
         }
     }
 
-    private fun replaceFragment(fragment: Fragment) {
+    private fun replaceFragment(fragment: Fragment, from: String?) {
+        val bundle = Bundle().apply {
+            putString("from", from)
+        }
+        fragment.arguments = bundle
+
         childFragmentManager.beginTransaction()
             .replace(R.id.map_fragment_container, fragment)
             .commit()
@@ -137,6 +149,7 @@ class BayadCentersFragment : Fragment() {
                 val bundle = Bundle().apply {
                     putParcelableArrayList("data", java.util.ArrayList(centers))
                     putString("from","List Of Bayad Centers")
+                    putString("from2","List Of Bayad Centers")
                 }
                 findNavController().navigate(R.id.listOfCentersFragment, bundle)
                 Log.d("FirestoreData", "Bayad Centers Selected Locations: $selectedLocations")
@@ -183,6 +196,7 @@ class BayadCentersFragment : Fragment() {
                 val bundle = Bundle().apply {
                     putParcelableArrayList("data", java.util.ArrayList(centers))
                     putString("from","List Of Business Centers")
+                    putString("from2","List Of Bayad Centers")
                 }
                 findNavController().navigate(R.id.listOfCentersFragment, bundle)
 

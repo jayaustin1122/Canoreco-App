@@ -55,8 +55,7 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
     private var gMap: GoogleMap? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val previousLocations = mutableSetOf<String>()
-    private lateinit var loadingDialog: SweetAlertDialog
-
+    private var from: String? = null
 
     private fun resetFragmentWithProgress() {
             reloadFragment()
@@ -124,7 +123,7 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
 
                 Log.d("FirestoreData", "Selected Locationss: $selectedLocations")
             }
-
+            dismissProgressDialog()
             val jsonData = loadJsonFromRaw(R.raw.filtered_barangayss)
             jsonData?.let { parseAndDrawPolygons(it, selectedLocations, "devices") }
                 ?: run {
@@ -313,20 +312,16 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadingDialog = DialogUtils.showLoading(requireActivity())
-        loadingDialog.show()
-        Log.d("LoadingDialog", "Loading dialog shown from Current()")
-        Handler(Looper.getMainLooper()).postDelayed({
-            loadingDialog.dismiss()
-        },1000)
-        checkPermissionLocation()
-        binding.fabRefresh.setOnClickListener{
-            resetFragmentWithProgress()
+        arguments?.let {
+            from = it.getString("from")
         }
+        checkPermissionLocation()
+
         binding.viewListButton.setOnClickListener {
             val detailsFragment = ListOfFutureAndCurrentOutagesFragment()
             val bundle = Bundle().apply {
                 putString("from", "current")
+                putString("from2", from)
             }
             detailsFragment.arguments = bundle
             findNavController().navigate(R.id.listOfFutureAndCurrentOutagesFragment, bundle)
@@ -381,12 +376,15 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
         gMap?.setOnMarkerClickListener(this)
         gMap?.setOnPolygonClickListener(this)
         gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(camarinesNorte, zoomLevel))
+
+        if (isAdded) {
+            showProgressDialog(requireContext(), "Please wait...")
+        }
+
         showPolygonsBasedOnFirestore()
         showDataInRealTime()
-
-
-
     }
+
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
