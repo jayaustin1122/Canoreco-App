@@ -38,6 +38,7 @@ class ReportFragment : Fragment() {
     private val IMAGE_PICK_GALLERY_CODE = 102
     private val IMAGE_PICK_CAMERA_CODE = 103
     private lateinit var auth: FirebaseAuth
+    private var from: String? = null
     private val CAMERA_PERMISSION_CODE = 101
     private lateinit var storage: FirebaseStorage
     private lateinit var progressDialog: ProgressDialog
@@ -353,11 +354,31 @@ class ReportFragment : Fragment() {
         )
 
     )
+    private fun handleBackNavigation() {
+        val bundle = Bundle().apply {
+            putInt("selectedFragmentId", null ?: R.id.navigation_Home)
+        }
+        when (from) {
+            "home" -> {
+                bundle.putInt("selectedFragmentId", null ?: R.id.navigation_Home)
+                findNavController().navigate(R.id.userHolderFragment, bundle)
+            }
+            "service" -> {
+                bundle.putInt("selectedFragmentId", null ?: R.id.navigation_services)
+                findNavController().navigate(R.id.userHolderFragment, bundle)
+            }
+            else -> {
+                bundle.putInt("selectedFragmentId", null ?: R.id.navigation_Home)
+                findNavController().navigate(R.id.userHolderFragment, bundle)
+            }
+        }
 
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         arguments?.let {
             selectedFragmentId = it.getInt("selectedFragmentId", R.id.navigation_services)
+            from = it.getString("from")
         }
         binding.backButton.setOnClickListener {
             val report = binding.reportTypeSpinner.text.toString().trim()
@@ -371,10 +392,7 @@ class ReportFragment : Fragment() {
                     "Are you sure you want to exit? Changes will not be saved."
                 ) { sweetAlertDialog ->
                     sweetAlertDialog.dismissWithAnimation()
-                    val bundle = Bundle().apply {
-                        putInt("selectedFragmentId", selectedFragmentId ?: R.id.navigation_services)
-                    }
-                    findNavController().navigate(R.id.userHolderFragment, bundle)
+                    handleBackNavigation()
                 }
             } else {
                 findNavController().navigateUp()
@@ -397,13 +415,7 @@ class ReportFragment : Fragment() {
                             "Are you sure you want to exit? Changes will not be saved."
                         ) { sweetAlertDialog ->
                             sweetAlertDialog.dismissWithAnimation()
-                            val bundle = Bundle().apply {
-                                putInt(
-                                    "selectedFragmentId",
-                                    selectedFragmentId ?: R.id.navigation_services
-                                )
-                            }
-                            findNavController().navigate(R.id.userHolderFragment, bundle)
+                            handleBackNavigation()
                         }
                     } else {
                         findNavController().navigateUp()
@@ -666,7 +678,7 @@ class ReportFragment : Fragment() {
                             .set(report)
                             .addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
-                                    findNavController().navigate(R.id.reportFragment)
+                                    findNavController().navigateUp()
                                 } else {
                                     Toast.makeText(
                                         this@ReportFragment.requireContext(),

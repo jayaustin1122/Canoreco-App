@@ -46,14 +46,14 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
- class HomeUserFragment : Fragment() {
+class HomeUserFragment : Fragment() {
     private lateinit var binding: FragmentHomeUserBinding
     private lateinit var adapter: NewsAdapter
     private lateinit var adapter2: MaintenanceAdapter
-     private lateinit var auth: FirebaseAuth
-     private lateinit var loadingDialog: SweetAlertDialog
-     private val viewModel: UserViewModel by viewModels()
-     override fun onCreateView(
+    private lateinit var auth: FirebaseAuth
+    private lateinit var loadingDialog: SweetAlertDialog
+    private val viewModel: UserViewModel by viewModels()
+    override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
@@ -66,7 +66,8 @@ import java.util.Locale
         super.onViewCreated(view, savedInstanceState)
         loadingDialog = DialogUtils.showLoading(requireActivity())
         auth = FirebaseAuth.getInstance()
-        val sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+        val sharedPreferences =
+            requireActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
         loadingDialog.show()
         getNews()
         getMaintenances()
@@ -93,7 +94,34 @@ import java.util.Locale
                 true
             }
         }
+        binding.viewOutages.setOnClickListener {
+            findNavController().apply {
+                val bundle = Bundle().apply {
+                    putInt("selectedFragmentId", null ?: R.id.navigation_Home)
+                    putString("from", "home")
+                }
+                navigate(R.id.outagesFragment, bundle)
+            }
+        }
 
+        binding.viewCenters.setOnClickListener {
+            findNavController().apply {
+                val bundle = Bundle().apply {
+                    putInt("selectedFragmentId", null ?: R.id.navigation_Home)
+                    putString("from", "home")
+                }
+                navigate(R.id.bayadCentersFragment, bundle)
+            }
+        }
+        binding.reportConcerns.setOnClickListener {
+            findNavController().apply {
+                val bundle = Bundle().apply {
+                    putInt("selectedFragmentId", null ?: R.id.navigation_Home)
+                    putString("from", "home")
+                }
+                navigate(R.id.reportFragment, bundle)
+            }
+        }
         binding.tvViewAllNews.setOnClickListener {
             findNavController().apply {
                 navigate(R.id.newsFragment)
@@ -109,11 +137,25 @@ import java.util.Locale
             userInfo?.let {
                 binding.apply {
                     // Set the user's profile image
-                    binding.textViewUser.text = userInfo.firstName
+                    textViewUser.text = userInfo.firstName
                     binding.imageViewProfile?.let {
                         Glide.with(requireContext())
                             .load(userInfo.image)
                             .into(it)
+                        imgUser?.let {
+                            Glide.with(requireContext())
+                                .load(userInfo.image)
+                                .into(it)
+                        }
+                        imgUser.setOnClickListener {
+                            val bundle = Bundle().apply {
+                                putInt("selectedFragmentId", null ?: R.id.navigation_account)
+                            }
+                            findNavController().navigate(R.id.userHolderFragment, bundle)
+                        }
+                        notif.setOnClickListener {
+                            findNavController().navigate(R.id.notifFragment)
+                        }
                     }
                 }
             }
@@ -122,107 +164,113 @@ import java.util.Locale
 
     }
 
-     private fun showGuide(targetView: View) {
-         val sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+    private fun showGuide(targetView: View) {
+        val sharedPreferences =
+            requireActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
 
-         val builder = GuideView.Builder(this@HomeUserFragment.requireContext())
-             .setTitle("Maintenance")
-             .setContentText("This is where you can Read and View Maintenance Activities")
-             .setGravity(Gravity.center)
-             .setDismissType(DismissType.anywhere)
-             .setPointerType(PointerType.circle)
-             .setTargetView(binding.rvMaintenanceActivities)
-             .setGuideListener { view: View ->
-                 showAppBarGuide()
-             }
+        val builder = GuideView.Builder(this@HomeUserFragment.requireContext())
+            .setTitle("Maintenance")
+            .setContentText("This is where you can Read and View Maintenance Activities")
+            .setGravity(Gravity.center)
+            .setDismissType(DismissType.anywhere)
+            .setPointerType(PointerType.circle)
+            .setTargetView(binding.rvMaintenanceActivities)
+            .setGuideListener { view: View ->
+                showAppBarGuide()
+            }
 
-         val guideView = builder.build()
-         guideView.show()
-         sharedPreferences.edit().putBoolean("areFinish", true).apply()
-         sharedPreferences.edit().putBoolean("areGuidesShown", true).apply()
+        val guideView = builder.build()
+        guideView.show()
+        sharedPreferences.edit().putBoolean("areFinish", true).apply()
+        sharedPreferences.edit().putBoolean("areGuidesShown", true).apply()
 
-     }
-     private fun showAppBarGuide() {
-         val toolbarGuide = GuideView.Builder(this@HomeUserFragment.requireContext())
-             .setTitle("News")
-             .setContentText("This is where you can Read and View News Activities")
-             .setGravity(Gravity.center)
-             .setDismissType(DismissType.anywhere)
-             .setPointerType(PointerType.circle)
-             .setTargetView(binding.rvLatestNews)
-             .setGuideListener { view: View ->
+    }
 
-             }
-             .build()
+    private fun showAppBarGuide() {
+        val toolbarGuide = GuideView.Builder(this@HomeUserFragment.requireContext())
+            .setTitle("News")
+            .setContentText("This is where you can Read and View News Activities")
+            .setGravity(Gravity.center)
+            .setDismissType(DismissType.anywhere)
+            .setPointerType(PointerType.circle)
+            .setTargetView(binding.rvLatestNews)
+            .setGuideListener { view: View ->
 
-         toolbarGuide.show()
-     }
+            }
+            .build()
 
-
-
-     private fun hideShimmerEffect() {
-         binding.shimmerViewContainer.stopShimmerAnimation()
-     }
-
-     private fun getNews() {
-         val freeItems = ArrayList<News>()
-         val db = FirebaseFirestore.getInstance()
-         val ref = db.collection("news")
-             .orderBy("timestamp", Query.Direction.DESCENDING)
-             .limit(4)
-
-         ref.get()
-             .addOnSuccessListener { documents ->
-                 for (document in documents) {
-                     val title = document.getString("title") ?: ""
-                     val shortDesc = document.getString("content") ?: ""
-                     val timestampString = document.getString("timestamp") ?: ""
-                     val category = document.getString("category") ?: ""
-                     val formattedDate = parseAndFormatDate(timestampString)
-                     val imageList = document.get("image") as? List<String> ?: emptyList()
-                     val firstImage = imageList.getOrNull(0) ?: ""
-
-                     // Use a local drawable image if the image list is empty
-                     val imageToUse = if (firstImage.isEmpty()) {
-                         // Get the resource ID of the drawable
-                         R.drawable.icon_home
-                     } else {
-                         firstImage
-                     }
-
-                     freeItems.add(News(
-                         title,
-                         shortDesc,
-                         "",
-                         imageToUse.toString(), // Ensure the image is passed as a string for the adapter
-                         timestampString,
-                         formattedDate,
-                         "",
-                         "",
-                         "",
-                         "",
-                         category
-                     ))
-                 }
+        toolbarGuide.show()
+    }
 
 
-                 lifecycleScope.launchWhenResumed {
-                     adapter = NewsAdapter(this@HomeUserFragment.requireContext(), findNavController(), freeItems)
-                     binding.rvLatestNews.setHasFixedSize(true)
-                     val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-                     binding.rvLatestNews.layoutManager = layoutManager
-                     binding.rvLatestNews.adapter = adapter
-                 }
-             }
-             .addOnFailureListener { exception ->
-                 Log.e("Home", "Error getting documents: ", exception)
-             }
-     }
+    private fun hideShimmerEffect() {
+        binding.shimmerViewContainer.stopShimmerAnimation()
+    }
+
+    private fun getNews() {
+        val freeItems = ArrayList<News>()
+        val db = FirebaseFirestore.getInstance()
+        val ref = db.collection("news")
+            .orderBy("timestamp", Query.Direction.DESCENDING)
+            .limit(4)
+
+        ref.get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    val title = document.getString("title") ?: ""
+                    val shortDesc = document.getString("content") ?: ""
+                    val timestampString = document.getString("timestamp") ?: ""
+                    val category = document.getString("category") ?: ""
+                    val formattedDate = parseAndFormatDate(timestampString)
+                    val imageList = document.get("image") as? List<String> ?: emptyList()
+                    val firstImage = imageList.getOrNull(0) ?: ""
+
+                    // Use a local drawable image if the image list is empty
+                    val imageToUse = if (firstImage.isEmpty()) {
+                        // Get the resource ID of the drawable
+                        R.drawable.icon_home
+                    } else {
+                        firstImage
+                    }
+
+                    freeItems.add(
+                        News(
+                            title,
+                            shortDesc,
+                            "",
+                            imageToUse.toString(), // Ensure the image is passed as a string for the adapter
+                            timestampString,
+                            formattedDate,
+                            "",
+                            "",
+                            "",
+                            "",
+                            category
+                        )
+                    )
+                }
 
 
+                lifecycleScope.launchWhenResumed {
+                    adapter = NewsAdapter(
+                        this@HomeUserFragment.requireContext(),
+                        findNavController(),
+                        freeItems
+                    )
+                    binding.rvLatestNews.setHasFixedSize(true)
+                    val layoutManager =
+                        LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                    binding.rvLatestNews.layoutManager = layoutManager
+                    binding.rvLatestNews.adapter = adapter
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.e("Home", "Error getting documents: ", exception)
+            }
+    }
 
 
-     @SuppressLint("SimpleDateFormat")
+    @SuppressLint("SimpleDateFormat")
     public fun parseAndFormatDate(timestampString: String): String {
         return try {
             val timestampSeconds = timestampString.toLongOrNull() ?: return ""
@@ -234,8 +282,6 @@ import java.util.Locale
             ""
         }
     }
-
-
 
 
     private fun getMaintenances() {
@@ -261,27 +307,35 @@ import java.util.Locale
 
                     Log.d("Home", "$firstImage")
 
-                    freeItems.add(Maintenance(
-                        title,
-                        shortDesc,
-                        "",
-                        firstImage,
-                        timestampString,
-                        formattedDate,
-                        "",
-                        "",
-                        "",
-                        "",
-                        category))
+                    freeItems.add(
+                        Maintenance(
+                            title,
+                            shortDesc,
+                            "",
+                            firstImage,
+                            timestampString,
+                            formattedDate,
+                            "",
+                            "",
+                            "",
+                            "",
+                            category
+                        )
+                    )
                     itemCount++
                 }
                 if (loadingDialog.isShowing) {
                     loadingDialog.dismissWithAnimation()
                 }
                 lifecycleScope.launchWhenResumed {
-                    adapter2 = MaintenanceAdapter(this@HomeUserFragment.requireContext(), findNavController(), freeItems)
+                    adapter2 = MaintenanceAdapter(
+                        this@HomeUserFragment.requireContext(),
+                        findNavController(),
+                        freeItems
+                    )
                     binding.rvMaintenanceActivities.setHasFixedSize(true)
-                    val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+                    val layoutManager =
+                        LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
                     binding.rvMaintenanceActivities.layoutManager = layoutManager
                     binding.rvMaintenanceActivities.adapter = adapter2
                 }
@@ -290,9 +344,6 @@ import java.util.Locale
                 Log.e("Home", "Error getting documents: ", exception)
             }
     }
-
-
-
 
 
 }

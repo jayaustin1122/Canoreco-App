@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.canorecoapp.R
 import com.example.canorecoapp.adapter.CentersAdapter
 import com.example.canorecoapp.databinding.FragmentListOfCentersBinding
 import com.example.canorecoapp.models.Centers
@@ -18,6 +19,7 @@ class ListOfCentersFragment : Fragment() {
     private val binding get() = _binding!!
     private var centersList: ArrayList<Centers>? = null
     private var from: String? = null
+    private var from2: String? = null
     private lateinit var adapter: CentersAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,6 +36,7 @@ class ListOfCentersFragment : Fragment() {
         arguments?.let { bundle ->
             centersList = bundle.getParcelableArrayList<Centers>("data")
             from = bundle.getString("from")
+            from2 = bundle.getString("from2")
         }
         binding.textView.text = from
 
@@ -45,9 +48,18 @@ class ListOfCentersFragment : Fragment() {
             binding.rvCenters.adapter = adapter
         }
         binding.backButton.setOnClickListener {
-            findNavController().navigateUp()
+            handleBackNavigation()
         }
     }
+    private fun handleBackNavigation() {
+        val bundle = Bundle().apply {
+            putString("from", from2)
+            putInt("selectedFragmentId", null ?: R.id.navigation_Home)
+        }
+        findNavController().previousBackStackEntry?.savedStateHandle?.set("bundleKey", bundle)
+        findNavController().navigateUp()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

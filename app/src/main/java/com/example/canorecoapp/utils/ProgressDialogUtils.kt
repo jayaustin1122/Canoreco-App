@@ -10,7 +10,7 @@ object ProgressDialogUtils {
         dismissProgressDialog()
         progressDialog = ProgressDialog(context).apply {
             setMessage(message)
-            setCancelable(true)
+            setCancelable(false)
             show()
         }
     }
