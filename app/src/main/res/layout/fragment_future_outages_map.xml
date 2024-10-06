@@ -6,18 +6,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".views.user.outages.FutureOutagesMapFragment">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabRefresh"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="80dp"
-        android:backgroundTint="@color/background_color"
-        android:src="@drawable/icon_refresh"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
     <fragment
         android:id="@+id/fragmentMap"
         android:name="com.google.android.gms.maps.SupportMapFragment"
