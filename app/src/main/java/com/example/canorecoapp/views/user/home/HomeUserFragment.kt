@@ -81,6 +81,12 @@ class HomeUserFragment : Fragment() {
         binding.fabBtnBind.setOnClickListener {
             findNavController().navigate(R.id.addAccountFragment)
         }
+        binding.tvViewAllService.setOnClickListener {
+            val bundle = Bundle().apply {
+                putInt("selectedFragmentId", R.id.navigation_services)
+            }
+            findNavController().navigate(R.id.userHolderFragment, bundle)
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             viewModel.loadUserInfo()

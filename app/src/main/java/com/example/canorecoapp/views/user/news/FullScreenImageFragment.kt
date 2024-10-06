@@ -34,7 +34,7 @@ class FullScreenImageFragment : Fragment() {
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                 findNavController().navigateUp()
+                    findNavController().navigateUp()
                 }
             }
         )

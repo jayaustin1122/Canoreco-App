@@ -178,35 +178,9 @@ class UserHolderFragment : Fragment() {
                 isEnabled = false
             }
         })
-        viewModel.userInfo.observe(viewLifecycleOwner, Observer { userInfo ->
-            userInfo?.let {
-                binding.apply {
-//                    // Set the user's profile image
-//                    val toolbar = binding.toolbar
-//                    val menuItem = toolbar.menu.findItem(R.id.imgProfiled)
-//                    val iconBell = toolbar.menu.findItem(R.id.notif)
-//                    val whiteColor = ContextCompat.getColor(requireContext(), R.color.white)
-//                    val colorStateList = ColorStateList.valueOf(whiteColor)
-//                    iconBell.iconTintList = colorStateList
-//                    Glide.with(requireContext())
-//                        .load(userInfo.image)
-//                        .error(R.drawable.logo)
-//                        .transform(CircleCrop())
-//                        .into(object : CustomTarget<Drawable>() {
-//                            override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
-//                                menuItem.icon = resource
-//                            }
-//
-//                            override fun onLoadCleared(placeholder: Drawable?) {
-//
-//                            }
-//                        })
-                }
-            }
-        })
+
 
     }
-
 
     private fun showGuide(targetView: View) {
         val sharedPreferences: SharedPreferences = requireActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
