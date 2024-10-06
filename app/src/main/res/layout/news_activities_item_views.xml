@@ -44,7 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="January 18, 2024"
-            android:textColor="@color/text_dark_color"
+            android:textColor="#666666"
             android:textSize="@dimen/dimen_14dp"
             android:fontFamily="@font/roboto_regular"
             android:layout_marginBottom="8dp" />
@@ -67,7 +67,7 @@
             android:ellipsize="end"
             android:layout_height="wrap_content"
             android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
-            android:textColor="@color/text_dark_color"
+            android:textColor="#444444"
             android:textSize="@dimen/dimen_15dp"
             android:fontFamily="@font/roboto_regular"
             android:layout_marginTop="8dp" />

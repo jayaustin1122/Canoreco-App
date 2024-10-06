@@ -91,7 +91,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Account Number"
-                    android:textColor="#777777"
+                    android:textColor="#666666"
                     android:textSize="@dimen/dimen_14dp"
                     android:fontFamily="@font/roboto_medium" />
 
@@ -112,7 +112,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Reference Number"
-                    android:textColor="#777777"
+                    android:textColor="#666666"
                     android:textSize="@dimen/dimen_14dp"
                     android:fontFamily="@font/roboto_medium" />
 
@@ -133,7 +133,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Mode of Payment"
-                    android:textColor="#777777"
+                    android:textColor="#666666"
                     android:textSize="@dimen/dimen_14dp"
                     android:fontFamily="@font/roboto_medium" />
 
@@ -159,7 +159,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:text="Current Bill"
-                    android:textColor="#777777"
+                    android:textColor="#666666"
                     android:textSize="@dimen/dimen_14dp"
                     android:fontFamily="@font/roboto_medium"/>
 
@@ -172,7 +172,7 @@
                     android:layout_marginBottom="8dp"
                     android:text="1, 800 PHP"
                     android:textColor="@color/text_dark_color"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     android:fontFamily="@font/roboto_bold" />
 
                 <!-- Row 3: Mode of Payment and Amount After Due -->
@@ -182,7 +182,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:text="Amount After Due"
-                    android:textColor="#777777"
+                    android:textColor="#666666"
                     android:textSize="@dimen/dimen_14dp"
                     android:fontFamily="@font/roboto_medium" />
 
@@ -195,7 +195,7 @@
                     android:layout_marginBottom="8dp"
                     android:text="2, 000 PHP"
                     android:textColor="@color/text_dark_color"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     android:fontFamily="@font/roboto_bold" />
             </LinearLayout>
         </LinearLayout>

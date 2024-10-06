@@ -36,8 +36,9 @@
     <color name="primary_dark_color">#222831</color>
     <color name="primary_light_color">#fbfff1</color>
 
+    <color name="secondary_main_color">#102864</color>
     <color name="secondary_color">#3066be</color>
-    <color name="secondary_accent_color">#E4E21C</color>
+    <color name="secondary_accent_color">#fbd50e</color>
 
     <color name="accent_color">#090c9b</color>
     <color name="background_color">#F1F1F1</color>

@@ -6,15 +6,26 @@
     android:layout_height="match_parent"
     tools:context=".views.user.bayadcenterandbusinesscenter.ViewMapMarkerClickFragment">
 
-    <ImageButton
-        android:id="@+id/back_button"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/circular_card_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/dimen_20dp"
-        android:elevation="@dimen/dimen_10dp"
-        android:background="@android:color/transparent"
-        android:src="@drawable/back_arrow"
-        app:tint="@color/primary_light_color" />
+        app:cardCornerRadius="50dp"
+        app:cardElevation="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/back_arrow"
+            app:tint="@color/text_dark_color" />
+
+    </androidx.cardview.widget.CardView>
 
     <fragment
         android:id="@+id/fragmentMap"

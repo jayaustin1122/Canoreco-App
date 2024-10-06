@@ -8,7 +8,8 @@
         android:iconTint="@color/text_light_color"
         android:iconTintMode="multiply"
         app:showAsAction="always"
-        android:title="@string/notification"/>
+        android:title="@string/notification"
+        />
     <item
         android:id="@+id/imgProfiled"
         android:icon="@drawable/icon_account_circle"

@@ -40,7 +40,7 @@
                 android:layout_marginTop="4dp"
                 android:text="March 4, 2024"
                 android:textSize="14sp"
-                android:textColor="@color/text_dark_color"
+                android:textColor="#666666"
                 android:fontFamily="@font/roboto_regular"/>
 
         </LinearLayout>
