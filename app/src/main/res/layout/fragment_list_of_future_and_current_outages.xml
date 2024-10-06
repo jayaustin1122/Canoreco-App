@@ -46,12 +46,21 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:scaleType="center"
+        android:src="@drawable/bg_main"
+        android:tileMode="disabled"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+
     <androidx.cardview.widget.CardView
         android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="20dp"
         android:elevation="4dp"
         app:cardCornerRadius="50dp"
         app:cardBackgroundColor="@color/white"
@@ -70,6 +79,7 @@
             app:queryBackground="@android:color/transparent"/>
 
     </androidx.cardview.widget.CardView>
+
     <TextView
         android:id="@+id/tvEmpty"
         android:layout_width="wrap_content"
@@ -95,12 +105,14 @@
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvListOutages"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginHorizontal="@dimen/dimen_20dp"
-        android:layout_marginVertical="@dimen/dimen_20dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="@dimen/dimen_20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

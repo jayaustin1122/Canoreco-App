@@ -29,7 +29,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Consumer Complaints"
+                android:text="Consumer Concerns"
                 android:textColor="@color/text_light_color"
                 android:textSize="22sp"
                 android:fontFamily="@font/roboto_bold"/>
@@ -68,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
                 android:fontFamily="@font/roboto_medium"
-                android:text="Report an Outage or Incident"
+                android:text="Report an Outage or Concern"
                 android:textColor="@color/text_dark_color"
                 android:textSize="22sp" />
 
@@ -196,6 +196,7 @@
                     android:padding="15dp" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/street_type_input_layout"
                 android:layout_width="match_parent"
@@ -207,7 +208,7 @@
                     android:id="@+id/tvStreet"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
-                    android:hint="Street (Optional)"
+                    android:hint="Street, Nearest Landmark (Optional)"
                     android:padding="15dp" />
 
             </com.google.android.material.textfield.TextInputLayout>
