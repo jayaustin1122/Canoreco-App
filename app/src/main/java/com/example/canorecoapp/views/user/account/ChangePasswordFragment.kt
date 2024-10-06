@@ -49,8 +49,6 @@ class ChangePasswordFragment : Fragment() {
         viewModel.userInfo.observe(viewLifecycleOwner, Observer { userInfo ->
             userInfo?.let {
                 binding.apply {
-                    // Set the user's profile image
-                    etOldPassword.setText(userInfo.password)
                     btnSave.setOnClickListener {
                         validateData(userInfo.password,userInfo.email)
                     }
@@ -144,11 +142,11 @@ class ChangePasswordFragment : Fragment() {
                                 }
                             }
                     } else {
-                        Toast.makeText(requireContext(), "Error Updating Password in Firebase Auth", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Your Old Password is wrong please check and try again", Toast.LENGTH_SHORT).show()
                     }
                 }
             } else {
-                Toast.makeText(requireContext(), "Reauthentication failed", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Your Old Password is wrong please check and try again",  Toast.LENGTH_SHORT).show()
             }
         }
     }

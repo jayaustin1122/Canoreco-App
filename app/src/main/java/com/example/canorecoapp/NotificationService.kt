@@ -117,11 +117,12 @@ class NotificationService : Service() {
         }
         val intent = Intent(this, MainActivity::class.java).apply {
             updateIsRead(notificationsRef2,isRead)
-            putExtra("navigate_to_fragment", "YourFragmentTag") // Replace with your fragment tag
+            putExtra("navigate_to_fragment", "YourFragmentTag")
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
         }
-        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+
 
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.logo)
