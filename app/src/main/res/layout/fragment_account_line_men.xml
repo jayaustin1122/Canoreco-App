@@ -112,6 +112,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
+                    android:divider="@android:drawable/divider_horizontal_textfield"
+                    android:dividerPadding="@dimen/dimen_20dp"
+                    android:showDividers="middle"
                     android:padding="@dimen/dimen_12dp">
 
                     <LinearLayout
