@@ -3,8 +3,8 @@
     <style name="Base.Theme.CanorecoApp" parent="Theme.Material3.Light.NoActionBar">
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
         <item name="android:windowLightStatusBar">false</item>
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:navigationBarColor">@android:color/white</item>
+        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:navigationBarColor">@color/g_dark_blue</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="bottomNavigationStyle">@style/Widget.App.BottomNavigationView</item>
     </style>

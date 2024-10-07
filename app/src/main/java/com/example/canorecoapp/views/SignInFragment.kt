@@ -21,13 +21,16 @@ import androidx.annotation.OptIn
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.viewpager2.widget.ViewPager2
 import com.example.canorecoapp.R
+import com.example.canorecoapp.adapter.SignInViewPagerAdapter
 import com.example.canorecoapp.databinding.DialogReviewBinding
 import com.example.canorecoapp.databinding.FragmentSignInBinding
 import com.example.canorecoapp.utils.DialogUtils
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.badge.ExperimentalBadgeUtils
+import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
@@ -40,12 +43,21 @@ import kotlinx.coroutines.withContext
 
 
 class SignInFragment : Fragment() {
-    private lateinit var binding : FragmentSignInBinding
-    private lateinit var auth : FirebaseAuth
+    private lateinit var binding: FragmentSignInBinding
+    private lateinit var auth: FirebaseAuth
     private var backPressTime = 0L
     private var doubleBackToExitPressedOnce = false
     private val handler = Handler()
-    private lateinit var fireStore : FirebaseFirestore
+    private lateinit var fireStore: FirebaseFirestore
+    private lateinit var imageSliderAdapter: SignInViewPagerAdapter
+    private var currentPage = 0
+    private val imageList = listOf(
+        R.drawable.background_login,
+        R.drawable.img_onboarding_three,
+        R.drawable.img_onboarding_one,
+        R.drawable.img_onboarding_three
+    )
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -54,13 +66,45 @@ class SignInFragment : Fragment() {
         return binding.root
     }
 
+    private fun setupImageSlider() {
+        imageSliderAdapter = SignInViewPagerAdapter(imageList)
+        binding.viewpager?.adapter = imageSliderAdapter
+        binding.viewpager?.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+        binding.tabLayout?.let { tabLayout ->
+            binding.viewpager?.let { viewPager ->
+                TabLayoutMediator(tabLayout, viewPager) { tab, position -> }.attach()
+            }
+        }
+
+        startAutoSlide()
+    }
+    private fun startAutoSlide() {
+        lifecycleScope.launch {
+            while (isAdded) {
+                delay(3000)
+                if (currentPage == imageList.size) {
+                    currentPage = 0
+                }
+                binding.viewpager?.setCurrentItem(currentPage++, true)
+            }
+        }
+    }
+
+
     @OptIn(ExperimentalBadgeUtils::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         auth = FirebaseAuth.getInstance()
         fireStore = FirebaseFirestore.getInstance()
-        binding.etPass.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-        binding.etUsernameLogin.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS
+        binding.etPass.inputType =
+            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+        binding.etUsernameLogin.inputType =
+            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS
+
+        setupImageSlider()
+
+
+
 
         handler.postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
         binding.buttonLoginLogin.setOnClickListener {
@@ -78,6 +122,7 @@ class SignInFragment : Fragment() {
             }
         }
     }
+
     var email = ""
     var pass = ""
 
@@ -85,19 +130,26 @@ class SignInFragment : Fragment() {
         email = binding.etUsernameLogin.text.toString().trim()
         pass = binding.etPass.text.toString().trim()
 
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             //invalid email
-            Toast.makeText(this.requireContext(),"Email Is Empty or Invalid Email Format", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this.requireContext(),
+                "Email Is Empty or Invalid Email Format",
+                Toast.LENGTH_SHORT
+            ).show()
             DialogUtils.showLoading(requireActivity()).dismiss()
-        }
-        else if (pass.isEmpty()){
-            Toast.makeText(this.requireContext(),"Empty Fields are not allowed", Toast.LENGTH_SHORT).show()
+        } else if (pass.isEmpty()) {
+            Toast.makeText(
+                this.requireContext(),
+                "Empty Fields are not allowed",
+                Toast.LENGTH_SHORT
+            ).show()
             DialogUtils.showLoading(requireActivity()).dismiss()
-        }
-        else{
+        } else {
             loginUser()
         }
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         handler.removeCallbacksAndMessages(null)
@@ -112,30 +164,32 @@ class SignInFragment : Fragment() {
         callback.remove()
         super.onPause()
     }
+
     private val callback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             if (doubleBackToExitPressedOnce) {
                 requireActivity().finish()
             } else {
                 doubleBackToExitPressedOnce = true
-                Toast.makeText(requireContext(), "Press back again to exit", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Press back again to exit", Toast.LENGTH_SHORT)
+                    .show()
                 handler.postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
             }
         }
     }
+
     private fun loginUser() {
         val email = binding.etUsernameLogin.text.toString()
         val password = binding.etPass.text.toString()
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                auth.signInWithEmailAndPassword(email,password).await()
-                withContext(Dispatchers.Main){
+                auth.signInWithEmailAndPassword(email, password).await()
+                withContext(Dispatchers.Main) {
                     checkUser()
                 }
 
-            }
-            catch (e : Exception){
-                withContext(Dispatchers.Main){
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
 
                     Toast.makeText(
                         this@SignInFragment.requireContext(),
@@ -147,13 +201,15 @@ class SignInFragment : Fragment() {
             }
         }
     }
+
     private fun checkUser() {
 
 
         val firebaseUser = auth.currentUser
 
         if (firebaseUser != null) {
-            val dbref = FirebaseFirestore.getInstance().collection("users").document(firebaseUser.uid)
+            val dbref =
+                FirebaseFirestore.getInstance().collection("users").document(firebaseUser.uid)
             dbref.get().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val snapshot = task.result
@@ -171,23 +227,27 @@ class SignInFragment : Fragment() {
                                     dialog.setContentView(dialogBinding.root)
                                     dialog.show()
                                     auth.signOut()
-                                }
-                                else{
-                                    DialogUtils.showSuccessMessage(requireActivity(), "Log In Successful", "Welcome $name").show()
-                                Toast.makeText(
-                                    this@SignInFragment.requireContext(),
-                                    "Login Successfully",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                findNavController().apply {
-                                    popBackStack(R.id.splashFragment, false)
-                                    navigate(R.id.adminHolderFragment)
-                                }
+                                } else {
+                                    DialogUtils.showSuccessMessage(
+                                        requireActivity(),
+                                        "Log In Successful",
+                                        "Welcome $name"
+                                    ).show()
+                                    Toast.makeText(
+                                        this@SignInFragment.requireContext(),
+                                        "Login Successfully",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    findNavController().apply {
+                                        popBackStack(R.id.splashFragment, false)
+                                        navigate(R.id.adminHolderFragment)
+                                    }
 
+
+                                }
 
                             }
 
-                            }
                             "member" -> {
 
                                 if (auth.currentUser?.isEmailVerified == true) {
@@ -202,21 +262,34 @@ class SignInFragment : Fragment() {
                                 }
                             }
 
-                            else-> {
+                            else -> {
 
                             }
-                            }
+                        }
                     } else {
-                        Toast.makeText(this@SignInFragment.requireContext(), "User not found.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@SignInFragment.requireContext(),
+                            "User not found.",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 } else {
-                    Toast.makeText(this@SignInFragment.requireContext(), "An error occurred. Please try again later.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@SignInFragment.requireContext(),
+                        "An error occurred. Please try again later.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         } else {
-            Toast.makeText(this@SignInFragment.requireContext(), "User not authenticated.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this@SignInFragment.requireContext(),
+                "User not authenticated.",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
+
     @SuppressLint("MissingInflatedId")
     private fun showVerificationDialog(user: FirebaseUser) {
         DialogUtils.showLoading(requireActivity()).dismiss()
@@ -270,6 +343,7 @@ class SignInFragment : Fragment() {
             }
         }
     }
+
     private fun verifyEmail(user: FirebaseUser?) {
         if (user == null) {
             Log.e("EmailVerification", "User is not logged in. Cannot send verification email.")
@@ -280,10 +354,17 @@ class SignInFragment : Fragment() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Log.d("EmailVerification", "Verification email sent to ${user.email}")
-                    Toast.makeText(requireContext(), "Check your email for verification", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(
+                        requireContext(),
+                        "Check your email for verification",
+                        Toast.LENGTH_SHORT
+                    ).show();
                     showVerificationDialog(user)
                 } else {
-                    Log.e("EmailVerification", "Failed to send verification email to ${user.email}. Task failed.")
+                    Log.e(
+                        "EmailVerification",
+                        "Failed to send verification email to ${user.email}. Task failed."
+                    )
 
                 }
             }

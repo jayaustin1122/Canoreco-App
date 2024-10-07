@@ -20,8 +20,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="@dimen/dimen_30dp"
             android:background="@drawable/bg_topappbar"
+            android:paddingTop="@dimen/dimen_30dp"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
             <com.google.android.material.textview.MaterialTextView
@@ -29,10 +29,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:fontFamily="@font/roboto_bold"
                 android:text="Consumer Concerns"
                 android:textColor="@color/text_light_color"
-                android:textSize="22sp"
-                android:fontFamily="@font/roboto_bold"/>
+                android:textSize="22sp" />
 
             <ImageButton
                 android:id="@+id/back_button"
@@ -48,11 +48,12 @@
 
     <ScrollView
         android:id="@+id/scrollView2"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:padding="20dp"
+        android:paddingHorizontal="@dimen/dimen_20dp"
+        android:paddingTop="@dimen/dimen_20dp"
         android:scrollbars="none"
-        app:layout_constraintBottom_toTopOf="@+id/bottomLinearLayout"
+        app:layout_constraintBottom_toTopOf="@+id/submit_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
@@ -81,9 +82,9 @@
             <!-- Report Type -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/report_type_input_layout"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_marginBottom="10dp">
 
                 <AutoCompleteTextView
@@ -98,9 +99,9 @@
             <!-- Report Concern -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/concern_input_layout"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_marginBottom="10dp">
 
                 <AutoCompleteTextView
@@ -149,15 +150,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_marginBottom="20dp"
-                android:scaleType="fitXY"
                 android:background="@drawable/upload"
                 android:gravity="center"
-                android:orientation="vertical"/>
+                android:orientation="vertical"
+                android:scaleType="fitXY" />
+
             <com.google.android.material.textview.MaterialTextView
 
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
+                android:id="@+id/located"
                 android:fontFamily="@font/roboto_regular"
                 android:text="Where is your concern located?"
                 android:textColor="@color/text_dark_color"
@@ -165,9 +168,9 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/mucipality_type_input_layout"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_marginBottom="10dp">
 
                 <AutoCompleteTextView
@@ -182,9 +185,9 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/brgy_type_input_layout"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_marginBottom="10dp">
 
                 <AutoCompleteTextView
@@ -213,30 +216,26 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+
         </LinearLayout>
 
     </ScrollView>
 
-    <LinearLayout
-        android:id="@+id/bottomLinearLayout"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/submit_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="20dp"
+        android:layout_marginBottom="50dp"
+        android:backgroundTint="@color/primary_main_color"
+        android:fontFamily="@font/roboto_medium"
+        android:layout_marginHorizontal="@dimen/dimen_20dp"
+        android:text="Submit"
+        android:textColor="@color/primary_light_color"
+        app:cornerRadius="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/submit_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/primary_main_color"
-            android:fontFamily="@font/roboto_medium"
-            android:text="Submit"
-            android:textColor="@color/primary_light_color"
-            app:cornerRadius="10dp"/>
-
-    </LinearLayout>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

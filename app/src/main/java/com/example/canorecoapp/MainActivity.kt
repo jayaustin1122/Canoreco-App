@@ -5,10 +5,14 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.view.View
+import android.view.WindowInsets
+import android.view.WindowInsetsController
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.canorecoapp.databinding.ActivityMainBinding
@@ -35,6 +39,10 @@ class MainActivity : AppCompatActivity() {
                 navigateToFragment(fragmentTag)
             }
         }
+        WindowCompat.setDecorFitsSystemWindows(
+            window,false
+        )
+
 
         // Request notification permission
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
