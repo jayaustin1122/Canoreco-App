@@ -150,6 +150,7 @@
             android:layout_width="match_parent"
             android:layout_marginHorizontal="@dimen/dimen_10dp"
             android:visibility="gone"
+            android:textColor="@color/white"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/primary_main_color"
             android:text="Update Status" />
@@ -160,6 +161,7 @@
             android:visibility="gone"
             android:layout_marginHorizontal="@dimen/dimen_10dp"
             android:layout_width="match_parent"
+            android:textColor="@color/white"
             android:backgroundTint="@color/primary_main_color"
             android:layout_height="wrap_content"
             android:text="Get This Task?" />

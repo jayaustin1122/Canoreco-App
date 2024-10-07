@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.fragment.findNavController
+import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentTasksDetailsBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.auth.FirebaseAuth
@@ -111,6 +113,7 @@ class TasksDetailsFragment  : BottomSheetDialogFragment() {
 
                         binding.btnUpdateStatus.setOnClickListener {
                             askAndUpdateStatus(id!!)
+
                         }
                     }else {
 
@@ -161,6 +164,16 @@ class TasksDetailsFragment  : BottomSheetDialogFragment() {
             deviceRef.updateChildren(updates)
                 .addOnSuccessListener {
                     Toast.makeText(requireContext(), "Status updated to 'Restored'", Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+                    val bundle = Bundle().apply {
+
+                        val selectedFragmentId = R.id.navigation_notificationl_linemen
+
+                        putInt("selectedFragmentId", selectedFragmentId)
+                    }
+
+                    findNavController().navigate(R.id.adminHolderFragment, bundle)
+
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(requireContext(), "Failed to update status: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -189,7 +202,7 @@ class TasksDetailsFragment  : BottomSheetDialogFragment() {
                     val password = document.getString("password")
                     Log.d("UploadData1", "saveUserTaskInDevice called with userName: $userName and id: $id")
                     saveUserTaskInDevice(userName,id)
-                    dismiss()
+
                 }
                 .addOnFailureListener { exception ->
 

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.fragment.findNavController
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentSetTimeDateragmentBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -21,7 +22,7 @@ import java.util.Calendar
 
 
 class FragmentSetTimeDateFragment : BottomSheetDialogFragment() {
-    private var _binding : FragmentSetTimeDateragmentBinding? = null
+    private var _binding: FragmentSetTimeDateragmentBinding? = null
     val binding get() = _binding!!
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -68,16 +69,21 @@ class FragmentSetTimeDateFragment : BottomSheetDialogFragment() {
         devicesRef.updateChildren(updates)
             .addOnSuccessListener {
                 dismiss()
-                Toast.makeText(context, "Data updated successfully for ID: $id", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Data updated successfully for ID: $id", Toast.LENGTH_SHORT)
+                    .show()
+                val bundle = Bundle().apply {
+
+                    val selectedFragmentId = R.id.navigation_notificationl_linemen
+
+                    putInt("selectedFragmentId", selectedFragmentId)
+                }
+
+                findNavController().navigate(R.id.adminHolderFragment, bundle)
+
                 println("Data updated successfully")
-            }
-            .addOnFailureListener {
-                Toast.makeText(context, "Failed to update data for ID: $id", Toast.LENGTH_SHORT).show()
-                println("Failed to update data: ${it.message}")
+
             }
     }
-
-
 
 
     private fun showDatePickerDialog() {
@@ -96,6 +102,7 @@ class FragmentSetTimeDateFragment : BottomSheetDialogFragment() {
         }
         datePicker.show(parentFragmentManager, "MaterialDatePicker")
     }
+
     private fun showTimePicker(editText: EditText) {
         val timePicker = MaterialTimePicker.Builder()
             .setTimeFormat(TimeFormat.CLOCK_24H)
