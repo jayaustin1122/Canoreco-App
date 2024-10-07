@@ -188,7 +188,6 @@
                 android:layout_marginBottom="10dp">
 
                 <AutoCompleteTextView
-
                     android:id="@+id/tvBrgy"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
@@ -204,7 +203,6 @@
                 android:layout_marginBottom="10dp">
 
                 <AutoCompleteTextView
-
                     android:id="@+id/tvStreet"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
