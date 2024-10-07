@@ -6,14 +6,34 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
-    <ImageView
-        android:id="@+id/backgroundImageView"
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewpager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/background_login"
+        android:layout_height="300dp"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="wrap_content"
+        android:background="@android:color/transparent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:layout_constraintBottom_toBottomOf="@+id/viewpager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:tabBackground="@drawable/indicator_selector"
+        app:tabGravity="center"
+        app:tabIndicator="@android:color/transparent"
+        app:tabIndicatorAnimationDuration="300"
+        app:tabIndicatorColor="@color/g_blue2"
+        app:tabRippleColor="@android:color/transparent"
+        app:tabSelectedTextColor="@color/purple_700" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/welcomeTextView"
@@ -26,7 +46,7 @@
         android:textColor="@color/text_dark_color"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/backgroundImageView" />
+        app:layout_constraintTop_toBottomOf="@+id/viewpager" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/schoolNameTextView"
@@ -70,8 +90,8 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:hint="Email"
-            android:scrollbars="horizontal"
             android:lines="1"
+            android:scrollbars="horizontal"
             android:singleLine="true"
             app:boxStrokeWidth="1dp"
             app:boxStrokeWidthFocused="2dp" />
@@ -135,25 +155,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginBottom="20dp"
         android:backgroundTint="@color/primary_main_color"
         android:fontFamily="@font/roboto_medium"
         android:text="Login"
+        android:layout_marginTop="@dimen/dimen_12dp"
         android:textColor="@color/primary_light_color"
         app:cornerRadius="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvForgotPasswordLogin" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="@dimen/dimen_12dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonLoginLogin">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/dontTextView"
