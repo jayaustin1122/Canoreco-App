@@ -25,6 +25,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentReportBinding
 import com.example.canorecoapp.utils.DialogUtils
@@ -38,7 +39,7 @@ import com.google.firebase.storage.FirebaseStorage
 
 
 class ReportFragment : Fragment() {
-
+    private lateinit var loadingDialog: SweetAlertDialog
     private lateinit var binding: FragmentReportBinding
     private var selectedImage: Uri? = null
     private val IMAGE_PICK_GALLERY_CODE = 102
@@ -46,10 +47,8 @@ class ReportFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
     private var from: String? = null
     private val CAMERA_PERMISSION_CODE = 101
-    private lateinit var progressDialog: AlertDialog
     private var selectedFragmentId: Int? = null
     private val viewModel: ReportViewModel by viewModels()
-
 
 
     override fun onCreateView(
@@ -69,10 +68,12 @@ class ReportFragment : Fragment() {
                 bundle.putInt("selectedFragmentId", R.id.navigation_Home)
                 findNavController().navigate(R.id.userHolderFragment, bundle)
             }
+
             "service" -> {
                 bundle.putInt("selectedFragmentId", R.id.navigation_services)
                 findNavController().navigate(R.id.userHolderFragment, bundle)
             }
+
             else -> {
                 bundle.putInt("selectedFragmentId", R.id.navigation_Home)
                 findNavController().navigate(R.id.userHolderFragment, bundle)
@@ -80,17 +81,13 @@ class ReportFragment : Fragment() {
         }
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         auth = FirebaseAuth.getInstance()
-        progressDialog = AlertDialog.Builder(requireContext())
-            .setTitle("Please wait")
-            .setMessage("Uploading...")
-            .setCancelable(false)
-            .create()
+
         arguments?.let {
-            selectedFragmentId = it.getInt("selectedFragmentId", R.id.navigation_services)
             from = it.getString("from")
         }
 
@@ -159,6 +156,8 @@ class ReportFragment : Fragment() {
         }
 
         binding.submitButton.setOnClickListener {
+            loadingDialog = DialogUtils.showLoading(requireActivity())
+            loadingDialog.show()
             validateData()
         }
 
@@ -187,39 +186,66 @@ class ReportFragment : Fragment() {
             false
         }
     }
+
     private fun setupObservers() {
         viewModel.uploadStatus.observe(viewLifecycleOwner, Observer { status ->
             when (status) {
                 is ReportViewModel.UploadStatus.Idle -> {
-                    progressDialog.dismiss()
+                    Log.d("ReportFragment", "Upload status: Idle")
                 }
+
                 is ReportViewModel.UploadStatus.UploadingImage -> {
-                    progressDialog.setMessage("Uploading Image...")
-                    progressDialog.show()
+                    Log.d("ReportFragment", "Uploading image...")
                 }
+
                 is ReportViewModel.UploadStatus.ImageUploadSuccess -> {
+                    Log.d("ReportFragment", "Image upload successful, URL: ${status.imageUrl}")
                     // Proceed to upload complaint data
                     uploadComplaintData(status.imageUrl)
                 }
+
                 is ReportViewModel.UploadStatus.ImageUploadFailure -> {
-                    progressDialog.dismiss()
-                    Toast.makeText(requireContext(), status.error, Toast.LENGTH_SHORT).show()
-                }
-                is ReportViewModel.UploadStatus.UploadingData -> {
-                    progressDialog.setMessage("Uploading Your Complaint...")
-                    progressDialog.show()
-                }
-                is ReportViewModel.UploadStatus.DataUploadSuccess -> {
-                    progressDialog.dismiss()
-                    Toast.makeText(requireContext(), "Complaint submitted successfully.", Toast.LENGTH_SHORT).show()
-                    findNavController().navigateUp()
-                }
-                is ReportViewModel.UploadStatus.DataUploadFailure -> {
-                    progressDialog.dismiss()
+                    Log.e("ReportFragment", "Image upload failed: ${status.error}")
                     Toast.makeText(requireContext(), status.error, Toast.LENGTH_SHORT).show()
                 }
 
-                else -> {}
+                is ReportViewModel.UploadStatus.UploadingData -> {
+
+                    Log.d("ReportFragment", "Uploading complaint data...")
+                    loadingDialog.dismiss()
+                    DialogUtils.showSuccessMessage(
+                        requireActivity(),
+                        "Success!",
+                        "Complaint Submitted"
+                    ).show()
+
+                    val bundle = Bundle().apply {
+                        putInt("selectedFragmentId", selectedFragmentId ?: R.id.navigation_services)
+                    }
+                    bundle.putInt("selectedFragmentId", R.id.navigation_services)
+                    findNavController().navigate(R.id.userHolderFragment, bundle)
+
+                }
+
+                is ReportViewModel.UploadStatus.DataUploadSuccess -> {
+                    Log.d("ReportFragment", "Complaint data upload successful")
+                    Toast.makeText(
+                        requireContext(),
+                        "Complaint submitted successfully.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    findNavController().navigateUp()
+                }
+
+                is ReportViewModel.UploadStatus.DataUploadFailure -> {
+                    Log.e("ReportFragment", "Complaint data upload failed: ${status.error}")
+                    loadingDialog.dismiss()
+                    Toast.makeText(requireContext(), status.error, Toast.LENGTH_SHORT).show()
+                }
+
+                else -> {
+                    Log.d("ReportFragment", "Unhandled status: $status")
+                }
             }
         })
     }
@@ -251,45 +277,48 @@ class ReportFragment : Fragment() {
         val barangay = binding.tvBrgy.text.toString().trim()
         val street = binding.tvStreet.text.toString().trim()
 
+        // Add logging to track the values before upload
+        Log.d(
+            "ReportFragment",
+            "Validating data: Report=$report, Concern=$concern, Description=$concernDescription, Municipality=$municipality, Barangay=$barangay, Street=$street"
+        )
+
         when {
-            report.isEmpty() -> Toast.makeText(
-                requireContext(),
-                "Please select a Report Type",
-                Toast.LENGTH_SHORT
-            ).show()
+            report.isEmpty() -> {
+                Toast.makeText(requireContext(), "Please select a Report Type", Toast.LENGTH_SHORT)
+                    .show()
+            }
 
-            concern.isEmpty() -> Toast.makeText(
-                requireContext(),
-                "Please select a Concern",
-                Toast.LENGTH_SHORT
-            ).show()
+            concern.isEmpty() -> {
+                Toast.makeText(requireContext(), "Please select a Concern", Toast.LENGTH_SHORT)
+                    .show()
+            }
 
-            concernDescription.isEmpty() -> Toast.makeText(
-                requireContext(),
-                "Concern Description cannot be empty",
-                Toast.LENGTH_SHORT
-            ).show()
+            concernDescription.isEmpty() -> {
+                Toast.makeText(
+                    requireContext(),
+                    "Concern Description cannot be empty",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
 
-            municipality.isEmpty() -> Toast.makeText(
-                requireContext(),
-                "Please select a Municipality",
-                Toast.LENGTH_SHORT
-            ).show()
+            municipality.isEmpty() -> {
+                Toast.makeText(requireContext(), "Please select a Municipality", Toast.LENGTH_SHORT)
+                    .show()
+            }
 
-            barangay.isEmpty() -> Toast.makeText(
-                requireContext(),
-                "Please select a Barangay",
-                Toast.LENGTH_SHORT
-            ).show()
+            barangay.isEmpty() -> {
+                Toast.makeText(requireContext(), "Please select a Barangay", Toast.LENGTH_SHORT)
+                    .show()
+            }
 
-            selectedImage == null -> Toast.makeText(
-                requireContext(),
-                "Please upload a picture",
-                Toast.LENGTH_SHORT
-            ).show()
+            selectedImage == null -> {
+                Toast.makeText(requireContext(), "Please upload a picture", Toast.LENGTH_SHORT)
+                    .show()
+            }
 
             else -> {
-                // Start uploading image
+                Log.d("ReportFragment", "All data valid, starting image upload...")
                 viewModel.uploadImage(selectedImage!!)
             }
         }
@@ -302,6 +331,12 @@ class ReportFragment : Fragment() {
         val municipality = binding.tvMucipality.text.toString().trim()
         val barangay = binding.tvBrgy.text.toString().trim()
         val street = binding.tvStreet.text.toString().trim()
+
+
+        Log.d(
+            "ReportFragment",
+            "Uploading complaint: Report=$report, Concern=$concern, Description=$concernDescription, Municipality=$municipality, Barangay=$barangay, Street=$street, ImageURL=$imageUrl"
+        )
 
         viewModel.uploadComplaint(
             report,
@@ -327,6 +362,7 @@ class ReportFragment : Fragment() {
                             requestCameraPermission()
                         }
                     }
+
                     1 -> pickImageFromGallery()
                 }
             }
@@ -376,6 +412,7 @@ class ReportFragment : Fragment() {
                     binding.fileUploadContainer.setImageURI(selectedImage)
                     Log.d("ReportFragment", "Image selected from gallery: $selectedImage")
                 }
+
                 IMAGE_PICK_CAMERA_CODE -> {
                     binding.fileUploadContainer.setImageURI(selectedImage)
                     Log.d("ReportFragment", "Image captured from camera: $selectedImage")

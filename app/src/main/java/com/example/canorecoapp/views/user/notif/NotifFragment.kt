@@ -15,10 +15,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.canorecoapp.R
 import com.example.canorecoapp.adapter.NotifDetailsAdapter
 import com.example.canorecoapp.databinding.FragmentNotifBinding
 import com.example.canorecoapp.models.Notif
+import com.example.canorecoapp.utils.DialogUtils
 import com.example.canorecoapp.utils.ProgressDialogUtils
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -28,6 +30,7 @@ import com.google.firebase.ktx.Firebase
 
 
 class NotifFragment : Fragment() {
+    private lateinit var loadingDialog: SweetAlertDialog
    private lateinit var binding : FragmentNotifBinding
     private lateinit var notifList: ArrayList<Notif>
     private lateinit var newsAdapter: NotifDetailsAdapter
@@ -113,7 +116,7 @@ class NotifFragment : Fragment() {
                             .addOnSuccessListener {
                                 Log.d("NotificationService", "Notification ${document.id} deleted successfully")
                                 getAllNews()
-                                ProgressDialogUtils.dismissProgressDialog()
+                                loadingDialog.dismiss()
                                 
                             }
                             .addOnFailureListener { e ->
@@ -247,7 +250,8 @@ class NotifFragment : Fragment() {
                         notifList.reverse()
                         Log.d("NewsFragment", "Fetched ${notifList.size} news items")
                         binding.tvClearAll.setOnClickListener {
-                            ProgressDialogUtils.showProgressDialog(requireContext(),"Clearing Your Notification")
+                            loadingDialog = DialogUtils.showLoading(requireActivity())
+                            loadingDialog.show()
                             clearAllNotifications()
 
                         }
