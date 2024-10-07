@@ -39,6 +39,10 @@ class MainActivity : AppCompatActivity() {
                 navigateToFragment(fragmentTag)
             }
         }
+        WindowCompat.setDecorFitsSystemWindows(
+            window,false
+        )
+
 
         // Request notification permission
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
@@ -68,7 +72,7 @@ class MainActivity : AppCompatActivity() {
     private fun navigateToFragment(fragmentTag: String?) {
         when (fragmentTag) {
             "YourFragmentTag" -> {
-                navController.navigate(R.id.notifFragment) // Replace with your actual fragment ID
+                navController.navigate(R.id.splashFragment)
             }
 
         }
