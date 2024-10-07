@@ -73,17 +73,7 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
         return binding.root
     }
 
-    private fun resetFragmentWithProgress() {
-        ProgressDialogUtils.showProgressDialog(requireContext(),"Loading...")
-        Handler(Looper.getMainLooper()).post {
-            reloadFragment()
-            ProgressDialogUtils.dismissProgressDialog()
-        }
-    }
 
-    private fun reloadFragment() {
-        findNavController().navigate(R.id.outagesFragment)
-    }
 
     private fun loadJsonFromRaw(resourceId: Int): String? {
         return if (isAdded) {
@@ -195,7 +185,7 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
                     }
                 }
             }
-            ProgressDialogUtils.dismissProgressDialog()
+
             // getCurrentLocation()
         } catch (e: JSONException) {
             Log.e("JSON", "Error parsing JSON data: ${e.message}")

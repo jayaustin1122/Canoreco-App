@@ -61,8 +61,6 @@ class SignUpFragment : Fragment() {
     private lateinit var stepView: StepView
     private lateinit var viewModel: SignUpViewModel
     private lateinit var loadingDialog: SweetAlertDialog
-    private lateinit var successDialog: SweetAlertDialog
-    private lateinit var warningMessage: SweetAlertDialog
     private lateinit var storage: FirebaseStorage
     private lateinit var fireStore: FirebaseFirestore
     private lateinit var storedVerificationId: String
@@ -349,25 +347,24 @@ class SignUpFragment : Fragment() {
                 .addOnCompleteListener { task ->
 
                     loadingDialog.dismiss()
-                    successDialog = DialogUtils.showSuccessMessage(
+                    DialogUtils.showSuccessMessage(
                         requireActivity(),
                         "Success",
                         "Account created successfully"
-                    )
-                    successDialog.show()
+                    ).show()
                     if (task.isSuccessful) {
                         findNavController().apply {
                             popBackStack(R.id.signUpFragment, false)
                             navigate(R.id.signInFragment)
                         }
                         auth.signOut()
-                        loadingDialog.dismiss()
                     } else {
                         Toast.makeText(
                             this@SignUpFragment.requireContext(),
                             task.exception?.message ?: "Error creating account",
                             Toast.LENGTH_SHORT
                         ).show()
+                        loadingDialog.dismiss()
                     }
                 }
         } catch (e: Exception) {

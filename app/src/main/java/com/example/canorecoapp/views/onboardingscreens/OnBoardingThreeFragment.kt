@@ -8,13 +8,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentOnBoardingThreeBinding
+import com.example.canorecoapp.utils.DialogUtils
 
 
 class OnBoardingThreeFragment : Fragment() {
     private lateinit var binding : FragmentOnBoardingThreeBinding
-    private lateinit var progressDialog : ProgressDialog
+    private lateinit var loadingDialog: SweetAlertDialog
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -27,25 +29,20 @@ class OnBoardingThreeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        progressDialog = ProgressDialog(this.requireContext())
-        progressDialog.setTitle("Please wait")
-        progressDialog.setCanceledOnTouchOutside(false)
         binding.buttonNext.setOnClickListener {
-            findNavController().navigate(R.id.signInFragment)
             onBoardingFinish()
         }
-
     }
     private fun onBoardingFinish(){
-        progressDialog.setMessage("Processing...")
-        progressDialog.show()
+        loadingDialog = DialogUtils.showLoading(requireActivity())
+        loadingDialog.show()
         view?.postDelayed({
             val sharedPref = requireActivity().getSharedPreferences("onBoarding", Context.MODE_PRIVATE)
             val editor = sharedPref.edit()
             editor.putBoolean("Finished", true)
             editor.apply()
-
-            progressDialog.dismiss()
+            findNavController().navigate(R.id.signInFragment)
+            loadingDialog.dismiss()
         }, 2000)
     }
 

@@ -1,20 +1,26 @@
 package com.example.canorecoapp.views.linemen.home
 
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentLinemenCurrentFurtureBinding
+import com.example.canorecoapp.viewmodels.UserViewModel
 import com.example.canorecoapp.views.user.outages.CurrentOutagesMapFragment
 import com.example.canorecoapp.views.user.outages.FutureOutagesMapFragment
 import com.google.android.material.tabs.TabLayout
 
 
 class LinemenCurrentFurtureFragment : Fragment() {
-    private lateinit var binding : FragmentLinemenCurrentFurtureBinding
+    private lateinit var binding: FragmentLinemenCurrentFurtureBinding
+    private val viewModel: UserViewModel by viewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -53,11 +59,38 @@ class LinemenCurrentFurtureFragment : Fragment() {
                 // No action needed
             }
         })
-    }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            viewModel.loadUserInfo()
+        }
+        viewModel.userInfo.observe(viewLifecycleOwner, Observer { userInfo ->
+            userInfo?.let {
+                binding.apply {
 
-    private fun replaceFragment(fragment: Fragment) {
-        childFragmentManager.beginTransaction()
-            .replace(R.id.map_fragment_container, fragment)
-            .commit()
-    }
+                    imgUser?.let {
+                        Glide.with(requireContext())
+                            .load(userInfo.image)
+                            .into(it)
+                    }
+                    imgUser.setOnClickListener {
+                        val bundle = Bundle().apply {
+                            putInt("selectedFragmentId", null ?: R.id.navigation_account_linemen)
+                        }
+                        findNavController().navigate(R.id.adminHolderFragment, bundle)
+                    }
+                    notif.setOnClickListener {
+                        val bundle = Bundle().apply {
+                            putString("from", userInfo.userType)
+                        }
+                        findNavController().navigate(R.id.notifFragment, bundle)
+                    }
+                }
+            }
+        })
+}
+
+private fun replaceFragment(fragment: Fragment) {
+    childFragmentManager.beginTransaction()
+        .replace(R.id.map_fragment_container, fragment)
+        .commit()
+}
 }

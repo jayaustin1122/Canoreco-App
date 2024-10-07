@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.canorecoapp.R
 import com.example.canorecoapp.adapter.SignInViewPagerAdapter
 import com.example.canorecoapp.databinding.DialogReviewBinding
@@ -50,6 +51,7 @@ class SignInFragment : Fragment() {
     private val handler = Handler()
     private lateinit var fireStore: FirebaseFirestore
     private lateinit var imageSliderAdapter: SignInViewPagerAdapter
+    private lateinit var loadingDialog: SweetAlertDialog
     private var currentPage = 0
     private val imageList = listOf(
         R.drawable.background_login,
@@ -108,6 +110,8 @@ class SignInFragment : Fragment() {
 
         handler.postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
         binding.buttonLoginLogin.setOnClickListener {
+            loadingDialog = DialogUtils.showLoading(requireActivity())
+            loadingDialog.show()
             validateData()
         }
 
@@ -137,14 +141,15 @@ class SignInFragment : Fragment() {
                 "Email Is Empty or Invalid Email Format",
                 Toast.LENGTH_SHORT
             ).show()
-            DialogUtils.showLoading(requireActivity()).dismiss()
+            loadingDialog.dismiss()
+
         } else if (pass.isEmpty()) {
             Toast.makeText(
                 this.requireContext(),
                 "Empty Fields are not allowed",
                 Toast.LENGTH_SHORT
             ).show()
-            DialogUtils.showLoading(requireActivity()).dismiss()
+            loadingDialog.dismiss()
         } else {
             loginUser()
         }
@@ -193,23 +198,25 @@ class SignInFragment : Fragment() {
 
                     Toast.makeText(
                         this@SignInFragment.requireContext(),
-                        "${e.message}",
+                        "${e.message} Check Email or Password",
                         Toast.LENGTH_SHORT
                     ).show()
+                    loadingDialog.dismiss()
                 }
+
 
             }
         }
     }
 
     private fun checkUser() {
-
-
         val firebaseUser = auth.currentUser
 
+        // Dismiss any loading dialogs
+        loadingDialog.dismiss()
+
         if (firebaseUser != null) {
-            val dbref =
-                FirebaseFirestore.getInstance().collection("users").document(firebaseUser.uid)
+            val dbref = FirebaseFirestore.getInstance().collection("users").document(firebaseUser.uid)
             dbref.get().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val snapshot = task.result
@@ -217,54 +224,56 @@ class SignInFragment : Fragment() {
                         val userType = snapshot.getString("userType")
                         val access = snapshot.getBoolean("access")
                         val name = snapshot.getString("firstName")
-                        when (userType) {
-                            "linemen" -> {
-                                if (access == false) {
 
-                                    val dialogBinding = DialogReviewBinding.inflate(layoutInflater)
-                                    val dialog = Dialog(this@SignInFragment.requireContext())
-                                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-                                    dialog.setContentView(dialogBinding.root)
-                                    dialog.show()
-                                    auth.signOut()
-                                } else {
-                                    DialogUtils.showSuccessMessage(
-                                        requireActivity(),
-                                        "Log In Successful",
-                                        "Welcome $name"
-                                    ).show()
-                                    Toast.makeText(
-                                        this@SignInFragment.requireContext(),
-                                        "Login Successfully",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    findNavController().apply {
-                                        popBackStack(R.id.splashFragment, false)
-                                        navigate(R.id.adminHolderFragment)
+                        // Check email verification status before proceeding
+                        if (firebaseUser.isEmailVerified) {
+                            when (userType) {
+                                "linemen" -> {
+                                    loadingDialog.dismiss()
+                                    if (access == false) {
+                                        // Show a dialog for denied access
+                                        val dialogBinding = DialogReviewBinding.inflate(layoutInflater)
+                                        val dialog = Dialog(this@SignInFragment.requireContext())
+                                        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                                        dialog.setContentView(dialogBinding.root)
+                                        dialog.show()
+
+                                        // Sign out the user
+                                        auth.signOut()
+                                    } else {
+                                        // Successful login
+                                        DialogUtils.showSuccessMessage(
+                                            requireActivity(),
+                                            "Log In Successful",
+                                            "Welcome $name"
+                                        ).show()
+
+                                        findNavController().apply {
+                                            popBackStack(R.id.splashFragment, false)
+                                            navigate(R.id.adminHolderFragment)
+                                        }
                                     }
-
-
                                 }
-
-                            }
-
-                            "member" -> {
-
-                                if (auth.currentUser?.isEmailVerified == true) {
-                                    DialogUtils.showLoading(requireActivity()).dismiss()
+                                "member" -> {
+                                    loadingDialog.dismiss()
+                                    // Navigate if verified
                                     findNavController().apply {
+                                        DialogUtils.showSuccessMessage(
+                                            requireActivity(),
+                                            "Log In Successful",
+                                            "Welcome $name"
+                                        ).show()
                                         popBackStack(R.id.splashFragment, false)
                                         navigate(R.id.userHolderFragment)
                                     }
-
-                                } else if (auth.currentUser?.isEmailVerified == false) {
-                                    verifyEmail(firebaseUser)
+                                }
+                                else -> {
+                                    // Handle unknown user type
                                 }
                             }
-
-                            else -> {
-
-                            }
+                        } else {
+                            // Email is not verified, sign out the user
+                            verifyEmail(firebaseUser)
                         }
                     } else {
                         Toast.makeText(
@@ -289,9 +298,21 @@ class SignInFragment : Fragment() {
             ).show()
         }
     }
+    override fun onStart() {
+        super.onStart()
+
+        val firebaseUser = auth.currentUser
+        if (firebaseUser != null && !firebaseUser.isEmailVerified) {
+            auth.signOut()
+            Toast.makeText(requireContext(), "Please verify your email to continue", Toast.LENGTH_LONG).show()
+            findNavController().navigate(R.id.signInFragment)
+        }
+    }
+
 
     @SuppressLint("MissingInflatedId")
     private fun showVerificationDialog(user: FirebaseUser) {
+        loadingDialog.dismiss()
         DialogUtils.showLoading(requireActivity()).dismiss()
         val dialogBuilder = AlertDialog.Builder(requireContext())
         val inflater = layoutInflater
@@ -345,11 +366,14 @@ class SignInFragment : Fragment() {
     }
 
     private fun verifyEmail(user: FirebaseUser?) {
+        loadingDialog.dismiss()
+
         if (user == null) {
             Log.e("EmailVerification", "User is not logged in. Cannot send verification email.")
             auth.signOut()
             return
         }
+
         user.sendEmailVerification()
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -358,20 +382,19 @@ class SignInFragment : Fragment() {
                         requireContext(),
                         "Check your email for verification",
                         Toast.LENGTH_SHORT
-                    ).show();
+                    ).show()
                     showVerificationDialog(user)
-                } else {
-                    Log.e(
-                        "EmailVerification",
-                        "Failed to send verification email to ${user.email}. Task failed."
-                    )
 
+                    // Sign out the user immediately after sending the verification email
+                    auth.signOut()
+                } else {
+                    Log.e("EmailVerification", "Failed to send verification email to ${user.email}")
                 }
             }
             .addOnFailureListener { exception ->
                 Log.e("EmailVerification", "Error sending verification email: ${exception.message}")
-
             }
     }
+
 
 }

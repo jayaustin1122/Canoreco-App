@@ -3,6 +3,7 @@ package com.example.canorecoapp.views.user.account
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.bumptech.glide.Glide
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentAccountUserBinding
@@ -19,6 +21,9 @@ import com.example.canorecoapp.viewmodels.UserViewModel
 import com.example.canorecoapp.views.user.news.FullScreenImageFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class AccountUserFragment : Fragment() {
     private lateinit var binding: FragmentAccountUserBinding
@@ -26,7 +31,7 @@ class AccountUserFragment : Fragment() {
     private lateinit var fireStore: FirebaseFirestore
     private lateinit var selectedImage: Uri
     private val viewModel: UserViewModel by viewModels()
-
+    private lateinit var loadingDialog: SweetAlertDialog
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -99,8 +104,14 @@ class AccountUserFragment : Fragment() {
             requireActivity(), "Logout", "Are you sure you want to Logout?"
         ) { sweetAlertDialog ->
             sweetAlertDialog.dismissWithAnimation()
-            auth.signOut()
-            findNavController().navigate(R.id.signInFragment)
+            loadingDialog = DialogUtils.showLoading(requireActivity())
+            loadingDialog.show()
+            Handler().postDelayed({
+                loadingDialog.dismiss()
+                auth.signOut()
+                findNavController().navigate(R.id.signInFragment)
+            }, 2000)
+
         }
     }
 }

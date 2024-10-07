@@ -41,6 +41,7 @@ class AccountLineMenFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
     private lateinit var fireStore: FirebaseFirestore
     private lateinit var selectedImage: Uri
+    private lateinit var loadingDialog: SweetAlertDialog
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -48,6 +49,22 @@ class AccountLineMenFragment : Fragment() {
         binding = FragmentAccountLineMenBinding.inflate(layoutInflater)
         // Inflate the layout for this fragment
         return binding.root
+    }
+
+    private fun showLogoutDialog() {
+        DialogUtils.showWarningMessage(
+            requireActivity(), "Logout", "Are you sure you want to Logout?"
+        ) { sweetAlertDialog ->
+            sweetAlertDialog.dismissWithAnimation()
+            loadingDialog = DialogUtils.showLoading(requireActivity())
+            loadingDialog.show()
+            Handler().postDelayed({
+                loadingDialog.dismiss()
+                auth.signOut()
+                findNavController().navigate(R.id.signInFragment)
+            }, 2000)
+
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -60,28 +77,13 @@ class AccountLineMenFragment : Fragment() {
             loadUsersInfo()
         }, 600)
         binding.logoutCard.setOnClickListener {
-            DialogUtils.showWarningMessage(requireActivity(), "Logout", "Are you sure you want to Logout?"
-            ) { sweetAlertDialog ->
-                sweetAlertDialog.dismissWithAnimation()
-                auth.signOut()
-                findNavController().navigate(R.id.signInFragment)
-            }
+            showLogoutDialog()
         }
         binding.logout.setOnClickListener {
-            DialogUtils.showWarningMessage(requireActivity(), "Logout", "Are you sure you want to Logout?"
-            ) { sweetAlertDialog ->
-                sweetAlertDialog.dismissWithAnimation()
-                auth.signOut()
-                findNavController().navigate(R.id.signInFragment)
-            }
+            showLogoutDialog()
         }
         binding.logoutIcon.setOnClickListener {
-            DialogUtils.showWarningMessage(requireActivity(), "Logout", "Are you sure you want to Logout?"
-            ) { sweetAlertDialog ->
-                sweetAlertDialog.dismissWithAnimation()
-                auth.signOut()
-                findNavController().navigate(R.id.signInFragment)
-            }
+            showLogoutDialog()
         }
         binding.updateProfile.setOnClickListener {
             findNavController().navigate(R.id.changePersonalFragment)
@@ -92,11 +94,6 @@ class AccountLineMenFragment : Fragment() {
         binding.changePassword.setOnClickListener {
             findNavController().navigate(R.id.changePasswordFragment)
         }
-
-
-
-
-
 
 
     }
@@ -142,8 +139,6 @@ class AccountLineMenFragment : Fragment() {
             ).show()
         }
     }
-
-
 
 
 }
