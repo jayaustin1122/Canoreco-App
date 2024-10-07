@@ -9,11 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.canorecoapp.R
 import com.example.canorecoapp.adapter.NotifDetailsAdapter
 import com.example.canorecoapp.databinding.FragmentNotifBinding
 import com.example.canorecoapp.models.Notif
@@ -31,6 +33,7 @@ class NotifFragment : Fragment() {
     private lateinit var newsAdapter: NotifDetailsAdapter
     private lateinit var deletedNotifications: List<Notif>
     private var db  = Firebase.firestore
+    private var from: String? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -40,7 +43,16 @@ class NotifFragment : Fragment() {
         return binding.root
     }
 
+    private fun handleBackNavigation() {
 
+        when (from) {
+            "member" -> findNavController().navigate(R.id.userHolderFragment)
+            "linemen" -> {
+//                bundle.putInt("selectedFragmentId", null ?: R.id.navigation_services)
+                findNavController().navigate(R.id.adminHolderFragment)
+            }
+        }
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         notifList = ArrayList()
@@ -48,10 +60,18 @@ class NotifFragment : Fragment() {
         binding.recyclerNews.adapter = newsAdapter
         getAllNews()
         setupSwipeToDelete()
+        arguments?.let {
+            from = it.getString("from")
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    handleBackNavigation()
+                }
+            })
         binding.backButton.setOnClickListener {
-            findNavController().apply {
-                navigateUp()
-            }
+            handleBackNavigation()
         }
         binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {

@@ -160,7 +160,10 @@ class HomeUserFragment : Fragment() {
                             findNavController().navigate(R.id.userHolderFragment, bundle)
                         }
                         notif.setOnClickListener {
-                            findNavController().navigate(R.id.notifFragment)
+                            val bundle = Bundle().apply {
+                                putString("from",userInfo.userType)
+                            }
+                            findNavController().navigate(R.id.notifFragment, bundle)
                         }
                     }
                 }
