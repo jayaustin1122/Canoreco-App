@@ -99,6 +99,7 @@ class ReportFragment : Fragment() {
     }
 
     private fun setupUI() {
+        // Initially hide the views
         binding.concernDescriptionInputLayout.visibility = View.GONE
         binding.uploadInstructions.visibility = View.GONE
         binding.located.visibility = View.GONE
@@ -107,16 +108,25 @@ class ReportFragment : Fragment() {
         binding.mucipalityTypeInputLayout.visibility = View.GONE
         binding.brgyTypeInputLayout.visibility = View.GONE
         binding.streetTypeInputLayout.visibility = View.GONE
+
         // Setup Report Type Spinner
         val concerns = complaints.keys.toList()
         val concernsAdapter = ArrayAdapter(requireContext(), R.layout.address_item_views, concerns)
         binding.reportTypeSpinner.setAdapter(concernsAdapter)
+
         binding.reportTypeSpinner.setOnItemClickListener { parent, view, position, id ->
             val selectedConcern = parent.getItemAtPosition(position).toString()
             val barangays = complaints[selectedConcern] ?: emptyList()
             val barangayAdapter =
                 ArrayAdapter(requireContext(), R.layout.address_item_views, barangays)
             binding.concernSpinner.setAdapter(barangayAdapter)
+        }
+
+        // Setup Concern Spinner with visibility handling
+        binding.concernSpinner.setOnItemClickListener { parent, view, position, id ->
+            val selectedConcern = parent.getItemAtPosition(position).toString()
+
+            // Show views when a concern is selected
             binding.concernDescriptionInputLayout.visibility = View.VISIBLE
             binding.uploadInstructions.visibility = View.VISIBLE
             binding.located.visibility = View.VISIBLE
@@ -142,6 +152,7 @@ class ReportFragment : Fragment() {
 
         makeDropdownOnly(binding.reportTypeSpinner)
         makeDropdownOnly(binding.tvMucipality)
+        makeDropdownOnly(binding.concernSpinner)
         makeDropdownOnly(binding.tvBrgy)
         binding.fileUploadContainer.setOnClickListener {
             showImagePickerDialog()
@@ -150,7 +161,6 @@ class ReportFragment : Fragment() {
         binding.submitButton.setOnClickListener {
             validateData()
         }
-
 
         binding.backButton.setOnClickListener {
             handleBackPressWithConfirmation()
@@ -164,6 +174,7 @@ class ReportFragment : Fragment() {
                 }
             })
     }
+
     @SuppressLint("ClickableViewAccessibility")
     private fun makeDropdownOnly(autoCompleteTextView: AutoCompleteTextView) {
         autoCompleteTextView.setOnClickListener {
@@ -207,6 +218,8 @@ class ReportFragment : Fragment() {
                     progressDialog.dismiss()
                     Toast.makeText(requireContext(), status.error, Toast.LENGTH_SHORT).show()
                 }
+
+                else -> {}
             }
         })
     }
