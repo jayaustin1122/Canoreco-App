@@ -1,32 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".views.linemen.tasks.TasksDetailsFragment"
-    android:padding="16dp">
+    android:paddingBottom="@dimen/dimen_20dp"
+    android:paddingHorizontal="@dimen/dimen_20dp"
+    android:orientation="vertical"
+    tools:context=".views.linemen.tasks.TasksDetailsFragment">
+
+    <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+        android:id="@+id/handle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <!-- Title -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:text="Task Details"
         android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/black"
-        android:gravity="center"
-        android:layout_marginBottom="16dp" />
+        android:textColor="@color/text_dark_color"
+        android:fontFamily="@font/roboto_bold"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:layout_marginTop="@dimen/dimen_20dp"
-        android:divider="@android:drawable/divider_horizontal_textfield"
-        android:dividerPadding="12dp"
-        android:showDividers="middle">
+        android:orientation="vertical">
 
         <!-- Location Name -->
         <TextView
@@ -165,4 +166,4 @@
 
     </LinearLayout>
 
-</FrameLayout>
+</LinearLayout>

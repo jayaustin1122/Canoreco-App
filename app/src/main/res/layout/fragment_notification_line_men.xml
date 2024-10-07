@@ -7,18 +7,59 @@
     android:background="@color/background_color"
     tools:context=".views.linemen.tasks.NotificationLineMenFragment">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/top_bar_dimen"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="@dimen/dimen_30dp"
+            android:background="@drawable/bg_topappbar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Active Devices"
+                android:fontFamily="@font/roboto_bold"
+                android:textColor="@color/text_light_color"
+                android:textSize="22sp" />
+
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ImageView
+        android:id="@+id/imageView8"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:scaleType="center"
+        android:src="@drawable/bg_main"
+        android:tileMode="disabled"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+
     <androidx.cardview.widget.CardView
         android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:elevation="4dp"
-        android:layout_marginTop="@dimen/dimen_20dp"
-        app:cardBackgroundColor="@color/white"
         app:cardCornerRadius="50dp"
+        app:cardBackgroundColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
 
         <SearchView
             android:id="@+id/search"
@@ -26,9 +67,9 @@
             android:layout_height="50dp"
             android:background="@android:color/transparent"
             android:iconifiedByDefault="false"
-            android:queryBackground="@android:color/transparent"
             android:queryHint="Search..."
-            app:queryBackground="@android:color/transparent" />
+            android:queryBackground="@android:color/transparent"
+            app:queryBackground="@android:color/transparent"/>
 
     </androidx.cardview.widget.CardView>
 
@@ -42,7 +83,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        tools:listitem="@layout/news_item_view"
-        app:layout_constraintTop_toBottomOf="@+id/card" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView8"
+        tools:listitem="@layout/news_item_view" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
