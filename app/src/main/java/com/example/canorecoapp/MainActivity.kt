@@ -39,10 +39,6 @@ class MainActivity : AppCompatActivity() {
                 navigateToFragment(fragmentTag)
             }
         }
-        WindowCompat.setDecorFitsSystemWindows(
-            window,false
-        )
-
 
         // Request notification permission
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
