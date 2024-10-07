@@ -11,17 +11,14 @@ import android.widget.Filter
 import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.canorecoapp.R
-import com.example.canorecoapp.databinding.NewsActivitiesItemViewsBinding
 import com.example.canorecoapp.databinding.NewsItemViewBinding
-import com.example.canorecoapp.models.Maintenance
-import com.example.canorecoapp.models.News
 import com.example.canorecoapp.models.Notif
 import com.example.canorecoapp.views.user.news.NewsDetailsFragment
+import com.example.canorecoapp.views.user.notif.NotificationBottomSheetDialogFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
@@ -58,7 +55,6 @@ class NotifDetailsAdapter(private val context: Context,
         val text = model.text
         val timeStamp = model.timestamp
         val status = model.status
-        val isRead = model.isRead
         val isFromDevice = model.isFromDevice
         val formattedDate = parseAndFormatDate(timeStamp)
 
@@ -66,32 +62,40 @@ class NotifDetailsAdapter(private val context: Context,
         holder.date.text = formattedDate
         holder.image.visibility = View.GONE
 
-        if (!status) {
-            holder.indicator.visibility = View.VISIBLE
-        } else {
-            holder.indicator.visibility = View.GONE
-        }
+        holder.indicator.visibility = if (!status) View.VISIBLE else View.GONE
+
         holder.itemView.setOnClickListener {
-                if (isFromDevice) {
-                    updateNotifStatus(timeStamp)
+            updateNotifStatus(timeStamp)
 
-                } else {
-                    updateNotifStatus(timeStamp)
-                    Log.d("adapteradapter", "$formattedDate")
-                    val detailsFragment = NewsDetailsFragment()
-                    val bundle = Bundle().apply {
-                        putString("title", timeStamp)
-                        putString("from", "News")
-                    }
-                    detailsFragment.arguments = bundle
-                    navController.navigate(R.id.newsDetailsFragment, bundle)
+            // Log whether the notification is from a device
+            Log.d("NotificationAdapter", "Notification clicked: Title: $newsTitle, From Device: $isFromDevice")
+
+            if (!isFromDevice) {
+                val materialDialog = NotificationBottomSheetDialogFragment.newInstance(
+                    title = newsTitle,
+                    text = text,
+                    isFromDevice = isFromDevice,
+                    date = formattedDate
+                )
+                materialDialog.show((context as AppCompatActivity).supportFragmentManager, "NotificationDialog")
+
+            } else {
+                // Navigate to NewsDetailsFragment for non-device notifications
+                val detailsFragment = NewsDetailsFragment()
+                val bundle = Bundle().apply {
+                    putString("title", timeStamp)
+                    putString("from", "News")
                 }
-
+                detailsFragment.arguments = bundle
+                navController.navigate(R.id.newsDetailsFragment, bundle)
+            }
         }
     }
 
 
-     fun updateNotifStatus(timeStamp: String) {
+
+
+    fun updateNotifStatus(timeStamp: String) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
