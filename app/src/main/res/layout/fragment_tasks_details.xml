@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/dimen_20dp"
-    android:paddingHorizontal="@dimen/dimen_20dp"
     android:orientation="vertical"
+    android:paddingHorizontal="@dimen/dimen_10dp"
+    android:paddingBottom="@dimen/dimen_10dp"
     tools:context=".views.linemen.tasks.TasksDetailsFragment">
 
     <com.google.android.material.bottomsheet.BottomSheetDragHandleView
@@ -13,158 +14,248 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <!-- Title -->
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="Task Details"
-        android:textSize="24sp"
-        android:textColor="@color/text_dark_color"
-        android:fontFamily="@font/roboto_bold"/>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/dimen_16dp"
+        android:paddingHorizontal="@dimen/dimen_16dp"
         android:orientation="vertical">
+
+        <!-- Title -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dimen_10dp"
+            android:fontFamily="@font/roboto_bold"
+            android:text="Device Details"
+            android:textColor="@color/text_dark_color"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <!-- Location Name -->
+                <TextView
+                    android:id="@+id/tvDeviceLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Device Name:"
+                    android:textColor="#666666"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/roboto_medium"/>
+
+                <TextView
+                    android:id="@+id/tvDeviceName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="DAET-CNSC-001"
+                    android:textColor="@color/text_dark_color"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/roboto_bold"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/dimen_20dp"
+                android:orientation="vertical">
+
+                <!-- Status -->
+                <TextView
+                    android:id="@+id/tvStatusLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Status:"
+                    android:textColor="#666666"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/roboto_medium" />
+
+                <TextView
+                    android:id="@+id/tvStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="statustv"
+                    android:textColor="@color/text_dark_color"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/roboto_bold" />
+
+            </LinearLayout>
+
+        </LinearLayout>
 
         <!-- Location Name -->
         <TextView
             android:id="@+id/tvLocationLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Location Name: "
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black" />
+            android:text="Device Address:"
+            android:textColor="#666666"
+            android:textSize="14sp"
+            android:fontFamily="@font/roboto_medium"/>
 
         <TextView
             android:id="@+id/tvLocationName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="locationnametv"
+            android:layout_marginBottom="15dp"
+            android:text="CNSC, Daet, F. Pimentel Street"
+            android:textColor="@color/text_dark_color"
             android:textSize="16sp"
-            android:layout_marginBottom="8dp"
-            android:textColor="@android:color/darker_gray" />
+            android:fontFamily="@font/roboto_bold"/>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="15dp"
+            app:dividerColor="@color/stroke_light_color" />
+
+        <!-- Title -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/dimen_10dp"
+            android:fontFamily="@font/roboto_bold"
+            android:text="Restoration Details"
+            android:textColor="@color/text_dark_color"
+            android:textSize="18sp" />
 
         <!-- Latitude and Longitude -->
         <TextView
             android:id="@+id/tvLangLatLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:text="Latitude, Longitude: "
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black" />
+            android:textColor="#666666"
+            android:textSize="14sp"
+            android:fontFamily="@font/roboto_medium" />
 
         <TextView
             android:id="@+id/tvLangLat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_marginBottom="10dp"
             android:text="latitude,longitude"
+            android:textColor="@color/text_dark_color"
             android:textSize="16sp"
-            android:layout_marginBottom="12dp"
-            android:textColor="@android:color/darker_gray" />
+            android:fontFamily="@font/roboto_bold" />
 
-        <!-- Start Time -->
-        <TextView
-            android:id="@+id/tvStartTimeLabel"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Start Time: "
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black" />
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/tvStartTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="starttimetv"
-            android:textSize="16sp"
-            android:layout_marginBottom="8dp"
-            android:textColor="@android:color/darker_gray" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-        <!-- End Time -->
-        <TextView
-            android:id="@+id/tvEndTimeLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="End Time: "
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black" />
+                <!-- Start Time -->
+                <TextView
+                    android:id="@+id/tvStartTimeLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Start Time: "
+                    android:textColor="#666666"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/roboto_medium" />
 
-        <TextView
-            android:id="@+id/tvEndTime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="endtimetv"
-            android:textSize="16sp"
-            android:layout_marginBottom="8dp"
-            android:textColor="@android:color/darker_gray" />
+                <TextView
+                    android:id="@+id/tvStartTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="starttimetv"
+                    android:textColor="@color/text_dark_color"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/roboto_bold" />
 
-        <!-- Status -->
-        <TextView
-            android:id="@+id/tvStatusLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Status: "
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black" />
+            </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="statustv"
-            android:textSize="16sp"
-            android:layout_marginBottom="8dp"
-            android:textColor="@android:color/darker_gray" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/dimen_20dp"
+                android:orientation="vertical">
+
+                <!-- End Time -->
+                <TextView
+                    android:id="@+id/tvEndTimeLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="End Time: "
+                    android:textColor="#666666"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/roboto_medium"/>
+
+                <TextView
+                    android:id="@+id/tvEndTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="endtimetv"
+                    android:textColor="@color/text_dark_color"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/roboto_bold" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
 
         <!-- Assigned -->
         <TextView
             android:id="@+id/tvAssignedLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Assigned: "
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:text="Assigned Lineman: "
+            android:textColor="#666666"
+            android:textSize="14sp"
+            android:fontFamily="@font/roboto_medium" />
 
         <TextView
             android:id="@+id/tvAssigned"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="assignedtv"
             android:visibility="gone"
+            android:text="assignedtv"
+            android:textColor="@color/text_dark_color"
             android:textSize="16sp"
-            android:textColor="@android:color/darker_gray" />
+            android:fontFamily="@font/roboto_bold" />
 
         <!-- Update Status Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnUpdateStatus"
             android:layout_width="match_parent"
-            android:layout_marginHorizontal="@dimen/dimen_10dp"
-            android:visibility="gone"
-            android:textColor="@color/white"
             android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_marginTop="@dimen/dimen_10dp"
             android:backgroundTint="@color/primary_main_color"
-            android:text="Update Status" />
+            android:text="Update Status"
+            android:textColor="@color/white" />
 
         <!-- Get Task Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_get_task"
-            android:visibility="gone"
-            android:layout_marginHorizontal="@dimen/dimen_10dp"
             android:layout_width="match_parent"
-            android:textColor="@color/white"
-            android:backgroundTint="@color/primary_main_color"
             android:layout_height="wrap_content"
-            android:text="Get This Task?" />
+            android:visibility="gone"
+            android:layout_marginTop="@dimen/dimen_10dp"
+            android:backgroundTint="@color/primary_main_color"
+            android:text="Get This Task?"
+            android:textColor="@color/white" />
 
     </LinearLayout>
 

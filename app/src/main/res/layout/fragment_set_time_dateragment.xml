@@ -15,6 +15,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <!-- Title -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:fontFamily="@font/roboto_bold"
+        android:text="Set Restoration Details"
+        android:textColor="@color/text_dark_color"
+        android:textSize="18sp" />
+
     <!-- Title for Date -->
     <TextView
         android:id="@+id/titleDate"
