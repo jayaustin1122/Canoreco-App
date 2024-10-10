@@ -42,15 +42,29 @@ class TasksDetailsFragment  : BottomSheetDialogFragment() {
         val endTime = args?.getString("endTime")
         val id = args?.getString("id")
         val assigned = args?.getString("assigned")
+        val barangay = args?.getString("barangay")
         val status = args?.getString("status")?.capitalize()
-
+        Log.d("StepTwoFragment", "Location Name: $locationName")
+        Log.d("StepTwoFragment", "Latitude: $latitude")
+        Log.d("StepTwoFragment", "Longitude: $longitude")
+        Log.d("StepTwoFragment", "Start Time: $startTime")
+        Log.d("StepTwoFragment", "End Time: $endTime")
+        Log.d("StepTwoFragment", "ID: $id")
+        Log.d("StepTwoFragment", "Assigned: $assigned")
+        Log.d("StepTwoFragment", "Barangay: $barangay")
+        Log.d("StepTwoFragment", "Status: $status")
         // Set values to UI elements
-        binding.tvLocationName.text = locationName
+        binding.tvLocationName.text = barangay
+        binding.tvDeviceName.text = locationName
         binding.tvLangLat.text = "${latitude} ${longitude}"
+        binding.tvStatus.text = status
 
 
         when (status) {
             "Damaged" -> {
+                binding.tvLocationName.text = barangay
+                binding.tvDeviceName.text = locationName
+                binding.tvRestoratinDetails.visibility = View.VISIBLE
                 binding.tvStartTime.visibility =View.GONE
                 binding.tvEndTime.visibility =View.GONE
                 binding.btnGetTask.apply {
@@ -71,8 +85,6 @@ class TasksDetailsFragment  : BottomSheetDialogFragment() {
                 binding.tvStartTime.visibility =View.GONE
                 binding.tvEndTime.visibility =View.GONE
                 binding.btnGetTask.visibility = View.GONE
-                binding.tvStatus.visibility = View.GONE
-                binding.tvStatusLabel.visibility = View.GONE
                 binding.tvStartTimeLabel.visibility = View.GONE
                 binding.tvEndTimeLabel.visibility = View.GONE
                 binding.tvEndTimeLabel.visibility = View.GONE

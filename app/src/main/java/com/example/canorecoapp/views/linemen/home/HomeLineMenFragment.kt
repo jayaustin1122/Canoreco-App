@@ -269,6 +269,7 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
                     val endTime = dataSnapshot.child("endTime").getValue(String::class.java)
                     val status = dataSnapshot.child("status").getValue(String::class.java)
                     val assigned = dataSnapshot.child("assigned").getValue(String::class.java)
+                    val barangay = dataSnapshot.child("barangay").getValue(String::class.java)
 
                     // Create the dialog fragment and set the data
                     val detailsDialog = TasksDetailsFragment()
@@ -281,6 +282,7 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
                         putString("status", status)
                         putString("id", dataKey)
                         putString("assigned", assigned)
+                        putString("barangay", barangay)
                     }
                     detailsDialog.arguments = bundle
                     detailsDialog.show(childFragmentManager, "TasksDetailsFragment")

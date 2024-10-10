@@ -1,5 +1,6 @@
 package com.example.canorecoapp.views.user.account
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
@@ -61,15 +63,7 @@ class ChangeContactAddressFragment : Fragment() {
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    val navController = findNavController()
-                    if (navController.currentDestination?.id == R.id.userHolderFragment) {
-                        navController.popBackStack()
-                    } else {
-                        val bundle = Bundle().apply {
-                            putInt("selectedFragmentId", R.id.navigation_account)
-                        }
-                        navController.navigate(R.id.userHolderFragment, bundle)
-                    }
+                   findNavController().navigateUp()
                 }
             }
         )
@@ -78,21 +72,19 @@ class ChangeContactAddressFragment : Fragment() {
             DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to exit? Changes will not be saved."
             ) { sweetAlertDialog ->
                 sweetAlertDialog.dismissWithAnimation()
-                val bundle = Bundle().apply {
-                    putInt("selectedFragmentId", null ?: R.id.navigation_account)
-                }
-                findNavController().navigate(R.id.userHolderFragment, bundle)
+
+                findNavController().navigateUp()
             }
         }
-
+        makeDropdownOnly(binding.tvMunicipality)
+        makeDropdownOnly(binding.tvBrgy)
         val municipalities = municipalitiesWithBarangays.keys.toList()
         val municipalityAdapter = ArrayAdapter(requireContext(), R.layout.address_item_views, municipalities)
         binding.tvMunicipality.setAdapter(municipalityAdapter)
 
         binding.tvMunicipality.setOnItemClickListener { parent, view, position, id ->
             val selectedMunicipality = parent.getItemAtPosition(position).toString()
-
-
+            binding.tvBrgy.setText("")
             val barangays = municipalitiesWithBarangays[selectedMunicipality] ?: emptyList()
             val barangayAdapter = ArrayAdapter(requireContext(), R.layout.address_item_views, barangays)
             binding.tvBrgy.setAdapter(barangayAdapter)
@@ -105,7 +97,18 @@ class ChangeContactAddressFragment : Fragment() {
             validateData()
         }
     }
-
+    @SuppressLint("ClickableViewAccessibility")
+    private fun makeDropdownOnly(autoCompleteTextView: AutoCompleteTextView) {
+        autoCompleteTextView.setOnClickListener {
+            autoCompleteTextView.showDropDown()
+        }
+        autoCompleteTextView.keyListener = null
+        autoCompleteTextView.setFocusable(false)
+        autoCompleteTextView.setOnTouchListener { _, _ ->
+            autoCompleteTextView.showDropDown()
+            false
+        }
+    }
     private fun validateData() {
         var phone = binding.etContactNumber.text.toString().trim()
         val barangay = binding.tvBrgy.text.toString().trim()

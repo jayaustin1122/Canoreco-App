@@ -141,6 +141,7 @@ class ReportFragment : Fragment() {
         binding.tvMucipality.setAdapter(municipalityAdapter)
         binding.tvMucipality.setOnItemClickListener { parent, view, position, id ->
             val selectedMunicipality = parent.getItemAtPosition(position).toString()
+            binding.tvBrgy.setText("")
             val barangays = municipalitiesWithBarangays[selectedMunicipality] ?: emptyList()
             val barangayAdapter =
                 ArrayAdapter(requireContext(), R.layout.address_item_views, barangays)

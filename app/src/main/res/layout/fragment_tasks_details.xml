@@ -76,6 +76,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Status:"
+                    android:elevation="1dp"
                     android:textColor="#666666"
                     android:textSize="14sp"
                     android:fontFamily="@font/roboto_medium" />
@@ -85,6 +86,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="statustv"
+                    android:elevation="1dp"
                     android:textColor="@color/text_dark_color"
                     android:textSize="16sp"
                     android:fontFamily="@font/roboto_bold" />
@@ -124,6 +126,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/dimen_10dp"
+            android:visibility="gone"
+            android:id="@+id/tvRestoratinDetails"
             android:fontFamily="@font/roboto_bold"
             android:text="Restoration Details"
             android:textColor="@color/text_dark_color"

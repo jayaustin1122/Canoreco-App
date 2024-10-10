@@ -51,6 +51,7 @@ class DevicesAdapter(private val context: Context,
         val startTime = model.startTime
         val endTime = model.endTime
         val dataKey = model.id
+        val barangay = model.barangay
         val assigned = model.assigned
         holder.title.text = locationName
         holder.date.text = status
@@ -65,6 +66,7 @@ class DevicesAdapter(private val context: Context,
             putDouble("longitude", longitude ?: 0.0)
             putString("startTime", startTime)
             putString("endTime", endTime)
+            putString("barangay", barangay)
             putString("status", status)
             putString("id", dataKey)
             putString("assigned", assigned)

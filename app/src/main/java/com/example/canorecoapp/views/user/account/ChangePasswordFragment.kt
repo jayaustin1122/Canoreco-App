@@ -59,15 +59,7 @@ class ChangePasswordFragment : Fragment() {
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    val navController = findNavController()
-                    if (navController.currentDestination?.id == R.id.userHolderFragment) {
-                        navController.popBackStack()
-                    } else {
-                        val bundle = Bundle().apply {
-                            putInt("selectedFragmentId", R.id.navigation_account)
-                        }
-                        navController.navigate(R.id.userHolderFragment, bundle)
-                    }
+                    findNavController().navigateUp()
                 }
             }
         )
@@ -76,10 +68,7 @@ class ChangePasswordFragment : Fragment() {
             DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to exit? Changes will not be saved."
             ) { sweetAlertDialog ->
                 sweetAlertDialog.dismissWithAnimation()
-                val bundle = Bundle().apply {
-                    putInt("selectedFragmentId", null ?: R.id.navigation_account)
-                }
-                findNavController().navigate(R.id.userHolderFragment, bundle)
+                findNavController().navigateUp()
             }
         }
     }
