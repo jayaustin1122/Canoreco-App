@@ -11,6 +11,7 @@
         android:id="@+id/viewpager"
         android:layout_width="match_parent"
         android:layout_height="300dp"
+        android:visibility="gone"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -20,6 +21,7 @@
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="wrap_content"
+        android:visibility="gone"
         android:background="@android:color/transparent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -35,19 +37,28 @@
         app:tabRippleColor="@android:color/transparent"
         app:tabSelectedTextColor="@color/purple_700" />
 
+    <ImageView
+        android:id="@+id/backgroundImageView"
+        android:layout_width="match_parent"
+        android:layout_height="280dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/background_login"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/welcomeTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
+        android:layout_marginStart="20dp"
         android:fontFamily="@font/roboto_medium"
         android:text="Welcome!"
         android:textColor="@color/text_dark_color"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/viewpager" />
-
+        app:layout_constraintTop_toBottomOf="@+id/backgroundImageView" />
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/schoolNameTextView"
         android:layout_width="wrap_content"
