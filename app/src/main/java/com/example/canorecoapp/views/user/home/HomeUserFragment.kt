@@ -257,6 +257,7 @@ class HomeUserFragment : Fragment() {
                             category
                         )
                     )
+                    freeItems.reverse()
                 }
 
 
@@ -330,7 +331,9 @@ class HomeUserFragment : Fragment() {
                             "",
                             category
                         )
+
                     )
+                    freeItems.reversed()
                     itemCount++
                 }
                 if (loadingDialog.isShowing) {

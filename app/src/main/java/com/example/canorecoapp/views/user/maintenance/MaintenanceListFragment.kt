@@ -102,6 +102,7 @@ class MaintenanceListFragment : Fragment() {
 
                     val maintenance = News(title, "", "", firstImage, timestamp, date, "", "", "", "", category)
                     newsList.add(maintenance)
+                    newsList.reverse()
                 }
 
                 lifecycleScope.launchWhenResumed {

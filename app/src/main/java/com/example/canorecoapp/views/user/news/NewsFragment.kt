@@ -96,6 +96,7 @@ class NewsFragment : Fragment() {
                     // Create News object and add to the list
                     val news = Maintenance(title, "", "", firstImage, timestamp, date, "", "", "", "", category)
                     newsList.add(news)
+                    newsList.reverse()
                 }
 
                 Log.d("NewsFragment", "Fetched ${newsList.size} news items")
