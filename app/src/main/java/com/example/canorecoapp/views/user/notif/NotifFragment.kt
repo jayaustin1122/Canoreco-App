@@ -134,9 +134,6 @@ class NotifFragment : Fragment() {
     }
     private fun showUndoSnackbar() {
         val snackbar = Snackbar.make(binding.recyclerNews, "All notifications deleted", Snackbar.LENGTH_LONG)
-        snackbar.setAction("UNDO") {
-            restoreDeletedNotifications()
-        }
         snackbar.show()
     }
     private fun restoreDeletedNotifications() {
