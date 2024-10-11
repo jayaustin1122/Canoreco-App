@@ -328,7 +328,7 @@ class SignInFragment : Fragment() {
         btnContinue.isEnabled = false
         btnResend.setOnClickListener {
             verifyEmail(user)
-            auth.signOut()
+
         }
 
         lifecycleScope.launch {
@@ -370,7 +370,7 @@ class SignInFragment : Fragment() {
 
         if (user == null) {
             Log.e("EmailVerification", "User is not logged in. Cannot send verification email.")
-            auth.signOut()
+
             return
         }
 
@@ -384,9 +384,6 @@ class SignInFragment : Fragment() {
                         Toast.LENGTH_SHORT
                     ).show()
                     showVerificationDialog(user)
-
-                    // Sign out the user immediately after sending the verification email
-                    auth.signOut()
                 } else {
                     Log.e("EmailVerification", "Failed to send verification email to ${user.email}")
                 }
