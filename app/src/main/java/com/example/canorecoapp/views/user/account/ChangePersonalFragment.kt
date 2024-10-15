@@ -38,15 +38,15 @@ import java.util.Calendar
 
 
 class ChangePersonalFragment : Fragment() {
-    private lateinit var binding : FragmentChangePersonalBinding
+    private lateinit var binding: FragmentChangePersonalBinding
     private lateinit var selectedImage: Uri
     private lateinit var firebaseUtils: FirebaseUtils
     private val CAMERA_PERMISSION_CODE = 101
     private val IMAGE_PICK_GALLERY_CODE = 102
     private val IMAGE_PICK_CAMERA_CODE = 103
-    private lateinit var storage : FirebaseStorage
-    private lateinit var progressDialog : ProgressDialog
-    private lateinit var fireStore : FirebaseFirestore
+    private lateinit var storage: FirebaseStorage
+    private lateinit var progressDialog: ProgressDialog
+    private lateinit var fireStore: FirebaseFirestore
     private val viewModel: UserViewModel by viewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -89,26 +89,64 @@ class ChangePersonalFragment : Fragment() {
                         .load(userInfo.image)
                         .into(binding.imgPersonal)
                 }
+                if (userInfo.userType == "member") {
+                    requireActivity().onBackPressedDispatcher.addCallback(
+                        viewLifecycleOwner,
+                        object : OnBackPressedCallback(true) {
+                            override fun handleOnBackPressed() {
+                                val bundle = Bundle().apply {
+                                    putInt("selectedFragmentId", R.id.navigation_account)
+                                }
+                                findNavController().navigate(R.id.userHolderFragment, bundle)
+                            }
+                        }
+                    )
+                    binding.backButton.setOnClickListener {
+                        DialogUtils.showWarningMessage(
+                            requireActivity(),
+                            "Warning",
+                            "Are you sure you want to exit? Changes will not be saved."
+                        ) { sweetAlertDialog ->
+                            sweetAlertDialog.dismissWithAnimation()
+
+                            val bundle = Bundle().apply {
+                                putInt("selectedFragmentId", R.id.navigation_account)
+                            }
+                            findNavController().navigate(R.id.userHolderFragment, bundle)
+                        }
+                    }
+                } else {
+                    requireActivity().onBackPressedDispatcher.addCallback(
+                        viewLifecycleOwner,
+                        object : OnBackPressedCallback(true) {
+                            override fun handleOnBackPressed() {
+                                val bundle = Bundle().apply {
+                                    putInt("selectedFragmentId", R.id.navigation_account_linemen)
+                                }
+                                findNavController().navigate(R.id.adminHolderFragment, bundle)
+                            }
+                        }
+                    )
+                    binding.backButton.setOnClickListener {
+                        DialogUtils.showWarningMessage(
+                            requireActivity(),
+                            "Warning",
+                            "Are you sure you want to exit? Changes will not be saved."
+                        ) { sweetAlertDialog ->
+                            sweetAlertDialog.dismissWithAnimation()
+
+                            val bundle = Bundle().apply {
+                                putInt("selectedFragmentId", R.id.navigation_account_linemen)
+                            }
+                            findNavController().navigate(R.id.adminHolderFragment, bundle)
+                        }
+                    }
+                }
             }
         })
         binding.imgPersonal.setOnClickListener {
             showImagePickerDialog()
         }
-        binding.backButton.setOnClickListener {
-            DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to exit? Changes will not be saved."
-            ) { sweetAlertDialog ->
-                sweetAlertDialog.dismissWithAnimation()
-                findNavController().navigateUp()
-            }
-        }
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    findNavController().navigateUp()
-                }
-            }
-        )
 
 
         binding.btnSave.setOnClickListener {
@@ -119,6 +157,7 @@ class ChangePersonalFragment : Fragment() {
             showDatePickerDialog()
         }
     }
+
     private fun uploadImage() {
         if (selectedImage == Uri.EMPTY) {
             val currentUser = FirebaseAuth.getInstance().currentUser
@@ -231,6 +270,7 @@ class ChangePersonalFragment : Fragment() {
             }
         }
     }
+
     private fun showDatePickerDialog() {
         val datePicker = MaterialDatePicker.Builder.datePicker()
             .setTitleText("Select Date")
@@ -247,6 +287,7 @@ class ChangePersonalFragment : Fragment() {
         }
         datePicker.show(parentFragmentManager, "MaterialDatePicker")
     }
+
     private fun updateInFirestore(image: Uri) {
         progressDialog.setMessage("Updating Account...")
         progressDialog.show()
@@ -271,16 +312,42 @@ class ChangePersonalFragment : Fragment() {
                 .update(updatedData)
                 .addOnSuccessListener {
                     progressDialog.dismiss()
-                    Toast.makeText(requireContext(), "Account information updated successfully", Toast.LENGTH_SHORT).show()
-                    findNavController().navigateUp()
+                    Toast.makeText(
+                        requireContext(),
+                        "Account information updated successfully",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    viewModel.userInfo.observe(viewLifecycleOwner, Observer { userInfo ->
+                        userInfo?.let {
+                            if (userInfo.userType == "member") {
+                                val bundle = Bundle().apply {
+                                    putInt("selectedFragmentId", R.id.navigation_account)
+                                }
+                                findNavController().navigate(
+                                    R.id.userHolderFragment,
+                                    bundle
+                                )
+                            } else {
+                                val bundle = Bundle().apply {
+                                    putInt("selectedFragmentId", R.id.navigation_account_linemen)
+                                }
+                                findNavController().navigate(R.id.adminHolderFragment, bundle)
+                            }
+                        }
+                    })
                 }
                 .addOnFailureListener { exception ->
                     progressDialog.dismiss()
-                    Toast.makeText(requireContext(), "Failed to update account info: ${exception.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Failed to update account info: ${exception.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
         } ?: run {
             progressDialog.dismiss()
             Toast.makeText(requireContext(), "User not authenticated", Toast.LENGTH_SHORT).show()
         }
     }
+
 }
