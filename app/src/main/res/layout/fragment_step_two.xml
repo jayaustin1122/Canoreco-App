@@ -141,17 +141,33 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textview.MaterialTextView
+        <LinearLayout
             android:id="@+id/bdayTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Street"
-            android:textSize="16sp"
-            android:textColor="@color/text_dark_color"
-            android:fontFamily="@font/roboto_medium"
+            android:gravity="center"
+            android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/brgy_type_input_layout" />
+            app:layout_constraintTop_toBottomOf="@+id/brgy_type_input_layout">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Street"
+                android:textSize="16sp"
+                android:textColor="@color/text_dark_color"
+                android:fontFamily="@font/roboto_medium" />
+
+            <TextView
+                android:id="@+id/asteriskFirstName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" (optional)"
+                android:textColor="#777777"
+                android:textSize="14sp"
+                android:textStyle="italic" />
+        </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout3"
