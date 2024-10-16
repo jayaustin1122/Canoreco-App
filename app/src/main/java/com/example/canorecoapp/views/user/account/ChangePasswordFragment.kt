@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -50,27 +51,66 @@ class ChangePasswordFragment : Fragment() {
             userInfo?.let {
                 binding.apply {
                     btnSave.setOnClickListener {
-                        validateData(userInfo.password,userInfo.email)
+                        validateData(userInfo.password, userInfo.email)
                     }
                 }
+                if (userInfo.userType == "member") {
+                    requireActivity().onBackPressedDispatcher.addCallback(
+                        viewLifecycleOwner,
+                        object : OnBackPressedCallback(true) {
+                            override fun handleOnBackPressed() {
+                                val bundle = Bundle().apply {
+                                    putInt("selectedFragmentId", R.id.navigation_account)
+                                }
+                                findNavController().navigate(R.id.userHolderFragment, bundle)
+                            }
+                        }
+                    )
+                    binding.backButton.setOnClickListener {
+                        DialogUtils.showWarningMessage(
+                            requireActivity(),
+                            "Warning",
+                            "Are you sure you want to exit? Changes will not be saved."
+                        ) { sweetAlertDialog ->
+                            sweetAlertDialog.dismissWithAnimation()
+
+                            val bundle = Bundle().apply {
+                                putInt("selectedFragmentId", R.id.navigation_account)
+                            }
+                            findNavController().navigate(R.id.userHolderFragment, bundle)
+                        }
+                    }
+                } else {
+                    requireActivity().onBackPressedDispatcher.addCallback(
+                        viewLifecycleOwner,
+                        object : OnBackPressedCallback(true) {
+                            override fun handleOnBackPressed() {
+                                val bundle = Bundle().apply {
+                                    putInt("selectedFragmentId", R.id.navigation_account_linemen)
+                                }
+                                findNavController().navigate(R.id.adminHolderFragment, bundle)
+                            }
+                        }
+                    )
+                    binding.backButton.setOnClickListener {
+                        DialogUtils.showWarningMessage(
+                            requireActivity(),
+                            "Warning",
+                            "Are you sure you want to exit? Changes will not be saved."
+                        ) { sweetAlertDialog ->
+                            sweetAlertDialog.dismissWithAnimation()
+
+                            val bundle = Bundle().apply {
+                                putInt("selectedFragmentId", R.id.navigation_account_linemen)
+                            }
+                            findNavController().navigate(R.id.adminHolderFragment, bundle)
+                        }
+                    }
+                }
+
             }
         })
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    findNavController().navigateUp()
-                }
-            }
-        )
 
-        binding.backButton.setOnClickListener {
-            DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to exit? Changes will not be saved."
-            ) { sweetAlertDialog ->
-                sweetAlertDialog.dismissWithAnimation()
-                findNavController().navigateUp()
-            }
-        }
     }
 
     private fun validateData(password: String?, email: String?) {
@@ -121,7 +161,24 @@ class ChangePasswordFragment : Fragment() {
                             .update("password", newPassword)
                             .addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
-                                    findNavController().navigateUp()
+                                    viewModel.userInfo.observe(viewLifecycleOwner, Observer { userInfo ->
+                                        userInfo?.let {
+                                            if (userInfo.userType == "member") {
+                                                val bundle = Bundle().apply {
+                                                    putInt("selectedFragmentId", R.id.navigation_account)
+                                                }
+                                                findNavController().navigate(
+                                                    R.id.userHolderFragment,
+                                                    bundle
+                                                )
+                                            } else {
+                                                val bundle = Bundle().apply {
+                                                    putInt("selectedFragmentId", R.id.navigation_account_linemen)
+                                                }
+                                                findNavController().navigate(R.id.adminHolderFragment, bundle)
+                                            }
+                                        }
+                                    })
                                 } else {
                                     Toast.makeText(
                                         this.requireContext(),
