@@ -238,28 +238,43 @@ class SignUpFragment : Fragment() {
         val email = viewModel.email
         val password = viewModel.password
         val confirmPass = viewModel.confirmPass
+
+        // Ensure the email is not empty
         if (email.isEmpty()) {
             Toast.makeText(requireContext(), "Email cannot be empty", Toast.LENGTH_SHORT).show()
             return
-        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            Toast.makeText(requireContext(), "Invalid email format", Toast.LENGTH_SHORT).show()
+        }
+        // Ensure the email follows proper email format and ends with "@gmail.com"
+        else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() || !email.endsWith("@gmail.com")) {
+            Toast.makeText(requireContext(), "Email must be a valid Gmail address", Toast.LENGTH_SHORT).show()
             return
-        } else if (password.isEmpty()) {
-            Toast.makeText(requireContext(), "Password cannot be empty", Toast.LENGTH_SHORT).show()
+        }
+        // Ensure the email does not contain ".con" typo
+        else if (email.contains(".con")) {
+            Toast.makeText(requireContext(), "Email cannot contain '.con', please enter a valid email", Toast.LENGTH_SHORT).show()
             return
-        } else if (confirmPass.isEmpty()) {
-            Toast.makeText(requireContext(), "Please confirm your password", Toast.LENGTH_SHORT)
-                .show()
+        }
+        // Ensure password is not empty
+        else if (password.isEmpty()) {
+            Toast.makeText(requireContext(), "Password Not Match!", Toast.LENGTH_SHORT).show()
             return
-        } else if (password != confirmPass) {
+        }
+        // Ensure confirm password is not empty
+        else if (confirmPass.isEmpty()) {
+            Toast.makeText(requireContext(), "Please confirm your password", Toast.LENGTH_SHORT).show()
+            return
+        }
+        // Ensure passwords match
+        else if (password != confirmPass) {
             Toast.makeText(requireContext(), "Passwords do not match", Toast.LENGTH_SHORT).show()
             return
-        } else {
+        }
+        // Proceed to create user account if all conditions are met
+        else {
             createUserAccount()
         }
-
-
     }
+
 
     private fun createUserAccount() {
         loadingDialog = DialogUtils.showLoading(requireActivity())

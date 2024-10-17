@@ -172,9 +172,8 @@
                     android:id="@+id/checkBoxAllowData"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="I allow the collection and processing of my personal data."
-                    android:buttonTint="@color/primary_main_color"/>
-
+                    android:backgroundTint="@color/primary_main_color"
+                    android:text="I allow the collection and processing of my personal data." />
 
 
             </LinearLayout>
