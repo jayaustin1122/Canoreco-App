@@ -106,7 +106,7 @@
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginVertical="10dp"
                 android:fontFamily="@font/roboto_medium"
                 android:text="Billing History"
                 android:textColor="@color/text_dark_color"

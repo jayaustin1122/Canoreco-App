@@ -8,9 +8,11 @@
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="bottomNavigationStyle">@style/Widget.App.BottomNavigationView</item>
     </style>
+
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
     </style>
+
     <style name="TabTextStyle" parent="TextAppearance.Design.Tab">
         <item name="android:textSize">14sp</item>
         <item name="android:fontFamily">@font/bold</item>

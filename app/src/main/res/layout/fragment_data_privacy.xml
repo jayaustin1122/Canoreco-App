@@ -94,7 +94,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:text="We at ValCo is committed to ensuring and promoting the protection your privacy and the confidentiality of data as defined under the Data Privacy Act of 2012 and its implementing rules and regulations. This Data Privacy Statement outlines how we collect, use, store, and protect your personal data. By using the App, you agree to the terms of this statement."
+                android:text="We at CANORECO is committed to ensuring and promoting the protection your privacy and the confidentiality of data as defined under the Data Privacy Act of 2012 and its implementing rules and regulations. This Data Privacy Statement outlines how we collect, use, store, and protect your personal data. By using the App, you agree to the terms of this statement."
                 android:textSize="15sp"
                 android:textColor="#777777"
                 android:fontFamily="@font/roboto_regular"/>
@@ -168,13 +168,13 @@
                 android:orientation="horizontal"
                 android:layout_marginBottom="15dp">
 
-                <CheckBox
+                <com.google.android.material.checkbox.MaterialCheckBox
                     android:id="@+id/checkBoxAllowData"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="@color/primary_main_color"
-                    android:text="I allow the collection and processing of my personal data." />
-
+                    android:checked="true"
+                    android:text="I allow the collection and processing of my personal data."
+                    app:buttonTint="@color/primary_main_color"/>
 
             </LinearLayout>
 
