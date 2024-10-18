@@ -44,12 +44,67 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         // Inflate the layout for this fragment
         return binding.root
     }
-
+    override fun onStart() {
+        super.onStart()
+        startListeningForSms()
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         requestSmsPermission()
         startListeningForDeviceStatuses()
+        startListeningForSms()
+
     }
+
+    private fun startListeningForSms() {
+        // Reference to Firestore
+        val smsRef = FirebaseFirestore.getInstance().collection("sms").document("to_all")
+        val usersRef = FirebaseFirestore.getInstance().collection("users")
+
+        smsRef.addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                Log.e("DeviceNotifFragment", "Listen failed.", e)
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null && snapshot.exists()) {
+                val status = snapshot.getBoolean("send") ?: false
+                val content = snapshot.getString("content") ?: ""
+
+                // Log the current status and content
+                Log.d("SMSFragment", "Status: $status, Content: $content")
+
+                // Check if the status changed to true
+                if (status) {
+                    // Retrieve user phone numbers
+                    usersRef.get().addOnSuccessListener { usersSnapshot ->
+                        val numbers = mutableListOf<String>()
+
+                        for (user in usersSnapshot) {
+                            val phone = user.getString("phone")
+                            if (phone != null) {
+                                numbers.add(phone)
+                            }
+                        }
+
+                        // Log to indicate sending SMS to all users
+                        Log.d("DeviceNotifFragment", "Sending SMS to all users: $numbers with content: $content")
+
+                        sendSms1(numbers, content)
+
+                        // Optionally reset the send status in Firestore
+                        smsRef.update("send", false) // Reset send status after sending
+                    }.addOnFailureListener { usersError ->
+                        Log.e("DeviceNotifFragment", "Failed to read user phone numbers", usersError)
+                    }
+                }
+            } else {
+                Log.d("DeviceNotifFragment", "Current data: null")
+            }
+        }
+    }
+
+
 
 
     private fun startListeningForDeviceStatuses() {
@@ -184,6 +239,22 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         }.addOnFailureListener { exception ->
             Log.e("DeviceNotifFragment", "Failed to query users", exception)
         }
+    }
+    private fun sendSms1(phoneNumbers: List<String>, notificationMessage: String) {
+        val sms = SmsManager.getDefault()
+
+        // Iterate through each phone number and send the SMS
+        for (phoneNumber in phoneNumbers) {
+            try {
+                sms.sendTextMessage(phoneNumber, null, notificationMessage, null, null)
+                Log.d("DeviceNotifFragment", "SMS sent to $phoneNumber")
+            } catch (e: Exception) {
+                Log.e("DeviceNotifFragment", "Failed to send SMS to $phoneNumber: ${e.message}")
+            }
+        }
+
+        // Show a toast message after attempting to send all SMS
+        Toast.makeText(requireContext(), "SMS sent to all contacts", Toast.LENGTH_SHORT).show()
     }
 
     private fun sendSms(phoneNumber: String, notificationMessage: String) {

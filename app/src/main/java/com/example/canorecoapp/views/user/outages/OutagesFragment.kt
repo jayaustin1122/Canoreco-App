@@ -1,43 +1,26 @@
 package com.example.canorecoapp.views.user.outages
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.content.res.ColorStateList
-import android.location.Geocoder
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.Glide
 import com.example.canorecoapp.R
-import com.example.canorecoapp.adapter.ViewPagerAdapter
 import com.example.canorecoapp.databinding.FragmentOutagesBinding
-import com.example.canorecoapp.views.user.outages.CurrentOutagesMapFragment
-import com.example.canorecoapp.views.user.outages.FutureOutagesMapFragment
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import java.io.IOException
-import java.util.Locale
+import smartdevelop.ir.eram.showcaseviewlib.GuideView
+import smartdevelop.ir.eram.showcaseviewlib.config.DismissType
+import smartdevelop.ir.eram.showcaseviewlib.config.Gravity
+import smartdevelop.ir.eram.showcaseviewlib.config.PointerType
 
 class OutagesFragment : Fragment() {
     private lateinit var binding: FragmentOutagesBinding
@@ -76,6 +59,7 @@ class OutagesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         loadUsersInfo()
+        showAppBarGuide()
         arguments?.let {
             from = it.getString("from")
         }
@@ -107,6 +91,26 @@ class OutagesFragment : Fragment() {
                 // No action needed
             }
         })
+    }
+
+    private fun showAppBarGuide() {
+        val sharedPreferences = requireActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+        val areGuidesShown = sharedPreferences.getBoolean("sss", false)
+
+        if (!areGuidesShown) {
+            val toolbarGuide = GuideView.Builder(requireContext())
+                .setTitle("Current and Future Outages")
+                .setContentText("This is where you can see all Future Outages and Current Outages")
+                .setGravity(Gravity.center)
+                .setDismissType(DismissType.anywhere)
+                .setPointerType(PointerType.circle)
+                .setTargetView(binding.tabLayout)
+                .setGuideListener {
+                }
+                .build()
+
+            toolbarGuide.show()
+        }
     }
 
 

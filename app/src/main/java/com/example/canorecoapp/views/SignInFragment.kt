@@ -356,7 +356,7 @@ class SignInFragment : Fragment() {
                 dialog.dismiss()
                 DialogUtils.showLoading(requireActivity()).dismiss()
                 Toast.makeText(requireContext(), "Account Verified", Toast.LENGTH_SHORT).show();
-                loginUser()
+                checkUser()
             } else {
                 dialog.dismiss()
                 DialogUtils.showLoading(requireActivity()).dismiss()

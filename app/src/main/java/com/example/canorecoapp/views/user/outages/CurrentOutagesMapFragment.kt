@@ -1,6 +1,9 @@
 package com.example.canorecoapp.views.user.outages
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
@@ -9,6 +12,7 @@ import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -43,13 +47,18 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import org.json.JSONException
 import org.json.JSONObject
+import smartdevelop.ir.eram.showcaseviewlib.GuideView
+import smartdevelop.ir.eram.showcaseviewlib.config.DismissType
+import smartdevelop.ir.eram.showcaseviewlib.config.Gravity
+import smartdevelop.ir.eram.showcaseviewlib.config.PointerType
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
-class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener , GoogleMap.OnPolygonClickListener{
+class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
+    GoogleMap.OnPolygonClickListener {
 
     private lateinit var binding: FragmentCurrentOutagesMapBinding
     private var gMap: GoogleMap? = null
@@ -58,21 +67,24 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
     private var from: String? = null
 
     private fun resetFragmentWithProgress() {
-            reloadFragment()
+        reloadFragment()
     }
 
     private fun reloadFragment() {
         findNavController().navigate(R.id.outagesFragment)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentCurrentOutagesMapBinding.inflate(inflater, container, false)
-        val mapFragment = childFragmentManager.findFragmentById(R.id.fragmentMap) as SupportMapFragment
+        val mapFragment =
+            childFragmentManager.findFragmentById(R.id.fragmentMaps) as SupportMapFragment
         mapFragment.getMapAsync(this)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+
         return binding.root
     }
 
@@ -227,7 +239,11 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
         })
     }
 
-    private fun parseAndDrawPolygons(jsonData: String, selectedLocations: Set<String>, devices: String) {
+    private fun parseAndDrawPolygons(
+        jsonData: String,
+        selectedLocations: Set<String>,
+        devices: String
+    ) {
         try {
             val jsonObject = JSONObject(jsonData)
             val features = jsonObject.getJSONArray("features")
@@ -281,7 +297,7 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
 
             }, 1000)
 
-           // getCurrentLocation()
+            // getCurrentLocation()
         } catch (e: JSONException) {
             Log.e("JSON", "Error parsing JSON data: ${e.message}")
         }
@@ -310,6 +326,7 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
         return LatLng(centroidLat, centroidLng)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         arguments?.let {
@@ -326,7 +343,35 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
             detailsFragment.arguments = bundle
             findNavController().navigate(R.id.listOfFutureAndCurrentOutagesFragment, bundle)
         }
+        val sharedPreferences =
+            requireActivity().getSharedPreferences("AppPreferences", Context.MODE_PRIVATE)
+        val areGuidesShown = sharedPreferences.getBoolean("sss", false)
 
+        if (!areGuidesShown) {
+            // Delay the showing of the guide by 3 seconds (3000 milliseconds)
+            Handler(Looper.getMainLooper()).postDelayed({
+                showAppBarGuide2(areGuidesShown, sharedPreferences)
+            }, 3000)
+        }
+    }
+
+    private fun showAppBarGuide2(areGuidesShown: Boolean, sharedPreferences: SharedPreferences) {
+        if (!areGuidesShown) {
+            val toolbarGuide = GuideView.Builder(requireContext())
+                .setTitle("Lis of Future and Current Outages")
+                .setContentText("This is where you can see the list of future and current outages")
+                .setGravity(Gravity.center)
+                .setDismissType(DismissType.anywhere)
+                .setPointerType(PointerType.circle)
+                .setTargetView(binding.viewListButton)
+                .setGuideListener {
+
+                    sharedPreferences.edit().putBoolean("sss", true).apply()
+                }
+                .build()
+
+            toolbarGuide.show()
+        }
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
