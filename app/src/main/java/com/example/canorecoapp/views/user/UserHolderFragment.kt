@@ -194,33 +194,13 @@ class UserHolderFragment : Fragment() {
                 .setPointerType(PointerType.circle)
                 .setTargetView(targetView)
                 .setGuideListener {
-                    showAppBarGuide() // Show app bar guide after bottom navigation guide
+
                 }
 
             builder.build().show()
 
         }
     }
-
-
-    private fun showAppBarGuide() {
-            val toolbarGuide = GuideView.Builder(requireContext())
-                .setTitle("Notification and Account Icon")
-                .setContentText("This is where you can access notifications and user settings.")
-                .setGravity(Gravity.center)
-                .setDismissType(DismissType.anywhere)
-                .setPointerType(PointerType.circle)
-                .setTargetView(binding.toolbar)
-                .setGuideListener {
-
-                }
-                .build()
-
-            toolbarGuide.show()
-        }
-
-
-
 
         @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

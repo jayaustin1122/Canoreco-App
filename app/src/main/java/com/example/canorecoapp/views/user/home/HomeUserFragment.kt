@@ -204,6 +204,36 @@ class HomeUserFragment : Fragment() {
             .setPointerType(PointerType.circle)
             .setTargetView(binding.rvLatestNews)
             .setGuideListener { view: View ->
+                showAppBarGuide2()
+            }
+            .build()
+
+        toolbarGuide.show()
+    }
+    private fun showAppBarGuide2() {
+        val toolbarGuide = GuideView.Builder(this@HomeUserFragment.requireContext())
+            .setTitle("Profile")
+            .setContentText("This is where you can View and Edit Your Profile")
+            .setGravity(Gravity.center)
+            .setDismissType(DismissType.anywhere)
+            .setPointerType(PointerType.circle)
+            .setTargetView(binding.imgUser)
+            .setGuideListener { view: View ->
+                showAppBarGuide3()
+            }
+            .build()
+
+        toolbarGuide.show()
+    }
+    private fun showAppBarGuide3() {
+        val toolbarGuide = GuideView.Builder(this@HomeUserFragment.requireContext())
+            .setTitle("Notifications")
+            .setContentText("This is where you can view your Notifications")
+            .setGravity(Gravity.center)
+            .setDismissType(DismissType.anywhere)
+            .setPointerType(PointerType.circle)
+            .setTargetView(binding.notif)
+            .setGuideListener { view: View ->
 
             }
             .build()
