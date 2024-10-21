@@ -1,7 +1,9 @@
 package com.example.canorecoapp.viewmodels
+
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.database.*
+import java.util.*
 
 class DeviceViewModel : ViewModel() {
     private val database: DatabaseReference = FirebaseDatabase.getInstance().getReference("devices")
@@ -10,7 +12,7 @@ class DeviceViewModel : ViewModel() {
     val device9001Status: MutableLiveData<String> = MutableLiveData()
 
     init {
-        // Set up listeners for real-time updates
+
         listenToDeviceStatus("9000", device9000Status)
         listenToDeviceStatus("9001", device9001Status)
     }
@@ -30,6 +32,16 @@ class DeviceViewModel : ViewModel() {
 
     fun toggleDeviceStatus(deviceId: String, currentStatus: String) {
         val newStatus = if (currentStatus == "damaged") "working" else "damaged"
-        database.child(deviceId).child("status").setValue(newStatus)
+        val updates = mutableMapOf<String, Any>(
+            "status" to newStatus
+        )
+
+        if (newStatus == "damaged") {
+            val timestamp = System.currentTimeMillis() / 1000
+            updates["timestamp"] = timestamp
+        }
+
+
+        database.child(deviceId).updateChildren(updates)
     }
 }
