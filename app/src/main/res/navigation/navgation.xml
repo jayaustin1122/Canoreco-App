@@ -202,4 +202,9 @@
         android:id="@+id/otpFragment"
         android:name="com.example.canorecoapp.views.signups.OtpFragment"
         android:label="OtpFragment" />
+    <fragment
+        android:id="@+id/deviceFragment"
+        android:name="com.example.canorecoapp.DeviceFragment"
+        android:label="fragment_device"
+        tools:layout="@layout/fragment_device" />
 </navigation>
