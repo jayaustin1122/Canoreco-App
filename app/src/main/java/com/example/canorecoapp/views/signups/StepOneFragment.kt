@@ -51,7 +51,7 @@ class StepOneFragment : Fragment() {
         firebaseUtils = FirebaseUtils()
         firebaseUtils.initialize(requireContext())
         selectedImage = Uri.EMPTY
-        binding.imageView2.setOnClickListener {
+        binding.addImageButton.setOnClickListener {
             showImagePickerDialog()
         }
         binding.etFirstName.addTextChangedListener {

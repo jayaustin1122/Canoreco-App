@@ -144,7 +144,7 @@ class ChangePersonalFragment : Fragment() {
                 }
             }
         })
-        binding.imgPersonal.setOnClickListener {
+        binding.addImageButton.setOnClickListener {
             showImagePickerDialog()
         }
 

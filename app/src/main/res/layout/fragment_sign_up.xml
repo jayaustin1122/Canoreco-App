@@ -70,7 +70,7 @@
         app:sv_stepNumberTextSize="10sp"
         app:sv_stepPadding="1dp"
         app:sv_stepViewStyle="@style/StepView"
-        app:sv_stepsNumber="3"
+        app:sv_stepsNumber="4"
         app:sv_textSize="11sp"
         app:sv_typeface="@font/medium" />
 

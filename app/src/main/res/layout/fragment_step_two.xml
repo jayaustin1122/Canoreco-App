@@ -184,7 +184,7 @@
                 android:id="@+id/etStreet"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:hint="Street(Optional)"
+                android:hint="Street"
                 android:inputType="text"
                 android:lines="1"
                 android:scrollbars="horizontal"

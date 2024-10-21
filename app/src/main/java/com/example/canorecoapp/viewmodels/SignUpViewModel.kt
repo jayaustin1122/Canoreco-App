@@ -2,6 +2,7 @@ package com.example.canorecoapp.viewmodels
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
+import com.google.firebase.auth.PhoneAuthProvider
 
 class SignUpViewModel  : ViewModel() {
     var firstName: String = ""
@@ -18,6 +19,10 @@ class SignUpViewModel  : ViewModel() {
     var meterNumber : String = ""
     var street : String = ""
     var area : String = ""
+    var otp : String = ""
+    var  token: PhoneAuthProvider.ForceResendingToken? = null
+    var verificationId : String = ""
+    var smsIsVerified : Boolean = false
 
 
     var image: Uri? = null

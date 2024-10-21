@@ -198,4 +198,8 @@
         android:name="com.example.canorecoapp.views.user.maintenance.MaintenanceDetailsFragment"
         android:label="fragment_maintenance_details"
         tools:layout="@layout/fragment_maintenance_details" />
+    <fragment
+        android:id="@+id/otpFragment"
+        android:name="com.example.canorecoapp.views.signups.OtpFragment"
+        android:label="OtpFragment" />
 </navigation>

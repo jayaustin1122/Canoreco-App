@@ -1,38 +1,29 @@
 package com.example.canorecoapp.views.signups
 
-import android.annotation.SuppressLint
-import android.app.AlertDialog
-import android.app.ProgressDialog
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
-import android.util.Patterns
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.canorecoapp.R
 import com.example.canorecoapp.adapter.SignUpAdapters
 import com.example.canorecoapp.databinding.FragmentSignUpBinding
-import com.example.canorecoapp.utils.DateTimeUtils.Companion.getCurrentDate
-import com.example.canorecoapp.utils.DateTimeUtils.Companion.getCurrentTime
 import com.example.canorecoapp.utils.DialogUtils
 import com.example.canorecoapp.utils.FirebaseUtils
 import com.example.canorecoapp.viewmodels.SignUpViewModel
+import com.example.canorecoapp.views.user.news.NewsDetailsFragment
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.FirebaseException
+import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
@@ -42,11 +33,9 @@ import com.google.firebase.storage.FirebaseStorage
 import com.shuhart.stepview.StepView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import org.bouncycastle.cms.RecipientId.password
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
@@ -98,6 +87,7 @@ class SignUpFragment : Fragment() {
             })
         adapter.addFragment(StepOneFragment())
         adapter.addFragment(StepTwoFragment())
+        adapter.addFragment(OtpFragment())
         adapter.addFragment(StepThreeFragment())
         stepView.go(0, true)
         viewPager.isUserInputEnabled = false
@@ -111,7 +101,8 @@ class SignUpFragment : Fragment() {
             when (viewPager.currentItem) {
                 0 -> validateFragmentOne()
                 1 -> validateFragmentTwo()
-                2 -> validateFragmentThree()
+                2 -> validateOtpFragment()
+                3 -> validateFragmentThree()
             }
         }
         binding.backButton.setOnClickListener {
@@ -133,6 +124,28 @@ class SignUpFragment : Fragment() {
                 viewModel.password = ""
                 viewModel.confirmPass = ""
                 findNavController().navigate(R.id.signInFragment)
+            }
+        }
+    }
+
+    private fun validateOtpFragment() {
+        val otp = viewModel.otp
+
+        when {
+            otp.isEmpty() -> {
+                Snackbar.make(requireView(), "Please verify the OTP", Snackbar.LENGTH_SHORT).show()
+                return
+            }
+            otp.length != 6 -> {
+                Snackbar.make(requireView(), "Please complete the OTP", Snackbar.LENGTH_SHORT).show()
+                return
+            }
+            !viewModel.smsIsVerified -> {
+                Snackbar.make(requireView(), "Please verify the OTP", Snackbar.LENGTH_SHORT).show()
+                return
+            }
+            else -> {
+                nextItem()
             }
         }
     }
@@ -194,7 +207,7 @@ class SignUpFragment : Fragment() {
     }
 
     fun validateFragmentTwo() {
-        val phone = viewModel.phone
+        var phone = viewModel.phone.trim() // Ensure no leading/trailing spaces
         val barangay = viewModel.barangay
         val municipality = viewModel.address
 
@@ -205,15 +218,22 @@ class SignUpFragment : Fragment() {
                 Toast.LENGTH_SHORT
             ).show()
             return
-        } else if (!phone.startsWith("09")) {
+        }
+
+
+        // Handle phone verification and conversion to +639 format
+        if (phone.startsWith("09")) {
+            // Convert "09xxxxxxxxx" to "+639xxxxxxxxx"
+            phone = phone.replaceFirst("09", "+639")
             Toast.makeText(
                 requireContext(),
-                "Phone number must start with '09'. Adjusting the number.",
+                "Verification code sent to: $phone",
                 Toast.LENGTH_SHORT
             ).show()
-            viewModel.phone = "09${phone.trimStart('0')}"
-            return
-        } else if (barangay.isEmpty()) {
+            viewModel.phone = phone
+        }
+        // Check for barangay and municipality
+        if (barangay.isEmpty()) {
             Toast.makeText(
                 requireContext(),
                 "Please add your Barangay to continue",
@@ -228,11 +248,74 @@ class SignUpFragment : Fragment() {
             ).show()
             return
         } else {
-            nextItem()
+            // All fields are valid, proceed with sending OTP
+            sendOtp(phone)
             Log.d("SignUpFragment", "validateFragmentTwo: All fields are valid")
         }
     }
 
+    private fun sendOtp(phone: String) {
+        if (phone.isNotEmpty()) {
+
+                val options = PhoneAuthOptions.newBuilder(auth)
+                    .setPhoneNumber(phone)       // Phone number to verify
+                    .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+                    .setActivity(requireActivity())                 // Activity (for callback binding)
+                    .setCallbacks(callbacks) // OnVerificationStateChangedCallbacks
+                    .build()
+                PhoneAuthProvider.verifyPhoneNumber(options)
+                nextItem()
+
+        } else {
+            Toast.makeText(requireContext(), "Please Enter Number", Toast.LENGTH_SHORT).show()
+
+        }
+
+    }
+
+    private val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+        override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+
+            signInWithPhoneAuthCredential(credential)
+        }
+
+        override fun onVerificationFailed(e: FirebaseException) {
+            if (e is FirebaseAuthInvalidCredentialsException) {
+                // Invalid request
+                Log.d("TAG", "onVerificationFailed: ${e.toString()}")
+            } else if (e is FirebaseTooManyRequestsException) {
+                // The SMS quota for the project has been exceeded
+                Log.d("TAG", "onVerificationFailed: ${e.toString()}")
+            }
+        }
+
+        override fun onCodeSent(
+            verificationId: String,
+            token: PhoneAuthProvider.ForceResendingToken
+        ) {
+            viewModel.verificationId = verificationId
+            viewModel.token = token
+
+        }
+    }
+
+    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(requireActivity()) { task ->
+                if (task.isSuccessful) {
+
+                } else {
+                    // Sign in failed, display a message and update the UI
+                    Log.d("TAG", "signInWithPhoneAuthCredential: ${task.exception.toString()}")
+                    if (task.exception is FirebaseAuthInvalidCredentialsException) {
+                        // The verification code entered was invalid
+                    }
+                    // Update UI
+                }
+
+            }
+    }
 
     fun validateFragmentThree() {
         val email = viewModel.email
@@ -245,13 +328,23 @@ class SignUpFragment : Fragment() {
             return
         }
         // Ensure the email follows proper email format and ends with "@gmail.com"
-        else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() || !email.endsWith("@gmail.com")) {
-            Toast.makeText(requireContext(), "Email must be a valid Gmail address", Toast.LENGTH_SHORT).show()
+        else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email)
+                .matches() || !email.endsWith("@gmail.com")
+        ) {
+            Toast.makeText(
+                requireContext(),
+                "Email must be a valid Gmail address",
+                Toast.LENGTH_SHORT
+            ).show()
             return
         }
         // Ensure the email does not contain ".con" typo
         else if (email.contains(".con")) {
-            Toast.makeText(requireContext(), "Email cannot contain '.con', please enter a valid email", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                "Email cannot contain '.con', please enter a valid email",
+                Toast.LENGTH_SHORT
+            ).show()
             return
         }
         // Ensure password is not empty
@@ -261,7 +354,8 @@ class SignUpFragment : Fragment() {
         }
         // Ensure confirm password is not empty
         else if (confirmPass.isEmpty()) {
-            Toast.makeText(requireContext(), "Please confirm your password", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Please confirm your password", Toast.LENGTH_SHORT)
+                .show()
             return
         }
         // Ensure passwords match
