@@ -122,12 +122,14 @@
     </fragment>
     <fragment
         android:id="@+id/listOfMyComplaintsFragment"
+        tools:layout="@layout/fragment_list_of_my_complaints"
         android:name="com.example.canorecoapp.views.user.complaints.ListOfMyComplaintsFragment"
         android:label="ListOfMyComplaintsFragment" />
 
     <fragment
         android:id="@+id/forgotPasswordFragment"
         android:name="com.example.canorecoapp.views.ForgotPasswordFragment"
+        tools:layout="@layout/fragment_forgot_password"
         android:label="ForgotPasswordFragment" />
     <fragment
         android:id="@+id/notifFragment"
@@ -200,6 +202,7 @@
         tools:layout="@layout/fragment_maintenance_details" />
     <fragment
         android:id="@+id/otpFragment"
+        tools:layout="@layout/fragment_otp"
         android:name="com.example.canorecoapp.views.signups.OtpFragment"
         android:label="OtpFragment" />
     <fragment
