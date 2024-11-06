@@ -42,7 +42,7 @@ class OtpFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.otpProgressBar.visibility = View.INVISIBLE
         auth = FirebaseAuth.getInstance()
-
+        binding.verifyLaterBtn.visibility = View.GONE
         addTextChangeListeners()
         startResendTimer()
 
@@ -50,12 +50,26 @@ class OtpFragment : Fragment() {
             if (viewModel.token != null) {
                 resendVerificationCode(viewModel.phone, viewModel.token!!)
             }
+            viewModel.resendAttempts++
+            if (viewModel.resendAttempts >= 1) {
+                binding.verifyLaterBtn.visibility = View.VISIBLE
+            }
             startResendTimer()
             Toast.makeText(requireContext(), "Sending new OTP...", Toast.LENGTH_SHORT).show()
 
         }
+        binding.verifyLaterBtn.setOnClickListener {
+            viewModel.skipOtpVerification = true
+            binding.verifyLaterBtn.visibility = View.GONE
+            Snackbar.make(requireView(), "You can verify later. Proceed to the next step.", Snackbar.LENGTH_SHORT).show()
 
+        }
         binding.verifyOTPBtn.setOnClickListener {
+            if (viewModel.skipOtpVerification) {
+                Snackbar.make(requireView(), "OTP verification skipped.", Snackbar.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
             val typedOTP = getEnteredOtp()
             if (typedOTP.length == 6) {
                 val verificationId = viewModel.verificationId

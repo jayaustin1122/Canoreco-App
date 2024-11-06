@@ -23,7 +23,8 @@ class SignUpViewModel  : ViewModel() {
     var  token: PhoneAuthProvider.ForceResendingToken? = null
     var verificationId : String = ""
     var smsIsVerified : Boolean = false
-
+    var resendAttempts = 0
+    var skipOtpVerification = false
 
     var image: Uri? = null
 

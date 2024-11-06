@@ -87,6 +87,7 @@ class SignUpFragment : Fragment() {
             })
         adapter.addFragment(StepOneFragment())
         adapter.addFragment(StepTwoFragment())
+        adapter.addFragment(OtpFragment())
         adapter.addFragment(StepThreeFragment())
         stepView.go(0, true)
         viewPager.isUserInputEnabled = false
@@ -100,7 +101,8 @@ class SignUpFragment : Fragment() {
             when (viewPager.currentItem) {
                 0 -> validateFragmentOne()
                 1 -> validateFragmentTwo()
-                2 -> validateFragmentThree()
+                2 -> validateOtpFragment()
+                3 -> validateFragmentThree()
             }
         }
         binding.backButton.setOnClickListener {
@@ -128,6 +130,11 @@ class SignUpFragment : Fragment() {
 
     private fun validateOtpFragment() {
         val otp = viewModel.otp
+
+        if (viewModel.skipOtpVerification) {
+            nextItem()
+            return
+        }
 
         when {
             otp.isEmpty() -> {
@@ -217,10 +224,17 @@ class SignUpFragment : Fragment() {
             ).show()
             return
         }
+
+
         // Handle phone verification and conversion to +639 format
         if (phone.startsWith("09")) {
             // Convert "09xxxxxxxxx" to "+639xxxxxxxxx"
             phone = phone.replaceFirst("09", "+639")
+            Toast.makeText(
+                requireContext(),
+                "Verification code sent to: $phone",
+                Toast.LENGTH_SHORT
+            ).show()
             viewModel.phone = phone
         }
         // Check for barangay and municipality
@@ -239,12 +253,72 @@ class SignUpFragment : Fragment() {
             ).show()
             return
         } else {
-           nextItem()
+            // All fields are valid, proceed with sending OTP
+            sendOtp(phone)
+            Log.d("SignUpFragment", "validateFragmentTwo: All fields are valid")
         }
     }
 
+    private fun sendOtp(phone: String) {
+        if (phone.isNotEmpty()) {
 
+            val options = PhoneAuthOptions.newBuilder(auth)
+                .setPhoneNumber(phone)       // Phone number to verify
+                .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+                .setActivity(requireActivity())                 // Activity (for callback binding)
+                .setCallbacks(callbacks) // OnVerificationStateChangedCallbacks
+                .build()
+            PhoneAuthProvider.verifyPhoneNumber(options)
+            nextItem()
 
+        } else {
+            Toast.makeText(requireContext(), "Please Enter Number", Toast.LENGTH_SHORT).show()
+
+        }
+
+    }
+
+    private val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+        override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+        }
+
+        override fun onVerificationFailed(e: FirebaseException) {
+            if (e is FirebaseAuthInvalidCredentialsException) {
+                // Invalid request
+                Log.d("TAG", "onVerificationFailed: ${e.toString()}")
+            } else if (e is FirebaseTooManyRequestsException) {
+                // The SMS quota for the project has been exceeded
+                Log.d("TAG", "onVerificationFailed: ${e.toString()}")
+            }
+        }
+
+        override fun onCodeSent(
+            verificationId: String,
+            token: PhoneAuthProvider.ForceResendingToken
+        ) {
+            viewModel.verificationId = verificationId
+            viewModel.token = token
+
+        }
+    }
+
+    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(requireActivity()) { task ->
+                if (task.isSuccessful) {
+
+                } else {
+                    // Sign in failed, display a message and update the UI
+                    Log.d("TAG", "signInWithPhoneAuthCredential: ${task.exception.toString()}")
+                    if (task.exception is FirebaseAuthInvalidCredentialsException) {
+                        // The verification code entered was invalid
+                    }
+                    // Update UI
+                }
+
+            }
+    }
 
     fun validateFragmentThree() {
         val email = viewModel.email
