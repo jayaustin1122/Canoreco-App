@@ -56,7 +56,6 @@ class OtpFragment : Fragment() {
             }
             startResendTimer()
             Toast.makeText(requireContext(), "Sending new OTP...", Toast.LENGTH_SHORT).show()
-
         }
         binding.verifyLaterBtn.setOnClickListener {
             viewModel.skipOtpVerification = true
