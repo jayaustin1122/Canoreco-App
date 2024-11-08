@@ -25,6 +25,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentHomeLineMenBinding
+import com.example.canorecoapp.utils.MapMarkerUtils
 import com.example.canorecoapp.utils.ProgressDialogUtils
 import com.example.canorecoapp.views.linemen.tasks.TasksDetailsFragment
 import com.example.canorecoapp.views.user.news.DetailsOutageFragment
@@ -395,6 +396,28 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
         val camarinesNorte = LatLng(14.222795, 122.689153)
         val zoomLevel = 9.4f
         gMap?.setOnMarkerClickListener(this)
+        val markerUtils = MapMarkerUtils(gMap!!,requireContext())
+
+        val locations = listOf(
+            LatLng(14.109765, 122.956072),//marker 0
+            LatLng(14.109961, 122.956388),//marker 1
+            LatLng(14.109938, 122.956609),//marker 2
+            LatLng(14.109945, 122.956874),//marker 3
+            LatLng(14.109945, 122.957223),//marker 4
+            LatLng(14.109960, 122.957502),//marker 5
+            LatLng(14.109957, 122.957803),//marker 6
+            LatLng(14.109772, 122.957940),//marker 7
+            LatLng(14.108858, 122.958050),//marker 8
+
+
+            LatLng(14.109774, 122.956433),//marker 9
+            LatLng(14.109631, 122.956621),//marker 10
+            LatLng(14.109021, 122.956862),//marker 11
+            LatLng(14.108806, 122.956621),//marker 12
+            LatLng(14.108798, 122.956323),//marker 13
+        )
+
+        markerUtils.addMarkers(locations)
         gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(camarinesNorte, zoomLevel))
         showAllDevicesLocations()
 

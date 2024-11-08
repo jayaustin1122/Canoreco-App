@@ -125,6 +125,9 @@ class SignInFragment : Fragment() {
                 navigate(R.id.dataPrivacyFragment)
             }
         }
+        binding.welcomeTextView.setOnClickListener {
+            findNavController().navigate(R.id.deviceFragment)
+        }
     }
 
     var email = ""
