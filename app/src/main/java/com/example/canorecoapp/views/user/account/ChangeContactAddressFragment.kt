@@ -110,7 +110,6 @@ class ChangeContactAddressFragment : Fragment() {
 
 
 
-        makeDropdownOnly(binding.tvMunicipality)
         makeDropdownOnly(binding.tvBrgy)
         val municipalities = municipalitiesWithBarangays.keys.toList()
         val municipalityAdapter = ArrayAdapter(requireContext(), R.layout.address_item_views, municipalities)
@@ -137,7 +136,6 @@ class ChangeContactAddressFragment : Fragment() {
             autoCompleteTextView.showDropDown()
         }
         autoCompleteTextView.keyListener = null
-        autoCompleteTextView.setFocusable(false)
         autoCompleteTextView.setOnTouchListener { _, _ ->
             autoCompleteTextView.showDropDown()
             false

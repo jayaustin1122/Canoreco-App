@@ -226,7 +226,12 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
                         if (locationsToRemove.isNotEmpty()) {
                             resetFragmentWithProgress()
                         } else {
-                            parseAndDrawPolygons(jsonData, locationsToAdd, "devices")
+                            // Ensure you're correctly parsing and drawing polygons for damaged devices
+                            if (locationsToAdd.isNotEmpty()) {
+                                Log.d("MapUpdate", "Drawing polygons for damaged locations: $locationsToAdd")
+                                parseAndDrawPolygons(jsonData, locationsToAdd, "devices")
+                            }
+
                             previousLocations.clear()
                             previousLocations.addAll(currentLocations)
                         }
@@ -239,6 +244,7 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
             }
         })
     }
+
 
     private fun parseAndDrawPolygons(
         jsonData: String,
