@@ -242,17 +242,18 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                     val id = deviceSnapshot.child("id").getValue(String::class.java) ?: "unknown"
                     val barangay = deviceSnapshot.child("barangay").getValue(String::class.java) ?: ""
                     if (status == "damaged") {
+                        Log.e("DeviceNotifFragment", "ewan ko na")
                         sendSmsto(barangay,status)
                         sendnotif(barangay,id,status)
                     }
-                    if (status == "working") {
+                    else if (status == "working") {
                         sendSmsto(barangay,status)
                         sendnotif(barangay,id,status)
-
                     }
-                    else{
+                    else if (status == "under repair") {
+                        Log.e("DeviceNotifFragment", "ewan ko na repair")
                         sendSmsto(barangay,status)
-                        sendnotif(barangay, id, status)
+                        sendnotif(barangay,id,status)
                     }
                 }
             }
@@ -271,7 +272,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 val userId = userDoc.id
                 val userEmail = userDoc.getString("email") ?: "No Email"
                 val notificationTitle = "Electric post in $barangay"
-                val notificationMessage = "An Electric post in $barangay has been under $status."
+                val notificationMessage = "An Electric post in $barangay is $status."
                 val timestamp = System.currentTimeMillis() / 1000
                 val notificationData = mapOf(
                     "title" to notificationTitle,
