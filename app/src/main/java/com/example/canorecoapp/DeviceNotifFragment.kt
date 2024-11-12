@@ -143,7 +143,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         usersRef.whereEqualTo("barangay", barangay).get().addOnSuccessListener { querySnapshot ->
             for (userDoc in querySnapshot.documents) {
                 val userId = userDoc.id
-                val userPhone = userDoc.getString("phone") // Assuming there's a 'phone' field
+                val userPhone = userDoc.getString("phone")
                 val userEmail = userDoc.getString("email") ?: "No Email"
                 val notificationTitle = "Electric Post Damaged in $barangay"
                 val notificationMessage = "A device in your Barangay: $barangay has been detected as damaged. Please check the app or news for more details."
@@ -156,8 +156,10 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                     "timestamp" to timestamp.toString()
                 )
 
-                // Send SMS
+                // Logging the SMS and notification details
+                Log.d("DeviceNotifFragment", "Sending notification to user: $userId ($userEmail) - Title: $notificationTitle, Message: $notificationMessage")
                 if (!userPhone.isNullOrEmpty()) {
+                    Log.d("DeviceNotifFragment", "Sending SMS to: $userPhone with message: $notificationMessage")
                     sendSms(userPhone, notificationMessage)
                 }
             }
@@ -165,14 +167,15 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             Log.e("DeviceNotifFragment", "Failed to query users", exception)
         }
     }
+
     private fun sendnotif(barangay: String, id: String) {
         val usersRef = db.collection("users")
         usersRef.whereEqualTo("barangay", barangay).get().addOnSuccessListener { querySnapshot ->
             for (userDoc in querySnapshot.documents) {
                 val userId = userDoc.id
                 val userEmail = userDoc.getString("email") ?: "No Email"
-                val notificationTitle = "Electric in $barangay"
-                val notificationMessage = "A Electric post in $barangay has been repaired."
+                val notificationTitle = "Electric post in $barangay"
+                val notificationMessage = "An Electric post in $barangay has been repaired."
                 val timestamp = System.currentTimeMillis() / 1000
                 val notificationData = mapOf(
                     "title" to notificationTitle,
@@ -181,6 +184,9 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                     "message" to notificationMessage,
                     "timestamp" to timestamp.toString()
                 )
+
+                // Logging notification details
+                Log.d("DeviceNotifFragment", "Sending notification to user: $userId ($userEmail) - Title: $notificationTitle, Message: $notificationMessage")
 
                 db.collection("users").document(userId)
                     .collection("notifications").document(timestamp.toString())
@@ -197,6 +203,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             Log.e("DeviceNotifFragment", "Failed to query users", exception)
         }
     }
+
 
     private fun updateDeviceToWorking(id: String) {
         val database: DatabaseReference = FirebaseDatabase.getInstance().reference
@@ -245,6 +252,17 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             Log.e("DeviceNotifFragment", "Failed to query users", exception)
         }
     }
+    private fun sendSms(phoneNumber: String, notificationMessage: String) {
+        val sms = SmsManager.getDefault()
+        try {
+            sms.sendTextMessage(phoneNumber, null, notificationMessage, null, null)
+            Log.d("DeviceNotifFragment", "SMS sent to: $phoneNumber with message: $notificationMessage")
+            Toast.makeText(requireContext(), "SMS sent to $phoneNumber", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Log.e("DeviceNotifFragment", "Failed to send SMS to $phoneNumber: ${e.message}")
+        }
+    }
+
     private fun sendSms1(phoneNumbers: List<String>, notificationMessage: String) {
         val sms = SmsManager.getDefault()
 
@@ -252,7 +270,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         for (phoneNumber in phoneNumbers) {
             try {
                 sms.sendTextMessage(phoneNumber, null, notificationMessage, null, null)
-                Log.d("DeviceNotifFragment", "SMS sent to $phoneNumber")
+                Log.d("DeviceNotifFragment", "SMS sent to: $phoneNumber with message: $notificationMessage")
             } catch (e: Exception) {
                 Log.e("DeviceNotifFragment", "Failed to send SMS to $phoneNumber: ${e.message}")
             }
@@ -262,11 +280,6 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         Toast.makeText(requireContext(), "SMS sent to all contacts", Toast.LENGTH_SHORT).show()
     }
 
-    private fun sendSms(phoneNumber: String, notificationMessage: String) {
-        val sms = SmsManager.getDefault()
-        sms.sendTextMessage(phoneNumber,null, notificationMessage,null,null)
-        Toast.makeText(requireContext(), "Sms Send", Toast.LENGTH_SHORT).show()
-    }
 
     override fun onDestroy() {
         super.onDestroy()
