@@ -71,7 +71,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         requestSmsPermission()
         startListeningForDeviceStatuses()
         startListeningForSms()
-
+        startListeningForNotifications()
     }
     private fun startListeningForNotifications() {
         val userId = auth.currentUser?.uid ?: return
