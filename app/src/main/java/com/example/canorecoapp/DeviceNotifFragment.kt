@@ -268,6 +268,13 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private fun sendnotif(barangay: String, id: String, status: String) {
         val usersRef = db.collection("users")
         usersRef.whereEqualTo("idArea", id).get().addOnSuccessListener { querySnapshot ->
+
+            if (querySnapshot.isEmpty) {
+
+                Log.d("DeviceNotifFragment", "No users found for area id: $id")
+                return@addOnSuccessListener
+            }
+
             for (userDoc in querySnapshot.documents) {
                 val userId = userDoc.id
                 val userEmail = userDoc.getString("email") ?: "No Email"
@@ -282,7 +289,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                     "timestamp" to timestamp.toString()
                 )
 
-                // Logging notification details
+
                 Log.d("DeviceNotifFragment", "Sending notification to user: $userId ($userEmail) - Title: $notificationTitle, Message: $notificationMessage")
 
                 db.collection("users").document(userId)
@@ -290,7 +297,6 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                     .set(notificationData)
                     .addOnSuccessListener {
                         Log.d("DeviceNotifFragment", "Notification successfully added for user $userId")
-
                     }
                     .addOnFailureListener { e ->
                         Log.e("DeviceNotifFragment", "Failed to add notification for user $userId", e)
@@ -300,6 +306,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             Log.e("DeviceNotifFragment", "Failed to query users", exception)
         }
     }
+
     private fun sendSmsto(barangay: String, status: String) {
         val usersRef = db.collection("users")
         usersRef.whereEqualTo("barangay", barangay).get().addOnSuccessListener { querySnapshot ->
