@@ -248,13 +248,13 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                     if (status == "working") {
                         val barangay = deviceSnapshot.child("barangay").getValue(String::class.java) ?: ""
                         sendSmsRepaired(barangay)
-                        sendnotif(barangay,id)
+                        sendnotifWorking(barangay,id)
 
                     }
                     else{
                         val barangay = deviceSnapshot.child("barangay").getValue(String::class.java) ?: ""
                         sendSmsRepaired(barangay)
-                        sendnotif(barangay,id)
+                        sendnotifUnderRepair(barangay,id)
                     }
                 }
             }
@@ -295,7 +295,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         }
     }
 
-    private fun sendnotif(barangay: String, id: String) {
+    private fun sendnotifWorking(barangay: String, id: String) {
         val usersRef = db.collection("users")
         usersRef.whereEqualTo("barangay", barangay).get().addOnSuccessListener { querySnapshot ->
             for (userDoc in querySnapshot.documents) {
@@ -331,7 +331,41 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         }
     }
 
+    private fun sendnotifUnderRepair(barangay: String, id: String) {
+        val usersRef = db.collection("users")
+        usersRef.whereEqualTo("barangay", barangay).get().addOnSuccessListener { querySnapshot ->
+            for (userDoc in querySnapshot.documents) {
+                val userId = userDoc.id
+                val userEmail = userDoc.getString("email") ?: "No Email"
+                val notificationTitle = "Electric post in $barangay"
+                val notificationMessage = "An Electric post in $barangay has been under repair."
+                val timestamp = System.currentTimeMillis() / 1000
+                val notificationData = mapOf(
+                    "title" to notificationTitle,
+                    "status" to false,
+                    "isRead" to false,
+                    "message" to notificationMessage,
+                    "timestamp" to timestamp.toString()
+                )
 
+                // Logging notification details
+                Log.d("DeviceNotifFragment", "Sending notification to user: $userId ($userEmail) - Title: $notificationTitle, Message: $notificationMessage")
+
+                db.collection("users").document(userId)
+                    .collection("notifications").document(timestamp.toString())
+                    .set(notificationData)
+                    .addOnSuccessListener {
+                        Log.d("DeviceNotifFragment", "Notification successfully added for user $userId")
+
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("DeviceNotifFragment", "Failed to add notification for user $userId", e)
+                    }
+            }
+        }.addOnFailureListener { exception ->
+            Log.e("DeviceNotifFragment", "Failed to query users", exception)
+        }
+    }
     private fun updateDeviceToWorking(id: String) {
         val database: DatabaseReference = FirebaseDatabase.getInstance().reference
         val deviceRef = database.child("devices/$id")
@@ -351,7 +385,33 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 Toast.makeText(requireContext(), "Failed to update status: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
+    private fun sendSmsUnderRepaired(barangay: String) {
+        val usersRef = db.collection("users")
+        usersRef.whereEqualTo("barangay", barangay).get().addOnSuccessListener { querySnapshot ->
+            for (userDoc in querySnapshot.documents) {
+                val userId = userDoc.id
+                val userPhone = userDoc.getString("phone") // Assuming there's a 'phone' field
+                val userEmail = userDoc.getString("email") ?: "No Email"
+                val notificationTitle = "Electric Post Repaired in $barangay"
+                val notificationMessage = "A device in your Barangay: $barangay has been under repair"
+                val timestamp = System.currentTimeMillis() / 1000
+                val notificationData = mapOf(
+                    "title" to notificationTitle,
+                    "status" to false,
+                    "isRead" to false,
+                    "message" to notificationMessage,
+                    "timestamp" to timestamp.toString()
+                )
 
+                // Send SMS
+                if (!userPhone.isNullOrEmpty()) {
+                    sendSms(userPhone, notificationMessage)
+                }
+            }
+        }.addOnFailureListener { exception ->
+            Log.e("DeviceNotifFragment", "Failed to query users", exception)
+        }
+    }
     private fun sendSmsRepaired(barangay: String) {
         val usersRef = db.collection("users")
         usersRef.whereEqualTo("barangay", barangay).get().addOnSuccessListener { querySnapshot ->
