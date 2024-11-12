@@ -240,18 +240,17 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 snapshot.children.forEach { deviceSnapshot ->
                     val status = deviceSnapshot.child("status").getValue(String::class.java) ?: "unknown"
                     val id = deviceSnapshot.child("id").getValue(String::class.java) ?: "unknown"
+                    val barangay = deviceSnapshot.child("barangay").getValue(String::class.java) ?: ""
                     if (status == "damaged") {
-                        val barangay = deviceSnapshot.child("barangay").getValue(String::class.java) ?: ""
-                        handleDeviceDamage(barangay)
+                        sendSmsto(barangay,status)
+                        sendnotif(barangay,id,status)
                     }
                     if (status == "working") {
-                        val barangay = deviceSnapshot.child("barangay").getValue(String::class.java) ?: ""
                         sendSmsto(barangay,status)
                         sendnotif(barangay,id,status)
 
                     }
                     else{
-                        val barangay = deviceSnapshot.child("barangay").getValue(String::class.java) ?: ""
                         sendSmsto(barangay,status)
                         sendnotif(barangay, id, status)
                     }
