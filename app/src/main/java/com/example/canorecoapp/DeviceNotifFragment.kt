@@ -61,17 +61,21 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         // Inflate the layout for this fragment
         return binding.root
     }
+
     override fun onStart() {
         super.onStart()
         startListeningForSms()
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         requestSmsPermission()
         startListeningForDeviceStatuses()
+        startListeningForDeviceStatuse2()
         startListeningForSms()
         startListeningForNotifications()
     }
+
     private fun startListeningForNotifications() {
         val userId = auth.currentUser?.uid ?: return
         val notificationsRef = db.collection("users")
@@ -97,18 +101,29 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                                 .document(userId)
                                 .collection("notifications")
                                 .document(timestamp.toString())
-                            createNotification(title, timestamp.toString(),notificationsRef2,isRead)
-                            notificationsRef2.update("isRead", true).addOnCompleteListener { updateTask ->
-                                if (!updateTask.isSuccessful) {
-                                    Log.e("NotificationService", "Failed to update isRead status", updateTask.exception)
+                            createNotification(
+                                title,
+                                timestamp.toString(),
+                                notificationsRef2,
+                                isRead
+                            )
+                            notificationsRef2.update("isRead", true)
+                                .addOnCompleteListener { updateTask ->
+                                    if (!updateTask.isSuccessful) {
+                                        Log.e(
+                                            "NotificationService",
+                                            "Failed to update isRead status",
+                                            updateTask.exception
+                                        )
+                                    }
                                 }
-                            }
                         }
                     }
                 }
             }
         }
     }
+
     @SuppressLint("SimpleDateFormat")
     private fun parseAndFormatDate(timestampString: String): String {
         return try {
@@ -122,6 +137,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             ""
         }
     }
+
     private fun createNotification(
         title: String,
         timestamp: String,
@@ -133,23 +149,30 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val importance = NotificationManager.IMPORTANCE_HIGH
-            val notificationChannel = NotificationChannel(channelId, channelName, importance).apply {
-                description = "Channel description"
-                enableLights(true)
-                lightColor = Color.RED
-                enableVibration(true)
-                vibrationPattern = longArrayOf(0, 500, 1000)
-            }
-            val notificationManager = context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationChannel =
+                NotificationChannel(channelId, channelName, importance).apply {
+                    description = "Channel description"
+                    enableLights(true)
+                    lightColor = Color.RED
+                    enableVibration(true)
+                    vibrationPattern = longArrayOf(0, 500, 1000)
+                }
+            val notificationManager =
+                context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(notificationChannel)
         }
         val intent = Intent(requireContext(), MainActivity::class.java).apply {
-            updateIsRead(notificationsRef2,isRead)
+            updateIsRead(notificationsRef2, isRead)
             putExtra("navigate_to_fragment", "YourFragmentTag")
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
         }
-        val pendingIntent = PendingIntent.getActivity(requireContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent = PendingIntent.getActivity(
+            requireContext(),
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
 
         val notificationBuilder = NotificationCompat.Builder(requireContext(), channelId)
@@ -214,14 +237,21 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                         }
 
                         // Log to indicate sending SMS to all users
-                        Log.d("DeviceNotifFragment", "Sending SMS to all users: $numbers with content: $content")
+                        Log.d(
+                            "DeviceNotifFragment",
+                            "Sending SMS to all users: $numbers with content: $content"
+                        )
 
                         sendSms1(numbers, content)
 
                         // Optionally reset the send status in Firestore
                         smsRef.update("send", false) // Reset send status after sending
                     }.addOnFailureListener { usersError ->
-                        Log.e("DeviceNotifFragment", "Failed to read user phone numbers", usersError)
+                        Log.e(
+                            "DeviceNotifFragment",
+                            "Failed to read user phone numbers",
+                            usersError
+                        )
                     }
                 }
             } else {
@@ -233,33 +263,90 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
 
 
+
     private fun startListeningForDeviceStatuses() {
-        devicesRef = FirebaseDatabase.getInstance().getReference("devices")
+        // Reference the specific device by its id (9001)
+        devicesRef = FirebaseDatabase.getInstance().getReference("devices/9001/status")
+
+        // Add a listener to monitor the 'status' field of the device directly
         devicesRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                snapshot.children.forEach { deviceSnapshot ->
-                    val status = deviceSnapshot.child("status").getValue(String::class.java) ?: "unknown"
-                    val id = deviceSnapshot.child("id").getValue(String::class.java) ?: "unknown"
-                    val barangay = deviceSnapshot.child("barangay").getValue(String::class.java) ?: ""
-                    if (status == "damaged") {
-                        Log.e("DeviceNotifFragment", "ewan ko na")
-                        sendSmsto(barangay,status)
-                        sendnotif(barangay,id,status)
-                    }
-                    else if (status == "working") {
-                        sendSmsto(barangay,status)
-                        sendnotif(barangay,id,status)
-                    }
-                    else if (status == "under repair") {
-                        Log.e("DeviceNotifFragment", "ewan ko na repair")
-                        sendSmsto(barangay,status)
-                        sendnotif(barangay,id,status)
-                    }
+                // Get the status value directly
+                val status = snapshot.getValue(String::class.java) ?: "unknown"
+
+                // Fetch other necessary fields (barangay, id) by querying the parent of 'status'
+                val parentRef = snapshot.ref.parent
+                parentRef?.let { parentSnapshotRef ->
+                    parentSnapshotRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(parentSnapshot: DataSnapshot) {
+                            val id = parentSnapshot.child("id").getValue(String::class.java) ?: "unknown"
+                            val barangay = parentSnapshot.child("barangay").getValue(String::class.java) ?: ""
+
+                            // Now handle different statuses
+                            when (status) {
+                                "damaged", "working", "under repair" -> {
+                                    Log.e("DeviceNotifFragment", "Device is $status")
+                                    sendSmsto(barangay, status)
+                                    sendnotif(barangay, id, status)
+                                }
+                                else -> {
+                                    Log.e("DeviceNotifFragment", "Unknown status: $status")
+                                }
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            Log.e("DeviceNotifFragment", "Failed to fetch device details", error.toException())
+                        }
+                    })
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.e("DeviceNotifFragment", "Failed to read device statuses", error.toException())
+                Log.e("DeviceNotifFragment", "Failed to read device status", error.toException())
+            }
+        })
+    }
+    private fun startListeningForDeviceStatuse2() {
+        // Reference the specific device by its id (9000)
+        devicesRef = FirebaseDatabase.getInstance().getReference("devices/9000/status")
+
+        // Add a listener to monitor the 'status' field of the device directly
+        devicesRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                // Get the status value directly
+                val status = snapshot.getValue(String::class.java) ?: "unknown"
+
+                // Fetch other necessary fields (barangay, id) by querying the parent of 'status'
+                val parentRef = snapshot.ref.parent
+                parentRef?.let { parentSnapshotRef ->
+                    parentSnapshotRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(parentSnapshot: DataSnapshot) {
+                            val id = parentSnapshot.child("id").getValue(String::class.java) ?: "unknown"
+                            val barangay = parentSnapshot.child("barangay").getValue(String::class.java) ?: ""
+
+                            // Now handle different statuses
+                            when (status) {
+                                "damaged", "working", "under repair" -> {
+                                    Log.e("DeviceNotifFragment", "Device is $status")
+                                    sendSmsto(barangay, status)
+                                    sendnotif(barangay, id, status)
+                                }
+                                else -> {
+                                    Log.e("DeviceNotifFragment", "Unknown status: $status")
+                                }
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            Log.e("DeviceNotifFragment", "Failed to fetch device details", error.toException())
+                        }
+                    })
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("DeviceNotifFragment", "Failed to read device status", error.toException())
             }
         })
     }
@@ -267,45 +354,58 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private fun sendnotif(barangay: String, id: String, status: String) {
         val usersRef = db.collection("users")
-        usersRef.whereEqualTo("idArea", id).get().addOnSuccessListener { querySnapshot ->
 
+        // Fetch all users or limit based on some criteria if needed
+        usersRef.get().addOnSuccessListener { querySnapshot ->
             if (querySnapshot.isEmpty) {
-
-                Log.d("DeviceNotifFragment", "No users found for area id: $id")
+                Log.d("DeviceNotifFragment", "No users found in the users collection")
                 return@addOnSuccessListener
             }
 
+            // Log the id that was passed for comparison
+            Log.d("DeviceNotifFragment", "Passed idArea: $id")
+
+            // Loop through each user document
             for (userDoc in querySnapshot.documents) {
                 val userId = userDoc.id
                 val userEmail = userDoc.getString("email") ?: "No Email"
-                val notificationTitle = "Electric post in $barangay"
-                val notificationMessage = "An Electric post in $barangay is $status."
-                val timestamp = System.currentTimeMillis() / 1000
-                val notificationData = mapOf(
-                    "title" to notificationTitle,
-                    "status" to false,
-                    "isRead" to false,
-                    "message" to notificationMessage,
-                    "timestamp" to timestamp.toString()
-                )
+                val userIdArea = userDoc.getString("idArea") ?: "No idArea"
 
+                // Compare the idArea manually
+                if (userIdArea == id) {
+                    Log.d("DeviceNotifFragment", "User $userId matched idArea: $userIdArea with passed id: $id")
 
-                Log.d("DeviceNotifFragment", "Sending notification to user: $userId ($userEmail) - Title: $notificationTitle, Message: $notificationMessage")
+                    val notificationTitle = "Electric post in $barangay"
+                    val notificationMessage = "An Electric post in $barangay is $status."
+                    val timestamp = System.currentTimeMillis() / 1000
+                    val notificationData = mapOf(
+                        "title" to notificationTitle,
+                        "status" to false,
+                        "isRead" to false,
+                        "message" to notificationMessage,
+                        "timestamp" to timestamp.toString()
+                    )
 
-                db.collection("users").document(userId)
-                    .collection("notifications").document(timestamp.toString())
-                    .set(notificationData)
-                    .addOnSuccessListener {
-                        Log.d("DeviceNotifFragment", "Notification successfully added for user $userId")
-                    }
-                    .addOnFailureListener { e ->
-                        Log.e("DeviceNotifFragment", "Failed to add notification for user $userId", e)
-                    }
+                    // Sending notification to the matching user
+                    db.collection("users").document(userId)
+                        .collection("notifications").document(timestamp.toString())
+                        .set(notificationData)
+                        .addOnSuccessListener {
+                            Log.d("DeviceNotifFragment", "Notification successfully added for user $userId")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.e("DeviceNotifFragment", "Failed to add notification for user $userId", e)
+                        }
+                } else {
+                    // Log if user idArea doesn't match the passed id
+                    Log.d("DeviceNotifFragment", "User $userId did not match. User's idArea: $userIdArea, Passed id: $id")
+                }
             }
         }.addOnFailureListener { exception ->
             Log.e("DeviceNotifFragment", "Failed to query users", exception)
         }
     }
+
 
     private fun sendSmsto(barangay: String, status: String) {
         val usersRef = db.collection("users")
