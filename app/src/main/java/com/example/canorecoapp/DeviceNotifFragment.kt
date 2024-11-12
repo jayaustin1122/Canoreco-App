@@ -369,11 +369,11 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             for (userDoc in querySnapshot.documents) {
                 val userId = userDoc.id
                 val userEmail = userDoc.getString("email") ?: "No Email"
-                val userIdArea = userDoc.getString("idArea") ?: "No idArea"
+                val userBarangay = userDoc.getString("barangay") ?: "No idArea"
 
                 // Compare the idArea manually
-                if (userIdArea == id) {
-                    Log.d("DeviceNotifFragment", "User $userId matched idArea: $userIdArea with passed id: $id")
+                if (userBarangay == barangay) {
+                    Log.d("DeviceNotifFragment", "User $userId matched idArea: $userBarangay with passed id: $id")
 
                     val notificationTitle = "Electric post in $barangay"
                     val notificationMessage = "An Electric post in $barangay is $status."
@@ -398,7 +398,6 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                         }
                 } else {
                     // Log if user idArea doesn't match the passed id
-                    Log.d("DeviceNotifFragment", "User $userId did not match. User's idArea: $userIdArea, Passed id: $id")
                 }
             }
         }.addOnFailureListener { exception ->
