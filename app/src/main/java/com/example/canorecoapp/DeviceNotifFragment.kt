@@ -267,7 +267,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private fun sendnotif(barangay: String, id: String, status: String) {
         val usersRef = db.collection("users")
-        usersRef.whereEqualTo("barangay", barangay).get().addOnSuccessListener { querySnapshot ->
+        usersRef.whereEqualTo("idArea", id).get().addOnSuccessListener { querySnapshot ->
             for (userDoc in querySnapshot.documents) {
                 val userId = userDoc.id
                 val userEmail = userDoc.getString("email") ?: "No Email"

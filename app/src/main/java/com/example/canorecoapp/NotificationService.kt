@@ -38,7 +38,7 @@ class NotificationService : Service() {
         super.onCreate()
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
-
+        startListeningForNotifications()
     }
 
 
