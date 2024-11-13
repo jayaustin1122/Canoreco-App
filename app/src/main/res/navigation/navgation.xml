@@ -206,8 +206,8 @@
         android:name="com.example.canorecoapp.views.signups.OtpFragment"
         android:label="OtpFragment" />
     <fragment
-        android:id="@+id/deviceFragment"
-        android:name="com.example.canorecoapp.DeviceFragment"
-        android:label="fragment_device"
-        tools:layout="@layout/fragment_device" />
+        android:id="@+id/homeLineMenFragment"
+        android:name="com.example.canorecoapp.views.linemen.home.HomeLineMenFragment"
+        android:label="fragment_home_line_men"
+        tools:layout="@layout/fragment_home_line_men" />
 </navigation>

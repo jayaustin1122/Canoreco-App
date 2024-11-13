@@ -231,11 +231,11 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
             Log.d("PolygonClick", "Polygon tag is null")
         }
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         checkPermissionLocation()
         showPolygonsBasedOnFirestore()
+
         binding.viewListButton.setOnClickListener {
             val detailsFragment = ListOfFutureAndCurrentOutagesFragment()
             val bundle = Bundle().apply {
@@ -244,7 +244,10 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
             detailsFragment.arguments = bundle
             findNavController().navigate(R.id.listOfFutureAndCurrentOutagesFragment, bundle)
         }
+
+
     }
+
 
     override fun onMarkerClick(marker: Marker): Boolean {
         val dataKey = marker.tag as? String
@@ -334,6 +337,7 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
         }
     }
     private fun showAllDevicesLocations() {
+
         val databaseReference = FirebaseDatabase.getInstance().getReference("devices")
         databaseReference.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -343,7 +347,27 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
                     val lat = deviceSnapshot.child("latitude").getValue(Double::class.java)
                     val lng = deviceSnapshot.child("longitude").getValue(Double::class.java)
                     val status = deviceSnapshot.child("status").getValue(String::class.java)
+                    val markerUtils = MapMarkerUtils(gMap!!, requireContext())
 
+                    val locations = listOf(
+                        LatLng(14.109765, 122.956072), //marker 0
+                        LatLng(14.109961, 122.956388), //marker 1
+                        LatLng(14.109938, 122.956609), //marker 2
+                        LatLng(14.109945, 122.956874), //marker 3
+                        LatLng(14.109945, 122.957223), //marker 4
+                        LatLng(14.109960, 122.957502), //marker 5
+                        LatLng(14.109957, 122.957803), //marker 6
+                        LatLng(14.109772, 122.957940), //marker 7
+                        LatLng(14.108858, 122.958050), //marker 8
+                        LatLng(14.109774, 122.956433), //marker 9
+                        LatLng(14.109631, 122.956621), //marker 10
+                        LatLng(14.109021, 122.956862), //marker 11
+                        LatLng(14.108806, 122.956621), //marker 12
+                        LatLng(14.108798, 122.956323), //marker 13
+                    )
+
+                    // Add the markers to the map
+                    markerUtils.addMarkers(locations)
                     if (lat != null && lng != null && status != null) {
                         val color = when (status.lowercase()) {
                             "working" -> Color.BLUE
@@ -395,31 +419,17 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
         gMap = googleMap
         val camarinesNorte = LatLng(14.222795, 122.689153)
         val zoomLevel = 9.4f
+
+        // Set marker click listener
         gMap?.setOnMarkerClickListener(this)
-        val markerUtils = MapMarkerUtils(gMap!!,requireContext())
 
-        val locations = listOf(
-            LatLng(14.109765, 122.956072),//marker 0
-            LatLng(14.109961, 122.956388),//marker 1
-            LatLng(14.109938, 122.956609),//marker 2
-            LatLng(14.109945, 122.956874),//marker 3
-            LatLng(14.109945, 122.957223),//marker 4
-            LatLng(14.109960, 122.957502),//marker 5
-            LatLng(14.109957, 122.957803),//marker 6
-            LatLng(14.109772, 122.957940),//marker 7
-            LatLng(14.108858, 122.958050),//marker 8
-
-
-            LatLng(14.109774, 122.956433),//marker 9
-            LatLng(14.109631, 122.956621),//marker 10
-            LatLng(14.109021, 122.956862),//marker 11
-            LatLng(14.108806, 122.956621),//marker 12
-            LatLng(14.108798, 122.956323),//marker 13
-        )
-
-        markerUtils.addMarkers(locations)
+        // Move camera to initial position
         gMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(camarinesNorte, zoomLevel))
+
+        // Show all devices locations or other markers
         showAllDevicesLocations()
+
+        // Add markers for specific locations
 
     }
 
