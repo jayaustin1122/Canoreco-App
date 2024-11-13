@@ -150,8 +150,11 @@ class ChangePersonalFragment : Fragment() {
 
 
         binding.btnSave.setOnClickListener {
-
-            uploadImage()
+            DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to update your personal information?."
+            ) { sweetAlertDialog ->
+                sweetAlertDialog.dismissWithAnimation()
+                uploadImage()
+            }
         }
         binding.etBirthDate.setOnClickListener {
             showDatePickerDialog()

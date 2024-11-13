@@ -127,7 +127,12 @@ class ChangeContactAddressFragment : Fragment() {
             val selectedBarangay = parent.getItemAtPosition(position).toString()
         }
         binding.btnSave.setOnClickListener {
-            validateData()
+            DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to update your contact information? Changes will be saved."
+            ) { sweetAlertDialog ->
+                sweetAlertDialog.dismissWithAnimation()
+                validateData()
+            }
+
         }
     }
     @SuppressLint("ClickableViewAccessibility")
