@@ -135,6 +135,7 @@ class DetailsOutageFragment : BottomSheetDialogFragment() {
                     val startTime = child.child("startTime").getValue(String::class.java) ?: ""
                     val endTime = child.child("endTime").getValue(String::class.java) ?: ""
                     val status = child.child("status").getValue(String::class.java) ?: ""
+                    val barangays = child.child("barangay").getValue(String::class.java) ?: ""
 
                     // Create DeviceInfo object with all fields
                     val device = DeviceInfo(
@@ -151,10 +152,21 @@ class DetailsOutageFragment : BottomSheetDialogFragment() {
                         binding.tvOutageStatus.visibility = View.GONE
                         binding.tvEstimatedTimeResolution.text = "Scheduled Date of Power Interruption:"
                         binding.tvUpdated.text = "Updated As of: $formattedDate"
-                        if (endTime.isNullOrEmpty() && startTime.isNullOrEmpty()) {
+                        if (status == "damaged") {
+                            val steps = listOf("Outage Detected", "Outage Under Repair", "Power Restored")
+                            binding.stepView.setSteps(steps)
                             binding.tvAddressInfo.text = "This address may be affected by a sudden power outage. Please wait for the linemen to estimate the working hours. Thank you!"
+                            binding.stepView.go(0, true)
+                            binding.stepView.visibility = View.VISIBLE
                             binding.tvTime.text = ""
-                        } else {
+                            binding.tvEstimatedTimeResolution.text = "Address: $barangays"
+                        } else if(status == "under repair")  {
+                            val steps = listOf("Outage Detected", "Outage Under Repair", "Power Restored")
+                            binding.stepView.setSteps(steps)
+                            binding.stepView.go(1, true)
+                            binding.tvEstimatedTimeResolution.text = "Address: $barangays"
+                            binding.stepView.visibility = View.VISIBLE
+                            binding.tvTime.text = ""
                             binding.tvAddressInfo.text = "This address may be affected by a sudden power outage. Estimated working hours: $formattedTime."
                         }
 

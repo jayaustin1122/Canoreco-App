@@ -205,7 +205,7 @@ class CurrentOutagesMapFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMa
 
                 documentId?.let {
                     currentLocations.add(it)
-                    if (status == "damaged") {
+                    if (status == "damaged" || status == "under repair"){
                         damagedLocations.add(it)
                     } else {
                         damagedLocations.remove(it)
