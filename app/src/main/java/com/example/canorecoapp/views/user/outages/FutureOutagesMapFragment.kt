@@ -212,15 +212,7 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
         return LatLng(centroidLat, centroidLng)
     }
 
-    private fun zoomIn(location: LatLng? = null) {
-        gMap?.let {
-            val cameraPosition = it.cameraPosition
-            val targetLocation = location ?: cameraPosition.target
-            val newZoom = cameraPosition.zoom + 5.0f
-            val newCameraPosition = CameraUpdateFactory.newLatLngZoom(targetLocation, newZoom)
-            it.animateCamera(newCameraPosition)
-        }
-    }
+
 
     override fun onMarkerClick(marker: Marker): Boolean {
         val dataKey = marker.tag as? String
@@ -238,26 +230,7 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
         }
     }
 
-    private fun getLocationName(latitude: String?, longitude: String?, locationTextView: TextView) {
-        val latitudeValue = latitude?.toDoubleOrNull()
-        val longitudeValue = longitude?.toDoubleOrNull()
 
-        if (latitudeValue != null && longitudeValue != null) {
-            val geocoder = Geocoder(requireContext(), Locale.getDefault())
-
-            try {
-                val addresses = geocoder.getFromLocation(latitudeValue, longitudeValue, 1)
-                if (addresses != null) {
-                    locationTextView.text = addresses.firstOrNull()?.getAddressLine(0) ?: "Unknown Location"
-                }
-            } catch (e: IOException) {
-                Log.e("Geocoding", "Error getting location name: ${e.message}")
-                locationTextView.text = "Error getting location name"
-            }
-        } else {
-            locationTextView.text = "Invalid Coordinates"
-        }
-    }
 
     private fun checkPermissionLocation() {
         if (ActivityCompat.checkSelfPermission(

@@ -39,7 +39,6 @@ class NotificationService : Service() {
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
         startListeningForNotifications()
-        startListeningForDeviceStatuses()
     }
 
 

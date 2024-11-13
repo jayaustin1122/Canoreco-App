@@ -50,17 +50,47 @@ class DetailsOutageFragment : BottomSheetDialogFragment() {
                 if (!result.isEmpty) {
 
                     for (document in result) {
-                        val timestamp = document.getString("title")
+                        val timestamp = document.getString("timestamp")
+                        val timestampString = document.getString("timestamp") ?: ""
+                        val status = document.getString("status") ?: ""
+                        val startTime = document.getString("startTime") ?: ""
+                        val endTime = document.getString("endTime") ?: ""
+                        val date = document.getString("date") ?: ""
+                        val steps = listOf("Outage Detected", "Outage Under Repair", "Power Restored")
+                        binding.stepView.setSteps(steps)
+                        val formattedDate = parseAndFormatDatse(timestampString)
+                        if (from == "Maintenance"|| from == "future"){
+                            Log.e("from", "from is $from")
+                            binding.stepView.visibility = View.GONE
+                            binding.tvOutageStatus.visibility = View.GONE
+                            binding.tvEstimatedTimeResolution.text = "Scheduled Date of Power Interruption:"
+                            binding.tvUpdated.text = "Updated As of maintenance: $formattedDate"
 
-                        timestamp?.let {
-                            getNews(timestamp,from,barangayName)
-                        } ?: run {
-                            Toast.makeText(
-                                requireContext(),
-                                "Timestamp not found for $barangayName",
-                                Toast.LENGTH_SHORT
-                            ).show()
                         }
+
+                        else{
+                            when (status) {
+                                "Outage Detected" -> {
+                                    binding.stepView.go(0, true)
+                                }
+                                "Outage Under Repair" -> {
+                                    binding.stepView.go(1, true)
+                                }
+                                "Power Restored" -> {
+                                    binding.stepView.go(2, true)
+                                }
+                                else -> {
+                                    binding.stepView.go(0, true)
+                                }
+                            }
+                        }
+                        binding.tvUpdated.text = "Updated As of: $formattedDate"
+                        Log.e("from", "from is $from")
+                        val formattedTime = formatTimeRange(startTime, endTime)
+                        binding.tvAddressInfo.text = "This address may be affected by an outage. Estimated working hours: $formattedTime."
+                        binding.tvTime.text = date
+                        Log.d("sample", "$timestamp")
+
                     }
                 } else {
                     showDataInRealTime(barangayName)
@@ -71,57 +101,7 @@ class DetailsOutageFragment : BottomSheetDialogFragment() {
                 Toast.makeText(requireContext(), "Failed to fetch data", Toast.LENGTH_SHORT).show()
             }
     }
-    private fun getNews(title: String?, from: String?, barangayName: String) {
-        val db = FirebaseFirestore.getInstance()
-        val ref = db.collection("news")
 
-        ref.whereEqualTo("title", title).get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    val timestampString = document.getString("timestamp") ?: ""
-                    val status = document.getString("status") ?: ""
-                    val startTime = document.getString("startTime") ?: ""
-                    val endTime = document.getString("endTime") ?: ""
-                    val date = document.getString("date") ?: ""
-                    val steps = listOf("Outage Detected", "Outage Under Repair", "Power Restored")
-                    binding.stepView.setSteps(steps)
-                    val formattedDate = parseAndFormatDatse(timestampString)
-                    if (from == "Maintenance"|| from == "future"){
-                        Log.e("from", "from is $from")
-                        binding.stepView.visibility = View.GONE
-                        binding.tvOutageStatus.visibility = View.GONE
-                        binding.tvEstimatedTimeResolution.text = "Scheduled Date of Power Interruption:"
-                        binding.tvUpdated.text = "Updated As of maintenance: $formattedDate"
-
-                    }
-
-                    else{
-                        when (status) {
-                            "Outage Detected" -> {
-                                binding.stepView.go(0, true)
-                            }
-                            "Outage Under Repair" -> {
-                                binding.stepView.go(1, true)
-                            }
-                            "Power Restored" -> {
-                                binding.stepView.go(2, true)
-                            }
-                            else -> {
-                                binding.stepView.go(0, true)
-                            }
-                        }
-                    }
-                    binding.tvUpdated.text = "Updated As of: $formattedDate"
-                    Log.e("from", "from is $from")
-                    val formattedTime = formatTimeRange(startTime, endTime)
-                    binding.tvAddressInfo.text = "This address may be affected by an outage. Estimated working hours: $formattedTime."
-                    binding.tvTime.text = date
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.e("Home", "Error getting documents: ", exception)
-            }
-    }
     private fun formatTimeRange(startTime: String, endTime: String): String {
         return try {
             val inputFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -155,6 +135,7 @@ class DetailsOutageFragment : BottomSheetDialogFragment() {
                     val startTime = child.child("startTime").getValue(String::class.java) ?: ""
                     val endTime = child.child("endTime").getValue(String::class.java) ?: ""
                     val status = child.child("status").getValue(String::class.java) ?: ""
+                    val barangays = child.child("barangay").getValue(String::class.java) ?: ""
 
                     // Create DeviceInfo object with all fields
                     val device = DeviceInfo(
@@ -171,10 +152,21 @@ class DetailsOutageFragment : BottomSheetDialogFragment() {
                         binding.tvOutageStatus.visibility = View.GONE
                         binding.tvEstimatedTimeResolution.text = "Scheduled Date of Power Interruption:"
                         binding.tvUpdated.text = "Updated As of: $formattedDate"
-                        if (endTime.isNullOrEmpty() && startTime.isNullOrEmpty()) {
+                        if (status == "damaged") {
+                            val steps = listOf("Outage Detected", "Outage Under Repair", "Power Restored")
+                            binding.stepView.setSteps(steps)
                             binding.tvAddressInfo.text = "This address may be affected by a sudden power outage. Please wait for the linemen to estimate the working hours. Thank you!"
+                            binding.stepView.go(0, true)
+                            binding.stepView.visibility = View.VISIBLE
                             binding.tvTime.text = ""
-                        } else {
+                            binding.tvEstimatedTimeResolution.text = "Address: $barangays"
+                        } else if(status == "under repair")  {
+                            val steps = listOf("Outage Detected", "Outage Under Repair", "Power Restored")
+                            binding.stepView.setSteps(steps)
+                            binding.stepView.go(1, true)
+                            binding.tvEstimatedTimeResolution.text = "Address: $barangays"
+                            binding.stepView.visibility = View.VISIBLE
+                            binding.tvTime.text = ""
                             binding.tvAddressInfo.text = "This address may be affected by a sudden power outage. Estimated working hours: $formattedTime."
                         }
 

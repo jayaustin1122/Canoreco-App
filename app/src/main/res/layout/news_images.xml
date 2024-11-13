@@ -12,9 +12,10 @@
 
     <ImageView
         android:id="@+id/imageBackground"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_width="360dp"
+        android:layout_height="400dp"
         android:scaleType="fitXY"
+        android:src="@drawable/nodata"
         android:background="@color/white" />
 
 </androidx.cardview.widget.CardView>
