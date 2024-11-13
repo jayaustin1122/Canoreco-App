@@ -375,8 +375,13 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 if (userBarangay == barangay) {
                     Log.d("DeviceNotifFragment", "User $userId matched idArea: $userBarangay with passed id: $id")
 
-                    val notificationTitle = "Electric post in $barangay"
-                    val notificationMessage = "An Electric post in $barangay is $status."
+                    val notificationTitle = "Electric post status update in $barangay"
+                    val notificationMessage = when (status) {
+                        "damaged" -> "Attention: The electric post in $barangay is reported damaged. Our team is addressing the issue."
+                        "working" -> "Good news: The electric post in $barangay is now back to full operation. Thank you for your patience."
+                        "under repair" -> "Update: The electric post in $barangay is under repair. Service will resume soon."
+                        else -> "Notification: The electric post in $barangay has an unknown status. Please contact support for more details."
+                    }
                     val timestamp = System.currentTimeMillis() / 1000
                     val notificationData = mapOf(
                         "title" to notificationTitle,
@@ -413,8 +418,13 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 val userId = userDoc.id
                 val userPhone = userDoc.getString("phone") // Assuming there's a 'phone' field
                 val userEmail = userDoc.getString("email") ?: "No Email"
-                val notificationTitle = "Electric Post Repaired in $barangay"
-                val notificationMessage = "A device in your Barangay: $barangay has been $status"
+                val notificationTitle = "Electric post status update in $barangay"
+                val notificationMessage = when (status) {
+                    "damaged" -> "Alert: The electric post in $barangay is currently damaged. Our team is working to resolve the issue as soon as possible. Please stay safe."
+                    "working" -> "Update: The electric post in $barangay is now fully operational. Thank you for your patience."
+                    "under repair" -> "Notice: The electric post in $barangay is currently under repair. Service will be restored shortly. We apologize for the inconvenience."
+                    else -> "Notification: The electric post in $barangay has an unknown status. Please contact support for more information."
+                }
                 val timestamp = System.currentTimeMillis() / 1000
                 val notificationData = mapOf(
                     "title" to notificationTitle,
