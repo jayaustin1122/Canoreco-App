@@ -21,7 +21,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.example.canorecoapp.databinding.FragmentDeviceNotifBinding
+import com.example.canorecoapp.viewmodels.DeviceViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -42,6 +44,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private lateinit var auth: FirebaseAuth
     private lateinit var realtimeDatabase: FirebaseDatabase
     private lateinit var devicesRef: DatabaseReference
+    private val viewModel: DeviceViewModel by viewModels()
 
     private var notificationsListener: ListenerRegistration? = null
 
@@ -74,6 +77,32 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         startListeningForDeviceStatuse2()
         startListeningForSms()
         startListeningForNotifications()
+        // Observe real-time changes for device 9000
+        viewModel.device9000Status.observe(viewLifecycleOwner) { status ->
+            binding.buttonDevice9000.text = "Device 9000 ($status)"
+            binding.buttonDevice9000.setBackgroundColor(
+                if (status == "damaged") Color.RED else Color.BLUE
+            )
+        }
+
+        // Observe real-time changes for device 9001
+        viewModel.device9001Status.observe(viewLifecycleOwner) { status ->
+            binding.buttonDevice9001.text = "Device 9001 ($status)"
+            binding.buttonDevice9001.setBackgroundColor(
+                if (status == "damaged") Color.RED else Color.BLUE
+            )
+        }
+
+        // Handle button clicks
+        binding.buttonDevice9000.setOnClickListener {
+            val currentStatus = viewModel.device9000Status.value ?: "working"
+            viewModel.toggleDeviceStatus("9000", currentStatus)
+        }
+
+        binding.buttonDevice9001.setOnClickListener {
+            val currentStatus = viewModel.device9001Status.value ?: "working"
+            viewModel.toggleDeviceStatus("9001", currentStatus)
+        }
     }
 
     private fun startListeningForNotifications() {
