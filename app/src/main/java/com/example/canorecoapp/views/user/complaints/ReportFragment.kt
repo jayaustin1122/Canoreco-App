@@ -157,7 +157,7 @@ class ReportFragment : Fragment() {
         }
 
         binding.submitButton.setOnClickListener {
-            DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to update your personal information?."
+            DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to report this complaint?."
             ) { sweetAlertDialog ->
                 sweetAlertDialog.dismissWithAnimation()
                 loadingDialog = DialogUtils.showLoading(requireActivity())
