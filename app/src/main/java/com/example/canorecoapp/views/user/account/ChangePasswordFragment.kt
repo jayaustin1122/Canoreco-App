@@ -24,7 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 
 class ChangePasswordFragment : Fragment() {
-    private lateinit var binding : FragmentChangePasswordBinding
+    private lateinit var binding: FragmentChangePasswordBinding
     private val viewModel: UserViewModel by viewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,7 +51,11 @@ class ChangePasswordFragment : Fragment() {
             userInfo?.let {
                 binding.apply {
                     btnSave.setOnClickListener {
-                        validateData(userInfo.password, userInfo.email)
+                        DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to update your password?."
+                        ) { sweetAlertDialog ->
+                            sweetAlertDialog.dismissWithAnimation()
+                            validateData(userInfo.password, userInfo.email)
+                        }
                     }
                 }
                 if (userInfo.userType == "member") {
@@ -114,26 +118,24 @@ class ChangePasswordFragment : Fragment() {
     }
 
     private fun validateData(password: String?, email: String?) {
-         val oldPass = binding.etOldPassword.text.toString().trim()
-         val confirmPass = binding.etConfirmPassword.text.toString().trim()
-         val newPass = binding.etNewPassword.text.toString().trim()
+        val oldPass = binding.etOldPassword.text.toString().trim()
+        val confirmPass = binding.etConfirmPassword.text.toString().trim()
+        val newPass = binding.etNewPassword.text.toString().trim()
 
 
-             if (oldPass.isEmpty()) {
-                Toast.makeText(requireContext(), "Password cannot be empty", Toast.LENGTH_SHORT).show()
-                return
-            }
-            else if (confirmPass.isEmpty()) {
-                Toast.makeText(requireContext(), "Please confirm your password", Toast.LENGTH_SHORT).show()
-                return
-            }
-            else if (newPass != confirmPass) {
-                Toast.makeText(requireContext(), "Passwords do not match", Toast.LENGTH_SHORT).show()
-                return
-            }
-            else {
-                 updatePassword(password,email)
-             }
+        if (oldPass.isEmpty()) {
+            Toast.makeText(requireContext(), "Password cannot be empty", Toast.LENGTH_SHORT).show()
+            return
+        } else if (confirmPass.isEmpty()) {
+            Toast.makeText(requireContext(), "Please confirm your password", Toast.LENGTH_SHORT)
+                .show()
+            return
+        } else if (newPass != confirmPass) {
+            Toast.makeText(requireContext(), "Passwords do not match", Toast.LENGTH_SHORT).show()
+            return
+        } else {
+            updatePassword(password, email)
+        }
 
     }
 
@@ -154,45 +156,66 @@ class ChangePasswordFragment : Fragment() {
                 // Update password in Firebase Authentication
                 user.updatePassword(newPassword).addOnCompleteListener {
                     if (it.isSuccessful) {
-                        Toast.makeText(requireContext(), "Password Updated", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Password Updated", Toast.LENGTH_SHORT)
+                            .show()
                         // Update the password field in Firestore
                         firestore.collection("users")
                             .document(userId!!)
                             .update("password", newPassword)
                             .addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
-                                    viewModel.userInfo.observe(viewLifecycleOwner, Observer { userInfo ->
-                                        userInfo?.let {
-                                            if (userInfo.userType == "member") {
-                                                val bundle = Bundle().apply {
-                                                    putInt("selectedFragmentId", R.id.navigation_account)
+                                    viewModel.userInfo.observe(
+                                        viewLifecycleOwner,
+                                        Observer { userInfo ->
+                                            userInfo?.let {
+                                                if (userInfo.userType == "member") {
+                                                    val bundle = Bundle().apply {
+                                                        putInt(
+                                                            "selectedFragmentId",
+                                                            R.id.navigation_account
+                                                        )
+                                                    }
+                                                    findNavController().navigate(
+                                                        R.id.userHolderFragment,
+                                                        bundle
+                                                    )
+                                                } else {
+                                                    val bundle = Bundle().apply {
+                                                        putInt(
+                                                            "selectedFragmentId",
+                                                            R.id.navigation_account_linemen
+                                                        )
+                                                    }
+                                                    findNavController().navigate(
+                                                        R.id.adminHolderFragment,
+                                                        bundle
+                                                    )
                                                 }
-                                                findNavController().navigate(
-                                                    R.id.userHolderFragment,
-                                                    bundle
-                                                )
-                                            } else {
-                                                val bundle = Bundle().apply {
-                                                    putInt("selectedFragmentId", R.id.navigation_account_linemen)
-                                                }
-                                                findNavController().navigate(R.id.adminHolderFragment, bundle)
                                             }
-                                        }
-                                    })
+                                        })
                                 } else {
                                     Toast.makeText(
                                         this.requireContext(),
-                                        task.exception?.message ?: "Error updating password in Firestore",
+                                        task.exception?.message
+                                            ?: "Error updating password in Firestore",
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
                             }
                     } else {
-                        Toast.makeText(requireContext(), "Your Old Password is wrong please check and try again", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            "Your Old Password is wrong please check and try again",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             } else {
-                Toast.makeText(requireContext(), "Your Old Password is wrong please check and try again",  Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    "Your Old Password is wrong please check and try again",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }

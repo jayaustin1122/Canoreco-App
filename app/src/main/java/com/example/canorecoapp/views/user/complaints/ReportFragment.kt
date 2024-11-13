@@ -157,9 +157,14 @@ class ReportFragment : Fragment() {
         }
 
         binding.submitButton.setOnClickListener {
-            loadingDialog = DialogUtils.showLoading(requireActivity())
-            loadingDialog.show()
-            validateData()
+            DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to update your personal information?."
+            ) { sweetAlertDialog ->
+                sweetAlertDialog.dismissWithAnimation()
+                loadingDialog = DialogUtils.showLoading(requireActivity())
+                loadingDialog.show()
+                validateData()
+            }
+
         }
 
         binding.backButton.setOnClickListener {
@@ -288,11 +293,14 @@ class ReportFragment : Fragment() {
             report.isEmpty() -> {
                 Toast.makeText(requireContext(), "Please select a Report Type", Toast.LENGTH_SHORT)
                     .show()
+
+                loadingDialog.dismiss()
             }
 
             concern.isEmpty() -> {
                 Toast.makeText(requireContext(), "Please select a Concern", Toast.LENGTH_SHORT)
                     .show()
+                loadingDialog.dismiss()
             }
 
             concernDescription.isEmpty() -> {
@@ -301,21 +309,25 @@ class ReportFragment : Fragment() {
                     "Concern Description cannot be empty",
                     Toast.LENGTH_SHORT
                 ).show()
+                loadingDialog.dismiss()
             }
 
             municipality.isEmpty() -> {
                 Toast.makeText(requireContext(), "Please select a Municipality", Toast.LENGTH_SHORT)
                     .show()
+                loadingDialog.dismiss()
             }
 
             barangay.isEmpty() -> {
                 Toast.makeText(requireContext(), "Please select a Barangay", Toast.LENGTH_SHORT)
                     .show()
+                loadingDialog.dismiss()
             }
 
             selectedImage == null -> {
                 Toast.makeText(requireContext(), "Please upload a picture", Toast.LENGTH_SHORT)
                     .show()
+                loadingDialog.dismiss()
             }
 
             else -> {
