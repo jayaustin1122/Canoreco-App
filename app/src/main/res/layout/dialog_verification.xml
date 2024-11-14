@@ -30,6 +30,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dimen_15dp"
+        android:backgroundTint="@color/primary_main_color"
+        android:fontFamily="@font/roboto_medium"
+        android:textColor="@color/primary_light_color"
         android:text="Continue"
         android:enabled="false" />
 
