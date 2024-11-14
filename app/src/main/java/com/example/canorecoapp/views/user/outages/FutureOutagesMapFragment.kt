@@ -146,8 +146,9 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
                             polygonOptions.add(latLng)
                         }
                         val centroid = calculateCentroid(latLngList)
-                        polygonOptions.strokeColor(Color.GRAY)
-                        polygonOptions.fillColor(Color.argb(150, 200, 200, 200))
+
+                        polygonOptions.strokeColor(Color.parseColor("#ff7b07"))
+                        polygonOptions.fillColor(Color.parseColor("#80FF7B07"))
                         polygonOptions.strokeWidth(3f)
 
                         val polygon = gMap?.addPolygon(polygonOptions)
@@ -157,7 +158,7 @@ class FutureOutagesMapFragment : Fragment() , OnMapReadyCallback, GoogleMap.OnMa
                         val markerOptions = MarkerOptions()
                             .position(centroid)
                             .title(barangayName)
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.img_outage_pin_orange))
                         val marker = gMap?.addMarker(markerOptions)
                         marker?.tag = barangayName
                         Log.d("MarkerTag", "Assigned tag: $barangayName to marker")

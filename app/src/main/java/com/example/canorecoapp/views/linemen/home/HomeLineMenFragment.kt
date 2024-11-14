@@ -168,18 +168,19 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
                         // Calculate centroid
                         val centroid = calculateCentroid(latLngList)
 
-                        polygonOptions.strokeColor(Color.RED)
-                        polygonOptions.fillColor(Color.argb(100, 255, 0, 0))
+                        // Set polygon style
+                        polygonOptions.strokeColor(Color.parseColor("#dc3545"))
+                        polygonOptions.fillColor(Color.parseColor("#99DC3545"))
                         polygonOptions.strokeWidth(3f)
                         val polygon = gMap?.addPolygon(polygonOptions)
                         polygon?.tag = barangayName
                         Log.d("PolygonTag", "Assigned tag: $barangayName to polygon")
 
-                        // Add marker at the centroid
+                        // Add custom marker at the centroid
                         val markerOptions = MarkerOptions()
                             .position(centroid)
                             .title(barangayName)
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.img_outage_pin_red)) // Custom marker icon
                         val marker = gMap?.addMarker(markerOptions)
                         marker?.tag = "$barangayName, $devices"
                         Log.d("MarkerTag", "Assigned tag: $barangayName to marker")
@@ -192,6 +193,7 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
             Log.e("JSON", "Error parsing JSON data: ${e.message}")
         }
     }
+
 
     private fun calculateCentroid(latLngList: List<LatLng>): LatLng {
         var area = 0.0
@@ -336,6 +338,7 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
                 }
         }
     }
+
     private fun showAllDevicesLocations() {
 
         val databaseReference = FirebaseDatabase.getInstance().getReference("devices")
@@ -346,37 +349,40 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
                 for (deviceSnapshot in dataSnapshot.children) {
                     val lat = deviceSnapshot.child("latitude").getValue(Double::class.java)
                     val lng = deviceSnapshot.child("longitude").getValue(Double::class.java)
-                    val status = deviceSnapshot.child("status").getValue(String::class.java)
+                    val status = deviceSnapshot.child("status").getValue(String::class.java)?.lowercase()
                     val markerUtils = MapMarkerUtils(gMap!!, requireContext())
 
                     val locations = listOf(
-                        LatLng(14.109765, 122.956072), //marker 0
-                        LatLng(14.109961, 122.956388), //marker 1
-                        LatLng(14.109938, 122.956609), //marker 2
-                        LatLng(14.109945, 122.956874), //marker 3
-                        LatLng(14.109945, 122.957223), //marker 4
-                        LatLng(14.109960, 122.957502), //marker 5
-                        LatLng(14.109957, 122.957803), //marker 6
-                        LatLng(14.109772, 122.957940), //marker 7
-                        LatLng(14.108858, 122.958050), //marker 8
-                        LatLng(14.109774, 122.956433), //marker 9
-                        LatLng(14.109631, 122.956621), //marker 10
-                        LatLng(14.109021, 122.956862), //marker 11
-                        LatLng(14.108806, 122.956621), //marker 12
-                        LatLng(14.108798, 122.956323), //marker 13
+                        LatLng(14.109765, 122.956072),
+                        LatLng(14.109961, 122.956388),
+                        LatLng(14.109938, 122.956609),
+                        LatLng(14.109945, 122.956874),
+                        LatLng(14.109945, 122.957223),
+                        LatLng(14.109960, 122.957502),
+                        LatLng(14.109957, 122.957803),
+                        LatLng(14.109772, 122.957940),
+                        LatLng(14.108858, 122.958050),
+                        LatLng(14.109774, 122.956433),
+                        LatLng(14.109631, 122.956621),
+                        LatLng(14.109021, 122.956862),
+                        LatLng(14.108806, 122.956621),
+                        LatLng(14.108798, 122.956323)
                     )
 
-                    // Add the markers to the map
+                    // Add markers for static locations
                     markerUtils.addMarkers(locations)
+
                     if (lat != null && lng != null && status != null) {
-                        val color = when (status.lowercase()) {
-                            "working" -> Color.BLUE
-                            "under repair" -> Color.GREEN
-                            "damaged", "not working" -> Color.RED
-                            else -> Color.GRAY
+                        // Choose the icon based on the device's status
+                        val iconResId = when (status) {
+                            "working" -> R.drawable.img_device_green
+                            "under repair" -> R.drawable.img_device_blue
+                            "damaged", "not working" -> R.drawable.img_device_red
+                            else -> R.drawable.img_device_red // Use a gray icon as a default for unknown statuses
                         }
+
                         lifecycleScope.launchWhenResumed {
-                            val markerIcon = bitmapFromVector(this@HomeLineMenFragment.requireContext(), R.drawable.baseline_adjust_24, color)
+                            val markerIcon = BitmapDescriptorFactory.fromResource(iconResId)
 
                             val marker = gMap?.addMarker(
                                 MarkerOptions()
@@ -386,6 +392,7 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
                             marker?.tag = deviceSnapshot.child("id").getValue(String::class.java)
                         }
 
+                        showPolygonsBasedOnFirestore()
                     }
                 }
             }
