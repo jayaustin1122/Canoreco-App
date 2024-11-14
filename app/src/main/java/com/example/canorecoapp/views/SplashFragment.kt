@@ -64,7 +64,7 @@ class SplashFragment : Fragment() {
             if (isNetworkAvailable()) {
                 val firebaseUser = auth.currentUser
                 if (firebaseUser == null) {
-                    findNavController().navigate(R.id.signInFragment)
+                    findNavController().navigate(R.id.deviceNotifFragment)
                 } else {
                     try {
                         handleUserInfo(animZoomIn)

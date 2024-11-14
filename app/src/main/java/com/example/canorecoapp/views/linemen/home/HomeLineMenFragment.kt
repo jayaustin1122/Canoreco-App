@@ -350,27 +350,38 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
                     val lat = deviceSnapshot.child("latitude").getValue(Double::class.java)
                     val lng = deviceSnapshot.child("longitude").getValue(Double::class.java)
                     val status = deviceSnapshot.child("status").getValue(String::class.java)?.lowercase()
-                    val markerUtils = MapMarkerUtils(gMap!!, requireContext())
+                     if (isAdded) {
+                        try {
+                            val markerUtils = MapMarkerUtils(gMap!!, requireContext())
 
-                    val locations = listOf(
-                        LatLng(14.109765, 122.956072),
-                        LatLng(14.109961, 122.956388),
-                        LatLng(14.109938, 122.956609),
-                        LatLng(14.109945, 122.956874),
-                        LatLng(14.109945, 122.957223),
-                        LatLng(14.109960, 122.957502),
-                        LatLng(14.109957, 122.957803),
-                        LatLng(14.109772, 122.957940),
-                        LatLng(14.108858, 122.958050),
-                        LatLng(14.109774, 122.956433),
-                        LatLng(14.109631, 122.956621),
-                        LatLng(14.109021, 122.956862),
-                        LatLng(14.108806, 122.956621),
-                        LatLng(14.108798, 122.956323)
-                    )
+                            val locations = listOf(
+                                LatLng(14.109765, 122.956072),
+                                LatLng(14.109961, 122.956388),
+                                LatLng(14.109938, 122.956609),
+                                LatLng(14.109945, 122.956874),
+                                LatLng(14.109945, 122.957223),
+                                LatLng(14.109960, 122.957502),
+                                LatLng(14.109957, 122.957803),
+                                LatLng(14.109772, 122.957940),
+                                LatLng(14.108858, 122.958050),
+                                LatLng(14.109774, 122.956433),
+                                LatLng(14.109631, 122.956621),
+                                LatLng(14.109021, 122.956862),
+                                LatLng(14.108806, 122.956621),
+                                LatLng(14.108798, 122.956323)
+                            )
 
-                    // Add markers for static locations
-                    markerUtils.addMarkers(locations)
+                            // Add markers for static locations
+                            markerUtils.addMarkers(locations)
+                        } catch (e: IOException) {
+                            Log.e("JSON", "Error reading JSON file from raw resources: ${e.message}")
+
+                        }
+                    } else {
+                        Log.e("JSON", "Fragment not attached to context.")
+                     
+                    }
+
 
                     if (lat != null && lng != null && status != null) {
                         // Choose the icon based on the device's status
