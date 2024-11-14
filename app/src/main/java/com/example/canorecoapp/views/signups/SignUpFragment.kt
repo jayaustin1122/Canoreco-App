@@ -1,11 +1,13 @@
 package com.example.canorecoapp.views.signups
 
+import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.ViewModelProvider
@@ -14,6 +16,8 @@ import androidx.viewpager2.widget.ViewPager2
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.canorecoapp.R
 import com.example.canorecoapp.adapter.SignUpAdapters
+import com.example.canorecoapp.databinding.DialogLoginBinding
+import com.example.canorecoapp.databinding.DialogReviewBinding
 import com.example.canorecoapp.databinding.FragmentSignUpBinding
 import com.example.canorecoapp.utils.DialogUtils
 import com.example.canorecoapp.utils.FirebaseUtils
@@ -390,6 +394,8 @@ class SignUpFragment : Fragment() {
                         "Success",
                         "Account created successfully"
                     ).show()
+
+                    showReviewDialog()
                     if (task.isSuccessful) {
                         findNavController().apply {
                             popBackStack(R.id.signUpFragment, false)
@@ -414,6 +420,15 @@ class SignUpFragment : Fragment() {
             ).show()
         }
     }
-
+    private fun showReviewDialog() {
+        val dialogBinding = DialogLoginBinding.inflate(layoutInflater)
+        val dialog = Dialog(requireContext())
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialogBinding.btnDismiss.setOnClickListener {
+            dialog.dismiss()
+        }
+        dialog.setContentView(dialogBinding.root)
+        dialog.show()
+    }
 
 }
