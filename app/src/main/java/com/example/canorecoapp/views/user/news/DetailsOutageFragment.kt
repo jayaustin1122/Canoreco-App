@@ -84,6 +84,7 @@ class DetailsOutageFragment : BottomSheetDialogFragment() {
                                 }
                             }
                         }
+                        binding.stepView.go(1, true)
                         binding.tvUpdated.text = "Updated As of: $formattedDate"
                         Log.e("from", "from is $from")
                         val formattedTime = formatTimeRange(startTime, endTime)

@@ -24,35 +24,35 @@
                     .icon(markerIcon)
                 googleMap.addMarker(markerOptions)
             }
-
-            if (locations.size > 1) {
-                // Add line from marker 1 to marker 2
-                val polylineOptions1 = PolylineOptions().add(
-                    locations[0],
-                    locations[1],
-                    locations[2],
-                    locations[3],
-                    locations[4],
-                    locations[5],
-                    locations[6],
-                    locations[7],
-                    locations[8],
-                ).color(Color.RED).width(5f)
-                googleMap.addPolyline(polylineOptions1)
-            }
-
-            if (locations.size > 2) {
-                // Add line from marker 1 to marker 3
-                val polylineOptions2 = PolylineOptions().add(
-                    locations[0],
-                    locations[9],
-                    locations[10],
-                    locations[11],
-                    locations[12],
-                    locations[13],
-                    ).color(Color.BLUE).width(5f)
-                googleMap.addPolyline(polylineOptions2)
-            }
+//
+//            if (locations.size > 1) {
+//                // Add line from marker 1 to marker 2
+//                val polylineOptions1 = PolylineOptions().add(
+//                    locations[0],
+//                    locations[1],
+//                    locations[2],
+//                    locations[3],
+//                    locations[4],
+//                    locations[5],
+//                    locations[6],
+//                    locations[7],
+//                    locations[8],
+//                ).color(Color.RED).width(5f)
+//                googleMap.addPolyline(polylineOptions1)
+//            }
+//
+//            if (locations.size > 2) {
+//                // Add line from marker 1 to marker 3
+//                val polylineOptions2 = PolylineOptions().add(
+//                    locations[0],
+//                    locations[9],
+//                    locations[10],
+//                    locations[11],
+//                    locations[12],
+//                    locations[13],
+//                    ).color(Color.BLUE).width(5f)
+//                googleMap.addPolyline(polylineOptions2)
+//            }
         }
 
 
