@@ -379,7 +379,7 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
                         }
                     } else {
                         Log.e("JSON", "Fragment not attached to context.")
-                     
+
                     }
 
 

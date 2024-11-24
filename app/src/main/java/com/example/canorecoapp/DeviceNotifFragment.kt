@@ -77,6 +77,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         startListeningForDeviceStatuse2()
         startListeningForSms()
         startListeningForNotifications()
+        startListeningForSmsOtp()
         // Observe real-time changes for device 9000
         viewModel.device9000Status.observe(viewLifecycleOwner) { status ->
             binding.buttonDevice9000.text = "Device 9000 ($status)"
@@ -285,7 +286,33 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     }
 
 
+    private fun startListeningForSmsOtp() {
+        // Reference to Firestore
+        val smsRef = FirebaseFirestore.getInstance().collection("sms").document("otp")
 
+        smsRef.addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                Log.e("DeviceNotifFragment", "Listen failed.", e)
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null && snapshot.exists()) {
+                val status = snapshot.getBoolean("status") ?: false
+                val code = snapshot.getString("code") ?: ""
+                val phone = snapshot.getString("phone") ?: ""
+
+                // Log the current status and content
+                Log.d("SMSFragment", "StatusOTP: $status, Content: $status")
+
+                // Check if the status changed to true
+                if (status) {
+                    sendSmsOtp(phone, code)
+                }
+            } else {
+                Log.d("DeviceNotifFragment", "Current data: null")
+            }
+        }
+    }
 
 
     private fun startListeningForDeviceStatuses() {
@@ -485,6 +512,22 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         for (phoneNumber in phoneNumbers) {
             try {
                 sms.sendTextMessage(phoneNumber, null, notificationMessage, null, null)
+                Log.d("DeviceNotifFragment", "SMS sent to: $phoneNumber with message: $notificationMessage")
+            } catch (e: Exception) {
+                Log.e("DeviceNotifFragment", "Failed to send SMS to $phoneNumber: ${e.message}")
+            }
+        }
+
+        // Show a toast message after attempting to send all SMS
+        Toast.makeText(requireContext(), "SMS sent to all contacts", Toast.LENGTH_SHORT).show()
+    }
+    private fun sendSmsOtp(phoneNumbers: String, notificationMessage: String) {
+        val sms = SmsManager.getDefault()
+
+        // Iterate through each phone number and send the SMS
+        for (phoneNumber in phoneNumbers) {
+            try {
+                sms.sendTextMessage(phoneNumber.toString(), null, notificationMessage, null, null)
                 Log.d("DeviceNotifFragment", "SMS sent to: $phoneNumber with message: $notificationMessage")
             } catch (e: Exception) {
                 Log.e("DeviceNotifFragment", "Failed to send SMS to $phoneNumber: ${e.message}")

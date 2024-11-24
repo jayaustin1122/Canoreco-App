@@ -21,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
 import java.util.concurrent.TimeUnit
 
 class OtpFragment : Fragment() {
@@ -40,49 +41,13 @@ class OtpFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.otpProgressBar.visibility = View.INVISIBLE
         auth = FirebaseAuth.getInstance()
-        binding.verifyLaterBtn.visibility = View.GONE
         addTextChangeListeners()
         startResendTimer()
 
+        binding.phoneNumberTextView.setText(viewModel.phone)
         binding.resendTextView.setOnClickListener {
-            if (viewModel.token != null) {
-                resendVerificationCode(viewModel.phone, viewModel.token!!)
-            }
-            viewModel.resendAttempts++
-            if (viewModel.resendAttempts >= 1) {
-                binding.verifyLaterBtn.visibility = View.VISIBLE
-            }
-            startResendTimer()
             Toast.makeText(requireContext(), "Sending new OTP...", Toast.LENGTH_SHORT).show()
-        }
-        binding.verifyLaterBtn.setOnClickListener {
-            viewModel.skipOtpVerification = true
-            binding.verifyLaterBtn.visibility = View.GONE
-            Snackbar.make(requireView(), "You can verify later. Proceed to the next step.", Snackbar.LENGTH_SHORT).show()
-
-        }
-        binding.verifyOTPBtn.setOnClickListener {
-            if (viewModel.skipOtpVerification) {
-                Snackbar.make(requireView(), "OTP verification skipped.", Snackbar.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            val typedOTP = getEnteredOtp()
-            if (typedOTP.length == 6) {
-                val verificationId = viewModel.verificationId
-                if (verificationId != null && verificationId.isNotEmpty()) {
-                    val credential = PhoneAuthProvider.getCredential(verificationId, typedOTP)
-                    binding.otpProgressBar.visibility = View.VISIBLE
-                    signInWithPhoneAuthCredential(credential)
-                    viewModel.otp = typedOTP
-                } else {
-                    Toast.makeText(requireContext(), "Verification ID is missing. Please resend the OTP.", Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                Toast.makeText(requireContext(), "Please Enter Correct OTP", Toast.LENGTH_SHORT).show()
-            }
         }
     }
 
@@ -96,7 +61,6 @@ class OtpFragment : Fragment() {
     }
 
     private fun startResendTimer() {
-
         binding.resendTextView.isEnabled = false
 
         // Start a 1-minute countdown
@@ -116,58 +80,6 @@ class OtpFragment : Fragment() {
         }.start()
     }
 
-    private fun resendVerificationCode(phone: String, token: PhoneAuthProvider.ForceResendingToken) {
-        val options = PhoneAuthOptions.newBuilder(auth)
-            .setPhoneNumber(phone)
-            .setTimeout(60L, TimeUnit.SECONDS)
-            .setActivity(requireActivity())
-            .setCallbacks(callbacks)
-            .setForceResendingToken(token)
-            .build()
-        PhoneAuthProvider.verifyPhoneNumber(options)
-    }
-
-    private val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-        override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-            signInWithPhoneAuthCredential(credential)
-        }
-
-        override fun onVerificationFailed(e: FirebaseException) {
-            Log.d("OtpFragment", "onVerificationFailed: ${e.message}")
-            binding.otpProgressBar.visibility = View.INVISIBLE
-            if (e is FirebaseAuthInvalidCredentialsException) {
-                Toast.makeText(requireContext(), "Invalid Request", Toast.LENGTH_SHORT).show()
-            } else if (e is FirebaseTooManyRequestsException) {
-                Toast.makeText(requireContext(), "SMS Quota Exceeded", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
-            viewModel.verificationId = verificationId
-            viewModel.token = token
-            Log.d("OtpFragment", "Verification ID received: $verificationId")
-        }
-    }
-
-    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
-        auth.signInWithCredential(credential)
-            .addOnCompleteListener(requireActivity()) { task ->
-                binding.otpProgressBar.visibility = View.INVISIBLE
-                if (task.isSuccessful) {
-                    Snackbar.make(requireView(), "Success! Your Phone Number is Verified. Please Click Next to Continue", Snackbar.LENGTH_SHORT).show()
-                    binding.verifyOTPBtn.visibility = View.INVISIBLE
-                    viewModel.smsIsVerified = true
-                } else {
-                    Log.d("OtpFragment", "signInWithPhoneAuthCredential failed: ${task.exception?.message}")
-                    if (task.exception is FirebaseAuthInvalidCredentialsException) {
-                        Toast.makeText(requireContext(), "Invalid OTP", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(requireContext(), "Authentication failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-    }
-
     private fun addTextChangeListeners() {
         binding.otpEditText1.addTextChangedListener(OTPTextWatcher(binding.otpEditText1, binding.otpEditText2))
         binding.otpEditText2.addTextChangedListener(OTPTextWatcher(binding.otpEditText2, binding.otpEditText3))
@@ -179,19 +91,39 @@ class OtpFragment : Fragment() {
 
     inner class OTPTextWatcher(private val currentView: View, private val nextView: View?) : TextWatcher {
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
         override fun afterTextChanged(s: Editable?) {
             val text = s.toString()
+
+            // Move focus to next field if current field is filled
             if (text.length == 1 && nextView != null) {
                 nextView.requestFocus()
             } else if (text.isEmpty() && currentView != binding.otpEditText1) {
                 currentView.requestFocus()
             }
+
+            // Check if all OTP fields are filled (6 digits entered)
+            if (areAllOtpFieldsFilled()) {
+                val typedOTP = getEnteredOtp()
+                viewModel.otp = typedOTP
+                Log.d("OtpFragment", "OTP Set Automatically: $typedOTP") // Log the OTP when all 6 digits are entered
+            }
         }
+    }
+
+    private fun areAllOtpFieldsFilled(): Boolean {
+        return binding.otpEditText1.text.isNotEmpty() &&
+                binding.otpEditText2.text.isNotEmpty() &&
+                binding.otpEditText3.text.isNotEmpty() &&
+                binding.otpEditText4.text.isNotEmpty() &&
+                binding.otpEditText5.text.isNotEmpty() &&
+                binding.otpEditText6.text.isNotEmpty()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        countdownTimer?.cancel() // Cancel the timer when the view is destroyed
+        countdownTimer?.cancel()
     }
 }

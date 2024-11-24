@@ -7,9 +7,12 @@ import android.content.ContentValues
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -50,49 +53,80 @@ class StepTwoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.etContactNumber.addTextChangedListener {
+        binding.etContactNumberSignUp.addTextChangedListener {
             viewModel.phone = it.toString()
         }
-        val municipalities = municipalitiesWithBarangays.keys.toList()
-        val municipalityAdapter = ArrayAdapter(requireContext(), R.layout.address_item_views, municipalities)
-        binding.tvMunicipality.setAdapter(municipalityAdapter)
+        binding.etEmail.addTextChangedListener {
+            viewModel.email = it.toString()
+        }
+        // Enhanced password strength logic
+        binding.etPasswordSignUp.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val password = s.toString()
 
+                if (password.isEmpty()) {
+                    binding.passwordStrengthTextView.visibility = View.GONE
+                } else {
+                    binding.passwordStrengthTextView.visibility = View.VISIBLE
+                    val hasUppercase = password.any { it.isUpperCase() }
+                    val hasLowercase = password.any { it.isLowerCase() }
+                    val hasDigit = password.any { it.isDigit() }
+                    val hasSpecialChar = password.any { !it.isLetterOrDigit() }
 
-        binding.tvMunicipality.setOnItemClickListener { parent, view, position, id ->
-            val selectedMunicipality = parent.getItemAtPosition(position).toString()
-            viewModel.address = selectedMunicipality
-            binding.tvBrgy.setText("")
-            val barangays = municipalitiesWithBarangays[selectedMunicipality] ?: emptyList()
-            val barangayAdapter = ArrayAdapter(requireContext(), R.layout.address_item_views, barangays)
-            binding.tvBrgy.setAdapter(barangayAdapter)
-        }
+                    when {
+                        password.length < 6 -> {
+                            binding.passwordStrengthTextView.text = "Weak"
+                            binding.passwordStrengthTextView.setTextColor(Color.RED)
+                        }
+                        hasUppercase && hasLowercase && hasDigit && hasSpecialChar -> {
+                            binding.passwordStrengthTextView.text = "Strong"
+                            binding.passwordStrengthTextView.setTextColor(Color.BLUE)
+                        }
+                        (hasUppercase || hasLowercase) && hasDigit -> {
+                            binding.passwordStrengthTextView.text = "Medium"
+                            binding.passwordStrengthTextView.setTextColor(Color.GREEN)
+                        }
+                        else -> {
+                            binding.passwordStrengthTextView.text = "Weak"
+                            binding.passwordStrengthTextView.setTextColor(Color.RED)
+                        }
+                    }
+                    viewModel.password = password
+                }
+            }
 
-        makeDropdownOnly(binding.tvMunicipality)
-        makeDropdownOnly(binding.tvBrgy)
-        binding.tvBrgy.setOnItemClickListener { parent, view, position, id ->
-            val selectedBarangay = parent.getItemAtPosition(position).toString()
-            viewModel.barangay = selectedBarangay
-        }
-        binding.etStreet.addTextChangedListener{
-            viewModel.street = it.toString()
-        }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+
+        // Password match logic
+        binding.etConfirmPasswordSignUp.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val password = binding.etPasswordSignUp.text.toString()
+                val confirmPassword = s.toString()
+
+                if (password.isEmpty() && confirmPassword.isEmpty()) {
+                    binding.passwordMatchTextView.visibility = View.GONE
+                } else {
+                    binding.passwordMatchTextView.visibility = View.VISIBLE
+                    if (password == confirmPassword) {
+                        if (password.isEmpty()) {
+                            binding.passwordMatchTextView.text = ""
+                        } else {
+                            binding.passwordMatchTextView.text = "Passwords match"
+                            binding.passwordMatchTextView.setTextColor(Color.BLUE)
+                        }
+                    } else {
+                        binding.passwordMatchTextView.text = "Passwords do not match"
+                        binding.passwordMatchTextView.setTextColor(Color.RED)
+                    }
+                    viewModel.confirmPass = confirmPassword
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
     }
-    override fun onResume() {
-        super.onResume()
-        val municipalities = municipalitiesWithBarangays.keys.toList()
-        val municipalityAdapter = ArrayAdapter(requireContext(), R.layout.address_item_views, municipalities)
-        binding.tvMunicipality.setAdapter(municipalityAdapter)
-    }
-    @SuppressLint("ClickableViewAccessibility")
-    private fun makeDropdownOnly(autoCompleteTextView: AutoCompleteTextView) {
-        autoCompleteTextView.setOnClickListener {
-            autoCompleteTextView.showDropDown()
-        }
-        autoCompleteTextView.keyListener = null
-        autoCompleteTextView.setFocusable(false)
-        autoCompleteTextView.setOnTouchListener { _, _ ->
-            autoCompleteTextView.showDropDown()
-            false
-        }
-    }
+
 }

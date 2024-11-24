@@ -14,22 +14,16 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import cn.pedant.SweetAlert.SweetAlertDialog
+import com.example.bidnshare.notification.FirebaseServiceCanoreco.Companion.token
 import com.example.canorecoapp.R
 import com.example.canorecoapp.adapter.SignUpAdapters
 import com.example.canorecoapp.databinding.DialogLoginBinding
-import com.example.canorecoapp.databinding.DialogReviewBinding
 import com.example.canorecoapp.databinding.FragmentSignUpBinding
 import com.example.canorecoapp.utils.DialogUtils
 import com.example.canorecoapp.utils.FirebaseUtils
 import com.example.canorecoapp.viewmodels.SignUpViewModel
-import com.example.canorecoapp.views.user.news.NewsDetailsFragment
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.FirebaseException
-import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-import com.google.firebase.auth.PhoneAuthCredential
-import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
@@ -40,8 +34,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
-import java.util.Calendar
-import java.util.concurrent.TimeUnit
+import kotlin.random.Random
 
 const val TOPIC = "/topics/myTopic2"
 
@@ -91,7 +84,7 @@ class SignUpFragment : Fragment() {
             })
         adapter.addFragment(StepOneFragment())
         adapter.addFragment(StepTwoFragment())
-        adapter.addFragment(StepThreeFragment())
+        adapter.addFragment(OtpFragment())
         stepView.go(0, true)
         viewPager.isUserInputEnabled = false
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
@@ -104,7 +97,7 @@ class SignUpFragment : Fragment() {
             when (viewPager.currentItem) {
                 0 -> validateFragmentOne()
                 1 -> validateFragmentTwo()
-                2 -> validateFragmentThree()
+                2 -> validateOtpFragment()
             }
         }
         binding.backButton.setOnClickListener {
@@ -133,28 +126,63 @@ class SignUpFragment : Fragment() {
     private fun validateOtpFragment() {
         val otp = viewModel.otp
 
-        if (viewModel.skipOtpVerification) {
-            nextItem()
-            return
+        if (otp.length == 6) {
+            loadingDialog = DialogUtils.showLoading(requireActivity())
+            loadingDialog.show()
+            verifyInFirebase(otp)
+        } else {
+            Toast.makeText(requireContext(), "Please Enter Correct OTP", Toast.LENGTH_SHORT).show()
         }
 
-        when {
-            otp.isEmpty() -> {
-                Snackbar.make(requireView(), "Please verify the OTP", Snackbar.LENGTH_SHORT).show()
-                return
+    }
+    private fun verifyInFirebase(typedOTP: String) {
+        // Reference to Firestore
+        val smsRef = FirebaseFirestore.getInstance().collection("sms").document("otp")
+
+        Log.d("VerifyOTP", "Checking OTP in Firestore...") // Log when we start checking Firestore
+
+        smsRef.get() // Use get() to fetch the document once
+            .addOnSuccessListener { snapshot ->
+                if (snapshot != null && snapshot.exists()) {
+                    val status = snapshot.getBoolean("status") ?: false
+                    val code = snapshot.getString("code") ?: ""
+                    val phone = snapshot.getString("phone") ?: ""
+
+                    // Log Firestore data
+                    Log.d("VerifyOTP", "Firestore OTP data - Status: $status, Code: $code, Phone: $phone")
+
+                    // Check if the typed OTP matches the stored OTP
+                    if (status && typedOTP == code) {
+                        Log.d("VerifyOTP", "OTP matched. Verifying...") // Log when OTP matches
+
+                        // If the OTP matches, clear the data
+                        smsRef.update(
+                            mapOf(
+                                "status" to false,
+                                "code" to "",
+                                "phone" to ""
+                            )
+                        ).addOnSuccessListener {
+                            // After successfully updating Firestore, show a success message
+                            Log.d("VerifyOTP", "OTP verified successfully, Firestore data cleared.") // Log success
+                            Toast.makeText(requireContext(), "OTP Verified Successfully", Toast.LENGTH_SHORT).show()
+                            uploadToFirebase()
+                        }.addOnFailureListener {
+                            // Handle failure case
+                            Log.e("VerifyOTP", "Failed to update OTP data in Firestore.") // Log failure
+                            Toast.makeText(requireContext(), "Failed to update OTP data", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                } else {
+                    Log.d("DeviceNotifFragment", "No OTP data found in Firestore.") // Log if no data found in Firestore
+                    Toast.makeText(requireContext(), "No OTP data found", Toast.LENGTH_SHORT).show()
+                }
             }
-            otp.length != 6 -> {
-                Snackbar.make(requireView(), "Please complete the OTP", Snackbar.LENGTH_SHORT).show()
-                return
+            .addOnFailureListener { e ->
+                Log.e("DeviceNotifFragment", "Failed to retrieve document", e) // Log failure when document retrieval fails
+                Toast.makeText(requireContext(), "Failed to retrieve OTP data", Toast.LENGTH_SHORT).show()
             }
-            !viewModel.smsIsVerified -> {
-                Snackbar.make(requireView(), "Please verify the OTP", Snackbar.LENGTH_SHORT).show()
-                return
-            }
-            else -> {
-                nextItem()
-            }
-        }
     }
 
     fun backItem() {
@@ -174,86 +202,14 @@ class SignUpFragment : Fragment() {
     }
 
     fun validateFragmentOne() {
-        val firstName = viewModel.firstName
-        val lastName = viewModel.lastName
-        val month = viewModel.month
-        val day = viewModel.day
-        val year = viewModel.year
-        val selectedImageUri = viewModel.image
-        if (firstName.isEmpty() && lastName.isEmpty()) {
-            Toast.makeText(
-                requireContext(),
-                "Please enter your First Name And Last Name",
-                Toast.LENGTH_SHORT
-            ).show()
-            return
-        } else if (month.isEmpty() || day.isEmpty() || year.isEmpty()) {
-            Toast.makeText(requireContext(), "Please Select Date of Birth", Toast.LENGTH_SHORT)
-                .show()
-            return
-        } else if (selectedImageUri == null) {
-            Toast.makeText(requireContext(), "Please upload a profile picture", Toast.LENGTH_SHORT)
-                .show()
-            return
-        } else {
-            val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-            val birthYear = year.toInt()
-            val userAge = currentYear - birthYear
-
-            if (userAge < 13) {
-                Toast.makeText(
-                    requireContext(),
-                    "You must be at least 13 years old to continue",
-                    Toast.LENGTH_SHORT
-                ).show()
-                return
-            } else {
-                nextItem()
-            }
-        }
+        nextItem()
     }
 
     fun validateFragmentTwo() {
-        var phone = viewModel.phone.trim() // Ensure no leading/trailing spaces
-        val barangay = viewModel.barangay
-        val municipality = viewModel.address
-
-        if (phone.isEmpty()) {
-            Toast.makeText(
-                requireContext(),
-                "Please add your Contact Number to continue",
-                Toast.LENGTH_SHORT
-            ).show()
-            return
-        }
-        // Handle phone verification and conversion to +639 format
-        if (phone.startsWith("09")) {
-            viewModel.phone = phone
-        }
-        // Check for barangay and municipality
-        if (barangay.isEmpty()) {
-            Toast.makeText(
-                requireContext(),
-                "Please add your Barangay to continue",
-                Toast.LENGTH_SHORT
-            ).show()
-            return
-        } else if (municipality.isEmpty()) {
-            Toast.makeText(
-                requireContext(),
-                "Please add your Municipality to continue",
-                Toast.LENGTH_SHORT
-            ).show()
-            return
-        } else {
-            nextItem()
-        }
-    }
-
-    fun validateFragmentThree() {
         val email = viewModel.email
         val password = viewModel.password
         val confirmPass = viewModel.confirmPass
+        val phone = viewModel.phone
 
         // Ensure the email is not empty
         if (email.isEmpty()) {
@@ -271,6 +227,7 @@ class SignUpFragment : Fragment() {
             ).show()
             return
         }
+
         // Ensure the email does not contain ".con" typo
         else if (email.contains(".con")) {
             Toast.makeText(
@@ -283,6 +240,10 @@ class SignUpFragment : Fragment() {
         // Ensure password is not empty
         else if (password.isEmpty()) {
             Toast.makeText(requireContext(), "Password Not Match!", Toast.LENGTH_SHORT).show()
+            return
+        }
+        else if (phone.isEmpty()) {
+            Toast.makeText(requireContext(), "Phone Is Empty!", Toast.LENGTH_SHORT).show()
             return
         }
         // Ensure confirm password is not empty
@@ -298,61 +259,51 @@ class SignUpFragment : Fragment() {
         }
         // Proceed to create user account if all conditions are met
         else {
-            createUserAccount()
+            uploadInFireStore(phone)
+            nextItem()
         }
     }
+    private fun uploadInFireStore(phone: String) {
+        // Generate a random 6-digit OTP
+        val otpCode = generateRandomOtp()
 
+        val user: HashMap<String, Any?> = hashMapOf(
+            "status" to true,
+            "phone" to phone, // You can replace this with the actual user's phone number
+            "code" to otpCode // Use the generated OTP code
+        )
 
-    private fun createUserAccount() {
-        loadingDialog = DialogUtils.showLoading(requireActivity())
-        loadingDialog.show()
-        val email = viewModel.email
-        val password = viewModel.password
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val authResult = auth.createUserWithEmailAndPassword(email, password).await()
-
-                val fcmToken = FirebaseMessaging.getInstance().token.await()
-
-                withContext(Dispatchers.Main) {
-                    uploadImage(fcmToken)
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    loadingDialog.dismiss()
-                    Toast.makeText(
-                        this@SignUpFragment.requireContext(),
-                        "Failed Creating Account or ${e.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-        }
-    }
-
-    private fun uploadImage(token: String) {
-
-        val reference = storage.reference.child("profile")
-            .child(token!!)
-        viewModel.image?.let {
-            reference.putFile(it).addOnCompleteListener {
-                if (it.isSuccessful) {
-                    reference.downloadUrl.addOnSuccessListener { image ->
-                        uploadToFirebase(token, image.toString())
+        val firestore = FirebaseFirestore.getInstance()
+        try {
+            firestore.collection("sms")
+                .document("otp")
+                .set(user)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        // Successfully uploaded data to Firestore
+                        Log.d("UploadInFireStore", "OTP uploaded successfully: $otpCode")
+                    } else {
+                        // Failed to upload data to Firestore
+                        Log.e("UploadInFireStore", "Failed to upload OTP to Firestore.")
                     }
-                } else {
-                    loadingDialog.dismiss()
-                    Toast.makeText(
-                        this@SignUpFragment.requireContext(),
-                        "Error uploading image",
-                        Toast.LENGTH_SHORT
-                    ).show()
                 }
-            }
+        } catch (e: Exception) {
+            Log.e("UploadInFireStore", "Error uploading OTP to Firestore: ${e.message}")
         }
     }
 
-    private fun uploadToFirebase(token: String?, imageUrl: String) {
+
+    private fun generateRandomOtp(): String {
+        val randomNumber = Random.nextInt(100000, 999999)
+        return randomNumber.toString()
+    }
+
+
+
+
+
+
+    private fun uploadToFirebase() {
 
         val firstName = viewModel.firstName
         val lastName = viewModel.lastName
@@ -364,27 +315,24 @@ class SignUpFragment : Fragment() {
         val uid = auth.uid
         val timestamp = System.currentTimeMillis() / 1000
 
-
         val user: HashMap<String, Any?> = hashMapOf(
-            "uid" to uid,
+            "uid" to timestamp,
             "email" to email,
             "password" to password,
             "firstName" to firstName,
             "lastName" to lastName,
-            "image" to imageUrl,
             "phone" to viewModel.phone,
             "userType" to "member",
             "access" to true,
-            "token" to token,
-            "dateOfBirth" to "$month-$day-$year",
             "timestamp" to timestamp,
             "barangay" to viewModel.barangay,
             "municipality" to viewModel.address,
         )
         val firestore = FirebaseFirestore.getInstance()
+
         try {
             firestore.collection("users")
-                .document(uid!!)
+                .document(timestamp.toString())
                 .set(user)
                 .addOnCompleteListener { task ->
 
@@ -394,8 +342,9 @@ class SignUpFragment : Fragment() {
                         "Success",
                         "Account created successfully"
                     ).show()
-
+                    verifyInFirebase(viewModel.phone)
                     showReviewDialog()
+
                     if (task.isSuccessful) {
                         findNavController().apply {
                             popBackStack(R.id.signUpFragment, false)
@@ -409,6 +358,7 @@ class SignUpFragment : Fragment() {
                             Toast.LENGTH_SHORT
                         ).show()
                         loadingDialog.dismiss()
+                        Log.e("UploadToFirebase", "Error during upload: ${task.exception?.message}")
                     }
                 }
         } catch (e: Exception) {
@@ -418,8 +368,12 @@ class SignUpFragment : Fragment() {
                 "Error uploading data: ${e.message}",
                 Toast.LENGTH_SHORT
             ).show()
+
+            // Log the error with detailed information for debugging
+            Log.e("UploadToFirebase", "Error uploading user data: ${e.message}", e)
         }
     }
+
     private fun showReviewDialog() {
         val dialogBinding = DialogLoginBinding.inflate(layoutInflater)
         val dialog = Dialog(requireContext())
