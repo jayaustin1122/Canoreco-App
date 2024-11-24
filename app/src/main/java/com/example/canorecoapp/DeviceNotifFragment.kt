@@ -80,17 +80,12 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         // Observe real-time changes for device 9000
         viewModel.device9000Status.observe(viewLifecycleOwner) { status ->
             binding.buttonDevice9000.text = "Device 9000 ($status)"
-            binding.buttonDevice9000.setBackgroundColor(
-                if (status == "damaged") Color.RED else Color.BLUE
-            )
         }
 
         // Observe real-time changes for device 9001
         viewModel.device9001Status.observe(viewLifecycleOwner) { status ->
             binding.buttonDevice9001.text = "Device 9001 ($status)"
-            binding.buttonDevice9001.setBackgroundColor(
-                if (status == "damaged") Color.RED else Color.BLUE
-            )
+
         }
 
         // Handle button clicks

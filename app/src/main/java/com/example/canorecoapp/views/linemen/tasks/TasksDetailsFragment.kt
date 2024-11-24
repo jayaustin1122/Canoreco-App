@@ -121,6 +121,7 @@ class TasksDetailsFragment  : BottomSheetDialogFragment() {
                         binding.tvStartTime.text = startTime
                         binding.tvEndTime.text = endTime
                         binding.tvAssigned.text = assigned
+                        binding.tvAssignedLabel.visibility = View.VISIBLE
 
 
                         binding.btnUpdateStatus.setOnClickListener {
@@ -136,6 +137,7 @@ class TasksDetailsFragment  : BottomSheetDialogFragment() {
                         binding.tvStartTime.text = startTime
                         binding.tvEndTime.text = endTime
                         binding.tvAssigned.text = assigned
+                        binding.tvAssignedLabel.visibility = View.VISIBLE
                     }
 
                 }

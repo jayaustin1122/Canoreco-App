@@ -50,6 +50,7 @@ class FragmentSetTimeDateFragment : BottomSheetDialogFragment() {
         binding.btnSet.setOnClickListener {
             uploadData(userName, id)
         }
+
     }
 
 
@@ -81,6 +82,8 @@ class FragmentSetTimeDateFragment : BottomSheetDialogFragment() {
                 findNavController().navigate(R.id.adminHolderFragment, bundle)
 
                 println("Data updated successfully")
+
+                dismiss()
 
             }
     }
