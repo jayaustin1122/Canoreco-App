@@ -35,10 +35,6 @@ class StepThreeFragment : Fragment() {
 
         viewModel = ViewModelProvider(requireActivity()).get(SignUpViewModel::class.java)
 
-
-
-
-
     }
 
 

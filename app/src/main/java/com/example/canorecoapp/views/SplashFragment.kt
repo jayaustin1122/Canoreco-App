@@ -21,6 +21,7 @@ import com.example.canorecoapp.databinding.DialogReviewBinding
 import com.example.canorecoapp.databinding.FragmentSplashBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -58,13 +59,14 @@ class SplashFragment : Fragment() {
         return sharedPref.getBoolean("Finished", false)
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun checkUser(animZoomIn: Animation) {
 
         GlobalScope.launch(Dispatchers.Main) {
             if (isNetworkAvailable()) {
                 val firebaseUser = auth.currentUser
                 if (firebaseUser == null) {
-                    findNavController().navigate(R.id.signUpFragment)
+                    findNavController().navigate(R.id.signInFragment)
                 } else {
                     try {
                         handleUserInfo(animZoomIn)

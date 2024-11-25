@@ -159,7 +159,7 @@ class SignUpEmployeeFragment : Fragment() {
     fun validateFragmentTwo() {
         val phone = viewModel.phone
         val barangay = viewModel.barangay
-        val municipality = viewModel.address
+        val municipality = viewModel.municipality
 
         if (phone.isEmpty()) {
             Toast.makeText(requireContext(), "Please add your Contact Number to continue", Toast.LENGTH_SHORT).show()
@@ -297,7 +297,7 @@ class SignUpEmployeeFragment : Fragment() {
             "dateOfBirth" to "$month-$day-$year",
             "timestamp" to timestamp,
             "barangay" to viewModel.barangay,
-            "municipality" to viewModel.address,
+            "municipality" to viewModel.municipality,
         )
         val firestore = FirebaseFirestore.getInstance()
         try {

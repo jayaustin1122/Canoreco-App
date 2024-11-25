@@ -1,20 +1,11 @@
 package com.example.canorecoapp.views
 
-import android.annotation.SuppressLint
-import android.app.AlertDialog
-import android.app.Dialog
 import android.os.Bundle
 import android.os.Handler
 import android.text.InputType
-import android.util.Log
-import android.util.Patterns
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
-import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.OptIn
@@ -25,15 +16,11 @@ import androidx.viewpager2.widget.ViewPager2
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.canorecoapp.R
 import com.example.canorecoapp.adapter.SignInViewPagerAdapter
-import com.example.canorecoapp.databinding.DialogReviewBinding
 import com.example.canorecoapp.databinding.FragmentSignInBinding
 import com.example.canorecoapp.utils.DialogUtils
-import com.google.android.material.badge.BadgeDrawable
-import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.badge.ExperimentalBadgeUtils
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -80,6 +67,7 @@ class SignInFragment : Fragment() {
 
         startAutoSlide()
     }
+
     private fun startAutoSlide() {
         lifecycleScope.launch {
             while (isAdded) {
@@ -104,8 +92,6 @@ class SignInFragment : Fragment() {
             InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS
 
         setupImageSlider()
-
-
 
 
         handler.postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
@@ -157,87 +143,126 @@ class SignInFragment : Fragment() {
             }
         }
     }
-
-
-
     private fun checkUser() {
-        val email = binding.etUsernameLogin.text?.trim().toString()
+        val phoneOrEmail = binding.etUsernameLogin.text?.trim().toString()
         val password = binding.etPass.text?.trim().toString()
 
-        // Check if email and password are not empty
-        if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(requireContext(), "Email or password cannot be empty.", Toast.LENGTH_SHORT).show()
+        // Check if phoneOrEmail and password are not empty
+        if (phoneOrEmail.isEmpty() || password.isEmpty()) {
+            loadingDialog.dismiss()
+            Toast.makeText(requireContext(), "Phone/Email or password cannot be empty.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        loadingDialog = DialogUtils.showLoading(requireActivity())
-        loadingDialog.show()
-        // Fetch user data from Firestore based on the email
         val dbref = FirebaseFirestore.getInstance().collection("users")
-        dbref.whereEqualTo("email", email).get().addOnCompleteListener { task ->
+
+        // Determine whether the input is a phone number or an email
+        val isEmail = android.util.Patterns.EMAIL_ADDRESS.matcher(phoneOrEmail).matches()
+
+        // Query Firestore: if it's an email, check the "email" field, otherwise check the "phone" field
+        val query = if (isEmail) {
+            dbref.whereEqualTo("email", phoneOrEmail) // Query by email
+        } else {
+            dbref.whereEqualTo("phone", phoneOrEmail) // Query by phone number
+        }
+
+        // Execute the query
+        query.get().addOnCompleteListener { task ->
+            loadingDialog.dismiss()  // Dismiss the loading dialog once the task is complete
+
             if (task.isSuccessful) {
                 val snapshot = task.result
                 if (snapshot != null && !snapshot.isEmpty) {
                     // Assume the first document matches the user (in case multiple documents are returned)
                     val userDoc = snapshot.documents.first()
-                    val storedPassword = userDoc.getString("password")
+                    val authEmail = userDoc.getString("authEmail")
                     val userType = userDoc.getString("userType")
-                    val access = userDoc.getBoolean("access")
-                    val firstName = userDoc.getString("firstName")
 
-                    // Check if the entered password matches the stored password
-                    if (storedPassword == password) {
-                        // Password matches, proceed based on user type
-                        if (userType != null && firstName != null) {
-                            if (userType == "linemen") {
-                                if (access == false) {
-                                    // Show a dialog for denied access
-                                    val dialogBinding = DialogReviewBinding.inflate(layoutInflater)
-                                    val dialog = Dialog(requireContext())
-                                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-                                    dialog.setContentView(dialogBinding.root)
-                                    dialog.show()
-
-                                    // Handle sign out
-                                    auth.signOut()
-                                } else {
-                                    // Successful login for linemen
-                                    DialogUtils.showSuccessMessage(requireActivity(), "Log In Successful", "Welcome $firstName").show()
-                                    findNavController().apply {
-                                        popBackStack(R.id.splashFragment, false)
-                                        navigate(R.id.adminHolderFragment)
-                                    }
-                                }
-                            } else if (userType == "member") {
-                                // Successful login for member
-                                DialogUtils.showSuccessMessage(requireActivity(), "Log In Successful", "Welcome $firstName").show()
-                                findNavController().apply {
-                                    popBackStack(R.id.splashFragment, false)
-                                    navigate(R.id.userHolderFragment)
-                                }
-                            }
-                        } else {
-                            Toast.makeText(requireContext(), "Error: User type or name missing.", Toast.LENGTH_SHORT).show()
-                        }
+                    if (!authEmail.isNullOrEmpty()) {
+                        // Proceed to login with the fetched email
+                        loginUser(authEmail, userType)
                     } else {
-                        // Password doesn't match
-                        Toast.makeText(requireContext(), "Incorrect password.", Toast.LENGTH_SHORT).show()
+                        loadingDialog.dismiss()
+                        // authEmail not found in the user document
+                        Toast.makeText(requireContext(), "Phone/Email is wrong.", Toast.LENGTH_SHORT).show()
                     }
                 } else {
+                    loadingDialog.dismiss()
                     // User not found
                     Toast.makeText(requireContext(), "User not found.", Toast.LENGTH_SHORT).show()
                 }
             } else {
                 loadingDialog.dismiss()
-                Toast.makeText(requireContext(), "An error occurred while checking credentials.", Toast.LENGTH_SHORT).show()
+                // Error occurred while fetching user data
+                Toast.makeText(requireContext(), "An error occurred: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
 
 
+    private fun loginUser(authEmail: String?, userType: String?) {
+        val password = binding.etPass.text.toString()
 
+        if (authEmail.isNullOrEmpty()) {
+            loadingDialog.dismiss()
+            Toast.makeText(requireContext(), "authEmail is null, cannot log in.", Toast.LENGTH_SHORT).show()
+            return
+        }
 
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // Sign in using the retrieved authEmail and the entered password
+                auth.signInWithEmailAndPassword(authEmail, password).await()
 
+                withContext(Dispatchers.Main) {
+                    // After login, check the user type and navigate accordingly
+                    checkUserType(userType)
+                }
+
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    loadingDialog.dismiss()  // Dismiss the loading dialog on failure
+                    // Handle login failure
+                    Toast.makeText(this@SignInFragment.requireContext(), "Password is Incorrect", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun checkUserType(userType: String?) {
+        when (userType) {
+            "linemen" -> {
+                loadingDialog.dismiss()  // Dismiss the loading dialog when done
+                Toast.makeText(this@SignInFragment.requireContext(), "Login Successfully", Toast.LENGTH_SHORT).show()
+                // Navigate to adminHolderFragment for "linemen"
+                findNavController().apply {
+                    popBackStack(R.id.splashFragment, false)
+                    navigate(R.id.adminHolderFragment)
+                }
+            }
+
+            "member" -> {
+                loadingDialog.dismiss()
+                DialogUtils.showSuccessMessage(
+                    requireActivity(),
+                    "Success",
+                    "Welcome to Canoreco App"
+                ).show()
+                    // Navigate to userHolderFragment for verified members
+                    findNavController().apply {
+                        popBackStack(R.id.splashFragment, false)
+                        navigate(R.id.userHolderFragment)
+                    }
+
+            }
+
+            else -> {
+                loadingDialog.dismiss()
+                // Handle unknown userType or show an appropriate message
+                Toast.makeText(requireContext(), "Unknown user type. Please contact support.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
 }

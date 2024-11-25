@@ -10,7 +10,7 @@ class SignUpViewModel  : ViewModel() {
     var email: String = ""
     var password: String = ""
     var confirmPass: String = ""
-    var address: String = ""
+    var municipality: String = ""
     var barangay: String = ""
     var phone: String = ""
     var month : String = ""
@@ -25,6 +25,7 @@ class SignUpViewModel  : ViewModel() {
     var smsIsVerified : Boolean = false
     var resendAttempts = 0
     var skipOtpVerification = false
+    var uid : String = ""
 
     var image: Uri? = null
 

@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity() {
         val currentUser: FirebaseUser? = auth.currentUser
         if (currentUser != null && !currentUser.isEmailVerified) {
             // Show dialog to ask for email verification
-            showVerificationDialog(currentUser)
+
         } else if (currentUser == null) {
             // User is not logged in, navigate to login screen or splash fragment
             navController.navigate(R.id.splashFragment)

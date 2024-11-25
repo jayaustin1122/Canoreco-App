@@ -80,14 +80,14 @@ class ChangePersonalFragment : Fragment() {
         viewModel.userInfo.observe(viewLifecycleOwner, Observer { userInfo ->
             userInfo?.let {
                 binding.apply {
-                    // Set the user's profile image
-                    binding.etFirstName.setText(userInfo.firstName)
-                    binding.etLastName.setText(userInfo.lastName)
-                    binding.etBirthDate.setText(userInfo.dateOfBirth)
-
-                    Glide.with(requireContext())
-                        .load(userInfo.image)
-                        .into(binding.imgPersonal)
+//                    // Set the user's profile image
+//                    binding.etFirstName.setText(userInfo.firstName)
+//                    binding.etLastName.setText(userInfo.lastName)
+//                    binding.etBirthDate.setText(userInfo.dateOfBirth)
+//
+//                    Glide.with(requireContext())
+//                        .load(userInfo.image)
+//                        .into(binding.imgPersonal)
                 }
                 if (userInfo.userType == "member") {
                     requireActivity().onBackPressedDispatcher.addCallback(
@@ -144,21 +144,21 @@ class ChangePersonalFragment : Fragment() {
                 }
             }
         })
-        binding.addImageButton.setOnClickListener {
-            showImagePickerDialog()
-        }
-
-
-        binding.btnSave.setOnClickListener {
-            DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to update your personal information?."
-            ) { sweetAlertDialog ->
-                sweetAlertDialog.dismissWithAnimation()
-                uploadImage()
-            }
-        }
-        binding.etBirthDate.setOnClickListener {
-            showDatePickerDialog()
-        }
+//        binding.addImageButton.setOnClickListener {
+//            showImagePickerDialog()
+//        }
+//
+//
+//        binding.btnSave.setOnClickListener {
+//            DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to update your personal information?."
+//            ) { sweetAlertDialog ->
+//                sweetAlertDialog.dismissWithAnimation()
+//                uploadImage()
+//            }
+//        }
+//        binding.etBirthDate.setOnClickListener {
+//            showDatePickerDialog()
+//        }
     }
 
     private fun uploadImage() {
@@ -169,7 +169,7 @@ class ChangePersonalFragment : Fragment() {
                 db.collection("users").document(user.uid).get()
                     .addOnSuccessListener { document ->
                         val existingImage = document.getString("image")
-                        updateInFirestore(Uri.parse(existingImage))
+            //            updateInFirestore(Uri.parse(existingImage))
                     }
                     .addOnFailureListener { exception ->
                         Toast.makeText(
@@ -188,7 +188,7 @@ class ChangePersonalFragment : Fragment() {
                 reference.putFile(it).addOnCompleteListener {
                     if (it.isSuccessful) {
                         reference.downloadUrl.addOnSuccessListener { image ->
-                            updateInFirestore(image)
+                  //          updateInFirestore(image)
                         }
                     } else {
                         progressDialog.dismiss()
@@ -258,21 +258,21 @@ class ChangePersonalFragment : Fragment() {
         startActivityForResult(intent, IMAGE_PICK_CAMERA_CODE)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == IMAGE_PICK_GALLERY_CODE) {
-                selectedImage = data?.data!!
-                binding.imgPersonal.setImageURI(selectedImage)
-
-                Log.d("TwoSignupFragment", "Image selected: $selectedImage")
-            } else if (requestCode == IMAGE_PICK_CAMERA_CODE) {
-                binding.imgPersonal.setImageURI(selectedImage)
-
-                Log.d("TwoSignupFragment", "Image selected: $selectedImage")
-            }
-        }
-    }
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if (resultCode == Activity.RESULT_OK) {
+//            if (requestCode == IMAGE_PICK_GALLERY_CODE) {
+//                selectedImage = data?.data!!
+//                binding.imgPersonal.setImageURI(selectedImage)
+//
+//                Log.d("TwoSignupFragment", "Image selected: $selectedImage")
+//            } else if (requestCode == IMAGE_PICK_CAMERA_CODE) {
+//                binding.imgPersonal.setImageURI(selectedImage)
+//
+//                Log.d("TwoSignupFragment", "Image selected: $selectedImage")
+//            }
+//        }
+//    }
 
     private fun showDatePickerDialog() {
         val datePicker = MaterialDatePicker.Builder.datePicker()
@@ -286,71 +286,71 @@ class ChangePersonalFragment : Fragment() {
             val month = (calendar.get(Calendar.MONTH) + 1).toString()
             val day = calendar.get(Calendar.DAY_OF_MONTH).toString()
 
-            binding.etBirthDate.setText("${month}/${day}/${year}")
+     //       binding.etBirthDate.setText("${month}/${day}/${year}")
         }
         datePicker.show(parentFragmentManager, "MaterialDatePicker")
     }
 
-    private fun updateInFirestore(image: Uri) {
-        progressDialog.setMessage("Updating Account...")
-        progressDialog.show()
-
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val firstName = binding.etFirstName.text.toString().trim()
-        val lastName = binding.etLastName.text.toString().trim()
-        val dateOfBirth = binding.etBirthDate.text.toString().trim()
-
-        currentUser?.let { user ->
-            val updatedData = hashMapOf<String, Any>(
-                "firstName" to firstName,
-                "lastName" to lastName,
-                "dateOfBirth" to dateOfBirth
-            )
-
-            if (image != Uri.EMPTY) {
-                updatedData["image"] = image.toString()
-            }
-
-            FirebaseFirestore.getInstance().collection("users").document(user.uid)
-                .update(updatedData)
-                .addOnSuccessListener {
-                    progressDialog.dismiss()
-                    Toast.makeText(
-                        requireContext(),
-                        "Account information updated successfully",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    viewModel.userInfo.observe(viewLifecycleOwner, Observer { userInfo ->
-                        userInfo?.let {
-                            if (userInfo.userType == "member") {
-                                val bundle = Bundle().apply {
-                                    putInt("selectedFragmentId", R.id.navigation_account)
-                                }
-                                findNavController().navigate(
-                                    R.id.userHolderFragment,
-                                    bundle
-                                )
-                            } else {
-                                val bundle = Bundle().apply {
-                                    putInt("selectedFragmentId", R.id.navigation_account_linemen)
-                                }
-                                findNavController().navigate(R.id.adminHolderFragment, bundle)
-                            }
-                        }
-                    })
-                }
-                .addOnFailureListener { exception ->
-                    progressDialog.dismiss()
-                    Toast.makeText(
-                        requireContext(),
-                        "Failed to update account info: ${exception.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-        } ?: run {
-            progressDialog.dismiss()
-            Toast.makeText(requireContext(), "User not authenticated", Toast.LENGTH_SHORT).show()
-        }
-    }
+//    private fun updateInFirestore(image: Uri) {
+//        progressDialog.setMessage("Updating Account...")
+//        progressDialog.show()
+//
+//        val currentUser = FirebaseAuth.getInstance().currentUser
+////        val firstName = binding.etFirstName.text.toString().trim()
+////        val lastName = binding.etLastName.text.toString().trim()
+////        val dateOfBirth = binding.etBirthDate.text.toString().trim()
+//
+//        currentUser?.let { user ->
+//            val updatedData = hashMapOf<String, Any>(
+//                "firstName" to firstName,
+//                "lastName" to lastName,
+//                "dateOfBirth" to dateOfBirth
+//            )
+//
+//            if (image != Uri.EMPTY) {
+//                updatedData["image"] = image.toString()
+//            }
+//
+//            FirebaseFirestore.getInstance().collection("users").document(user.uid)
+//                .update(updatedData)
+//                .addOnSuccessListener {
+//                    progressDialog.dismiss()
+//                    Toast.makeText(
+//                        requireContext(),
+//                        "Account information updated successfully",
+//                        Toast.LENGTH_SHORT
+//                    ).show()
+//                    viewModel.userInfo.observe(viewLifecycleOwner, Observer { userInfo ->
+//                        userInfo?.let {
+//                            if (userInfo.userType == "member") {
+//                                val bundle = Bundle().apply {
+//                                    putInt("selectedFragmentId", R.id.navigation_account)
+//                                }
+//                                findNavController().navigate(
+//                                    R.id.userHolderFragment,
+//                                    bundle
+//                                )
+//                            } else {
+//                                val bundle = Bundle().apply {
+//                                    putInt("selectedFragmentId", R.id.navigation_account_linemen)
+//                                }
+//                                findNavController().navigate(R.id.adminHolderFragment, bundle)
+//                            }
+//                        }
+//                    })
+//                }
+//                .addOnFailureListener { exception ->
+//                    progressDialog.dismiss()
+//                    Toast.makeText(
+//                        requireContext(),
+//                        "Failed to update account info: ${exception.message}",
+//                        Toast.LENGTH_SHORT
+//                    ).show()
+//                }
+//        } ?: run {
+//            progressDialog.dismiss()
+//            Toast.makeText(requireContext(), "User not authenticated", Toast.LENGTH_SHORT).show()
+//        }
+//    }
 
 }

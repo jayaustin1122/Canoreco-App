@@ -34,6 +34,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="search"
+            app:layout_constraintBottom_toTopOf="@+id/textInputLayout1"
+            app:layout_constraintEnd_toEndOf="parent" />
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/accountNumberTextView"
             android:layout_width="wrap_content"
@@ -62,7 +69,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:hint="Account Number"
-                android:inputType="text"
+                android:inputType="phone"
                 android:lines="1"
                 android:scrollbars="horizontal"
                 android:singleLine="true"
