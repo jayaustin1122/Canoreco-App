@@ -44,6 +44,7 @@ class UserViewModel : ViewModel() {
                                 barangay = it.getString("barangay") ?: "",
                                 dateOfBirth = it.getString("dateOfBirth") ?: "",
                                 email = it.getString("email") ?: "",
+                                authEmail = it.getString("authEmail") ?: "",
                                 firstName = it.getString("firstName") ?: "",
                                 image = it.getString("image") ?: "",
                                 lastName = it.getString("lastName") ?: "",

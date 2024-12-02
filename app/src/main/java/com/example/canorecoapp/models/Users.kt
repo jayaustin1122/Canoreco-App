@@ -5,6 +5,7 @@ data class Users(
     val barangay: String,
     val dateOfBirth: String,
     val email: String,
+    val authEmail: String,
     val firstName: String,
     val image: String,
     val lastName: String,

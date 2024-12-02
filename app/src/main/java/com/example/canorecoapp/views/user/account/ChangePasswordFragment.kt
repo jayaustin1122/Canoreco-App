@@ -54,7 +54,7 @@ class ChangePasswordFragment : Fragment() {
                         DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to update your password?."
                         ) { sweetAlertDialog ->
                             sweetAlertDialog.dismissWithAnimation()
-                            validateData(userInfo.password, userInfo.email)
+                            validateData(userInfo.password, userInfo.authEmail)
                         }
                     }
                 }

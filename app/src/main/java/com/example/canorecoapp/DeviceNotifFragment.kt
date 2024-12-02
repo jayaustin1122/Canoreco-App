@@ -331,8 +331,10 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 parentRef?.let { parentSnapshotRef ->
                     parentSnapshotRef.addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(parentSnapshot: DataSnapshot) {
-                            val id = parentSnapshot.child("id").getValue(String::class.java) ?: "unknown"
-                            val barangay = parentSnapshot.child("barangay").getValue(String::class.java) ?: ""
+                            val id =
+                                parentSnapshot.child("id").getValue(String::class.java) ?: "unknown"
+                            val barangay =
+                                parentSnapshot.child("barangay").getValue(String::class.java) ?: ""
 
                             // Now handle different statuses
                             when (status) {
@@ -341,6 +343,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                                     sendSmsto(barangay, status)
                                     sendnotif(barangay, id, status)
                                 }
+
                                 else -> {
                                     Log.e("DeviceNotifFragment", "Unknown status: $status")
                                 }
@@ -348,7 +351,11 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                         }
 
                         override fun onCancelled(error: DatabaseError) {
-                            Log.e("DeviceNotifFragment", "Failed to fetch device details", error.toException())
+                            Log.e(
+                                "DeviceNotifFragment",
+                                "Failed to fetch device details",
+                                error.toException()
+                            )
                         }
                     })
                 }
@@ -359,6 +366,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             }
         })
     }
+
     private fun startListeningForDeviceStatuse2() {
         // Reference the specific device by its id (9000)
         devicesRef = FirebaseDatabase.getInstance().getReference("devices/9000/status")
@@ -374,8 +382,10 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 parentRef?.let { parentSnapshotRef ->
                     parentSnapshotRef.addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(parentSnapshot: DataSnapshot) {
-                            val id = parentSnapshot.child("id").getValue(String::class.java) ?: "unknown"
-                            val barangay = parentSnapshot.child("barangay").getValue(String::class.java) ?: ""
+                            val id =
+                                parentSnapshot.child("id").getValue(String::class.java) ?: "unknown"
+                            val barangay =
+                                parentSnapshot.child("barangay").getValue(String::class.java) ?: ""
 
                             // Now handle different statuses
                             when (status) {
@@ -384,6 +394,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                                     sendSmsto(barangay, status)
                                     sendnotif(barangay, id, status)
                                 }
+
                                 else -> {
                                     Log.e("DeviceNotifFragment", "Unknown status: $status")
                                 }
@@ -391,7 +402,11 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                         }
 
                         override fun onCancelled(error: DatabaseError) {
-                            Log.e("DeviceNotifFragment", "Failed to fetch device details", error.toException())
+                            Log.e(
+                                "DeviceNotifFragment",
+                                "Failed to fetch device details",
+                                error.toException()
+                            )
                         }
                     })
                 }
@@ -425,7 +440,10 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
                 // Compare the idArea manually
                 if (userBarangay == barangay) {
-                    Log.d("DeviceNotifFragment", "User $userId matched idArea: $userBarangay with passed id: $id")
+                    Log.d(
+                        "DeviceNotifFragment",
+                        "User $userId matched idArea: $userBarangay with passed id: $id"
+                    )
 
                     val notificationTitle = "Electric post status update in $barangay"
                     val notificationMessage = when (status) {
@@ -448,10 +466,17 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                         .collection("notifications").document(timestamp.toString())
                         .set(notificationData)
                         .addOnSuccessListener {
-                            Log.d("DeviceNotifFragment", "Notification successfully added for user $userId")
+                            Log.d(
+                                "DeviceNotifFragment",
+                                "Notification successfully added for user $userId"
+                            )
                         }
                         .addOnFailureListener { e ->
-                            Log.e("DeviceNotifFragment", "Failed to add notification for user $userId", e)
+                            Log.e(
+                                "DeviceNotifFragment",
+                                "Failed to add notification for user $userId",
+                                e
+                            )
                         }
                 } else {
                     // Log if user idArea doesn't match the passed id
@@ -495,11 +520,15 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             Log.e("DeviceNotifFragment", "Failed to query users", exception)
         }
     }
+
     private fun sendSms(phoneNumber: String, notificationMessage: String) {
         val sms = SmsManager.getDefault()
         try {
             sms.sendTextMessage(phoneNumber, null, notificationMessage, null, null)
-            Log.d("DeviceNotifFragment", "SMS sent to: $phoneNumber with message: $notificationMessage")
+            Log.d(
+                "DeviceNotifFragment",
+                "SMS sent to: $phoneNumber with message: $notificationMessage"
+            )
             Toast.makeText(requireContext(), "SMS sent to $phoneNumber", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
             Log.e("DeviceNotifFragment", "Failed to send SMS to $phoneNumber: ${e.message}")
@@ -513,7 +542,10 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         for (phoneNumber in phoneNumbers) {
             try {
                 sms.sendTextMessage(phoneNumber, null, notificationMessage, null, null)
-                Log.d("DeviceNotifFragment", "SMS sent to: $phoneNumber with message: $notificationMessage")
+                Log.d(
+                    "DeviceNotifFragment",
+                    "SMS sent to: $phoneNumber with message: $notificationMessage"
+                )
             } catch (e: Exception) {
                 Log.e("DeviceNotifFragment", "Failed to send SMS to $phoneNumber: ${e.message}")
             }
@@ -522,21 +554,15 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         // Show a toast message after attempting to send all SMS
         Toast.makeText(requireContext(), "SMS sent to all contacts", Toast.LENGTH_SHORT).show()
     }
+
     private fun sendSmsOtp(phoneNumbers: String, notificationMessage: String) {
         val sms = SmsManager.getDefault()
 
-        // Iterate through each phone number and send the SMS
-        for (phoneNumber in phoneNumbers) {
-            try {
-                sms.sendTextMessage(phoneNumber.toString(), null, notificationMessage, null, null)
-                Log.d("DeviceNotifFragment", "SMS sent to: $phoneNumber with message: $notificationMessage")
-            } catch (e: Exception) {
-                Log.e("DeviceNotifFragment", "Failed to send SMS to $phoneNumber: ${e.message}")
-            }
-        }
-
-        // Show a toast message after attempting to send all SMS
-        Toast.makeText(requireContext(), "SMS sent to all contacts", Toast.LENGTH_SHORT).show()
+        sms.sendTextMessage(phoneNumbers, null, notificationMessage, null, null)
+        Log.d(
+            "DeviceNotifFragment",
+            "SMS sent to: $phoneNumbers with message: $notificationMessage"
+        )
     }
 
 
@@ -544,10 +570,16 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         super.onDestroy()
         notificationsListener?.remove()
     }
+
     private fun hasSmsPermission(): Boolean {
-        return EasyPermissions.hasPermissions(requireContext(), android.Manifest.permission.SEND_SMS)
+        return EasyPermissions.hasPermissions(
+            requireContext(),
+            android.Manifest.permission.SEND_SMS
+        )
     }
+
     private val SMS_PERMISSION_REQUEST_CODE = 123
+
     // Request the SMS permission
     private fun requestSmsPermission() {
         EasyPermissions.requestPermissions(
@@ -557,6 +589,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             android.Manifest.permission.SEND_SMS
         )
     }
+
     // Override onRequestPermissionsResult to handle the result of the permission request
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -571,12 +604,14 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             this
         )
     }
+
     // Implement EasyPermissions.PermissionCallbacks interface
     override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
         if (requestCode == SMS_PERMISSION_REQUEST_CODE) {
 
         }
     }
+
     override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
         if (requestCode == SMS_PERMISSION_REQUEST_CODE) {
             // Permission denied, inform the user or handle it appropriately
