@@ -23,6 +23,7 @@ import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.concurrent.TimeUnit
+import kotlin.random.Random
 
 class OtpFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
@@ -48,6 +49,36 @@ class OtpFragment : Fragment() {
         binding.phoneNumberTextView.setText(viewModel.phone)
         binding.resendTextView.setOnClickListener {
             Toast.makeText(requireContext(), "Sending new OTP...", Toast.LENGTH_SHORT).show()
+            uploadInFireStore(viewModel.phone)
+        }
+    }
+    private fun generateRandomOtp(): String {
+        val randomNumber = Random.nextInt(100000, 999999)
+        return randomNumber.toString()
+    }
+
+    private fun uploadInFireStore(phone: String) {
+        val otpCode = generateRandomOtp()
+        val user: HashMap<String, Any?> = hashMapOf(
+            "status" to true,
+            "phone" to phone,
+            "code" to otpCode
+        )
+
+        val firestore = FirebaseFirestore.getInstance()
+        try {
+            firestore.collection("sms")
+                .document("otp")
+                .set(user)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Log.d("UploadInFireStore", "OTP uploaded successfully: $otpCode")
+                    } else {
+                        Log.e("UploadInFireStore", "Failed to upload OTP to Firestore.")
+                    }
+                }
+        } catch (e: Exception) {
+            Log.e("UploadInFireStore", "Error uploading OTP to Firestore: ${e.message}")
         }
     }
 

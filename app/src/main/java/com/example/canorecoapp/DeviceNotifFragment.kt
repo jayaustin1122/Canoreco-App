@@ -555,14 +555,18 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         Toast.makeText(requireContext(), "SMS sent to all contacts", Toast.LENGTH_SHORT).show()
     }
 
-    private fun sendSmsOtp(phoneNumbers: String, notificationMessage: String) {
+    private fun sendSmsOtp(phoneNumber: String, notificationMessage: String) {
         val sms = SmsManager.getDefault()
-
-        sms.sendTextMessage(phoneNumbers, null, notificationMessage, null, null)
-        Log.d(
-            "DeviceNotifFragment",
-            "SMS sent to: $phoneNumbers with message: $notificationMessage"
-        )
+        try {
+            sms.sendTextMessage(phoneNumber, null, notificationMessage, null, null)
+            Log.d(
+                "DeviceNotifFragment",
+                "SMS sent to: $phoneNumber with message: $notificationMessage"
+            )
+            Toast.makeText(requireContext(), "SMS sent to $phoneNumber", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Log.e("DeviceNotifFragment", "Failed to send SMS to $phoneNumber: ${e.message}")
+        }
     }
 
 
