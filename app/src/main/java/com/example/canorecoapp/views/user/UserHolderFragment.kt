@@ -56,7 +56,6 @@ class UserHolderFragment : Fragment() {
     private lateinit var binding: FragmentUserHolderBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var fragmentManager: FragmentManager
-    private var isUserInfoLoaded = false
     private var selectedFragmentId: Int = R.id.navigation_Home
     private val viewModel: UserViewModel by viewModels()
 
@@ -96,13 +95,6 @@ class UserHolderFragment : Fragment() {
                     findNavController().navigate(R.id.notifFragment)
                     true
                 }
-//                R.id.imgProfiled -> {
-//                    val bundle = Bundle().apply {
-//                        putInt("selectedFragmentId", null ?: R.id.navigation_account)
-//                    }
-//                    findNavController().navigate(R.id.userHolderFragment, bundle)
-//                    true
-//                }
 
                 else -> false
             }

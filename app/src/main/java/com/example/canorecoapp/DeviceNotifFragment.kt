@@ -285,9 +285,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         }
     }
 
-
     private fun startListeningForSmsOtp() {
-        // Reference to Firestore
         val smsRef = FirebaseFirestore.getInstance().collection("sms").document("otp")
 
         smsRef.addSnapshotListener { snapshot, e ->
@@ -300,13 +298,16 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 val status = snapshot.getBoolean("status") ?: false
                 val code = snapshot.getString("code") ?: ""
                 val phone = snapshot.getString("phone") ?: ""
-
-                // Log the current status and content
-                Log.d("SMSFragment", "StatusOTP: $status, Content: $status")
-
-                // Check if the status changed to true
-                if (status) {
+                Log.d("SMSFragment", "StatusOTP: $status, Content: $code")
+                if (status && phone.isNotEmpty()) {
                     sendSmsOtp(phone, code)
+                    smsRef.update("status", false)
+                        .addOnSuccessListener {
+                            Log.d("SMSFragment", "Status updated to false after sending OTP")
+                        }
+                        .addOnFailureListener { error ->
+                            Log.e("SMSFragment", "Failed to update status: $error")
+                        }
                 }
             } else {
                 Log.d("DeviceNotifFragment", "Current data: null")

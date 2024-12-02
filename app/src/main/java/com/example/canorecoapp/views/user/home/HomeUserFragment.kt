@@ -142,33 +142,66 @@ class HomeUserFragment : Fragment() {
         viewModel.userInfo.observe(viewLifecycleOwner, Observer { userInfo ->
             userInfo?.let {
                 binding.apply {
-                    // Set the user's profile image
+                    // Set the user's name
                     textViewUser.text = userInfo.firstName
-                    binding.imageViewProfile?.let {
-                        Glide.with(requireContext())
-                            .load(userInfo.image)
-                            .into(it)
-                        imgUser?.let {
+
+                    // Load the user's profile image or set a default image if none is found
+                    binding.imageViewProfile?.let { profileImageView ->
+                        val imageUrl = userInfo.image
+                        if (!imageUrl.isNullOrEmpty()) {
                             Glide.with(requireContext())
-                                .load(userInfo.image)
-                                .into(it)
+                                .load(imageUrl)
+                                .into(profileImageView)
+                        } else {
+                            // Set a default image if no image is found
+                            Glide.with(requireContext())
+                                .load(R.drawable.img_user_placeholder) // replace with your default image
+                                .into(profileImageView)
                         }
-                        imgUser.setOnClickListener {
+                    }
+
+                    // Handle imgUser similarly
+                    imgUser?.let { imgUserView ->
+                        val imageUrl = userInfo.image
+                        if (!imageUrl.isNullOrEmpty()) {
+                            Glide.with(requireContext())
+                                .load(imageUrl)
+                                .into(imgUserView)
+                        } else {
+                            // Set a default image if no image is found
+                            Glide.with(requireContext())
+                                .load(R.drawable.img_user_placeholder) // replace with your default image
+                                .into(imgUserView)
+                        }
+
+                        // Set click listener for imgUser
+                        imgUserView.setOnClickListener {
                             val bundle = Bundle().apply {
                                 putInt("selectedFragmentId", null ?: R.id.navigation_account)
                             }
                             findNavController().navigate(R.id.userHolderFragment, bundle)
                         }
-                        notif.setOnClickListener {
-                            val bundle = Bundle().apply {
-                                putString("from",userInfo.userType)
-                            }
-                            findNavController().navigate(R.id.notifFragment, bundle)
+                    }
+
+                    // Set click listener for notifications
+                    notif.setOnClickListener {
+                        val bundle = Bundle().apply {
+                            putString("from", userInfo.userType)
                         }
+                        findNavController().navigate(R.id.notifFragment, bundle)
                     }
                 }
+            } ?: run {
+                // Handle the case where userInfo is null, set default placeholder or error image
+                Glide.with(requireContext())
+                    .load(R.drawable.img_user_placeholder) // replace with your default image
+                    .into(binding.imageViewProfile)
+                Glide.with(requireContext())
+                    .load(R.drawable.img_user_placeholder) // replace with your default image
+                    .into(binding.imgUser)
             }
         })
+
 
 
     }
@@ -239,11 +272,6 @@ class HomeUserFragment : Fragment() {
             .build()
 
         toolbarGuide.show()
-    }
-
-
-    private fun hideShimmerEffect() {
-        binding.shimmerViewContainer.stopShimmerAnimation()
     }
 
     private fun getNews() {
@@ -386,6 +414,5 @@ class HomeUserFragment : Fragment() {
                 Log.e("Home", "Error getting documents: ", exception)
             }
     }
-
 
 }

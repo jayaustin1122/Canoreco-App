@@ -205,7 +205,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Update Personal Details"
+                                android:text="Account Details"
                                 android:textSize="@dimen/dimen_16sp"
                                 android:textColor="@color/text_dark_color"
                                 android:fontFamily="@font/roboto_medium"/>
@@ -227,6 +227,7 @@
                         android:id="@+id/update_contact_address"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:visibility="gone"
                         android:paddingVertical="6dp"
                         android:orientation="horizontal">
 

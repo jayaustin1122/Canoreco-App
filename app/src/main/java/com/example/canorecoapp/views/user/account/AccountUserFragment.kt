@@ -50,22 +50,45 @@ class AccountUserFragment : Fragment() {
         viewModel.userInfo.observe(viewLifecycleOwner, Observer { userInfo ->
             userInfo?.let {
                 binding.apply {
+                    // Set user's name and contact number
                     username.text = "${userInfo.firstName} ${userInfo.lastName}"
                     contactNumber.text = userInfo.phone
-                    Glide.with(requireContext()).load(userInfo.image)
-                        .into(imgUserProfile)
 
-                    imgUserProfile.setOnClickListener {
-                        val detailsFragment = FullScreenImageFragment()
-                        val bundle = Bundle().apply {
-                            putStringArrayList("imageList", arrayListOf(userInfo.image))
-                            putInt("initialPosition", 0)
-                        }
-                        findNavController().navigate(R.id.fullScreenImageFragment, bundle)
+                    // Load user's profile image or default image if not found
+                    val imageUrl = userInfo.image
+                    if (!imageUrl.isNullOrEmpty()) {
+                        Glide.with(requireContext())
+                            .load(imageUrl)
+                            .into(imgUserProfile)
+                    } else {
+                        // Set a default image if the user's image is missing
+                        Glide.with(requireContext())
+                            .load(R.drawable.img_user_placeholder) // replace with your default image
+                            .into(imgUserProfile)
                     }
+
+//                    // Set click listener to open image in FullScreenImageFragment
+//                    imgUserProfile.setOnClickListener {
+//                        val bundle = Bundle().apply {
+//                            // Check if imageUrl is null or empty and handle it accordingly
+//                            if (!imageUrl.isNullOrEmpty()) {
+//                                // If imageUrl is available, pass it as a string in the list
+//                                putStringArrayList("imageList", arrayListOf(imageUrl))
+//                            } else {
+//                                // If imageUrl is not available, pass a default resource ID as an integer
+//                                putInt("defaultImageRes", R.drawable.img_user_placeholder)
+//                            }
+//                            putInt("initialPosition", 0)
+//                        }
+//                        findNavController().navigate(R.id.fullScreenImageFragment, bundle)
+//                    }
+
                 }
+            } ?: run {
+
             }
         })
+
 
         // Handle error messages from the ViewModel
         viewModel.errorMessage.observe(viewLifecycleOwner, Observer { errorMessage ->
