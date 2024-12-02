@@ -33,7 +33,6 @@ import kotlinx.coroutines.withContext
 class SignInFragment : Fragment() {
     private lateinit var binding: FragmentSignInBinding
     private lateinit var auth: FirebaseAuth
-    private var backPressTime = 0L
     private var doubleBackToExitPressedOnce = false
     private val handler = Handler()
     private lateinit var fireStore: FirebaseFirestore
@@ -95,6 +94,7 @@ class SignInFragment : Fragment() {
 
 
         handler.postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
+
         binding.buttonLoginLogin.setOnClickListener {
             loadingDialog = DialogUtils.showLoading(requireActivity())
             loadingDialog.show()

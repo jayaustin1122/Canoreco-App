@@ -124,63 +124,6 @@ class LineMenHolderFragment : Fragment() {
         inflater.inflate(R.menu.appbar_employee, menu)
     }
 
-//    private var notificationsListener: ListenerRegistration? = null
-//
-//    @OptIn(ExperimentalBadgeUtils::class)
-//    private fun loadNotificationBadge() {
-//        val db = FirebaseFirestore.getInstance()
-//        val currentUser = FirebaseAuth.getInstance().currentUser
-//
-//        currentUser?.let { user ->
-//            val notificationsRef = db.collection("users")
-//                .document(user.uid)
-//                .collection("notifications")
-//
-//            notificationsListener?.remove()
-//
-//            notificationsListener = notificationsRef.addSnapshotListener { snapshot, exception ->
-//                if (exception != null) {
-//                    Toast.makeText(
-//                        requireContext(),
-//                        "Error Loading Notifications: ${exception.message}",
-//                        Toast.LENGTH_SHORT
-//                    ).show()
-//                    return@addSnapshotListener
-//                }
-//
-//                snapshot?.let { querySnapshot ->
-//                    var notificationCount = 0
-//                    for (document in querySnapshot.documents) {
-//                        val status = document.get("status")
-//                        if (status != true) { // Check if status is false
-//                            notificationCount++
-//                        }
-//                    }
-//                    val badge: BadgeDrawable = BadgeUtils.create(this@LineMenHolderFragment.requireContext())
-//                    if (notificationCount > 0) {
-//                        badge.isVisible = true
-//                        badge.number = notificationCount
-//                        val toolbar = binding.toolbar
-//                        BadgeUtils.attachBadgeDrawable(badge, toolbar, R.id.notifEmployee)
-//                    } else {
-//                        badge.isVisible = false
-//                    }
-//                }
-//            }
-//        } ?: run {
-//            Toast.makeText(
-//                requireContext(),
-//                "User not authenticated",
-//                Toast.LENGTH_SHORT
-//            ).show()
-//        }
-//    }
-//
-//    override fun onDestroyView() {
-//        super.onDestroyView()
-//        notificationsListener?.remove()
-//    }
-
     @RequiresApi(Build.VERSION_CODES.O)
     private fun loadUsersInfo() {
         val db = FirebaseFirestore.getInstance()

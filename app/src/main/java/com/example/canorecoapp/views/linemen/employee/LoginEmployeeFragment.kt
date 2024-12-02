@@ -6,6 +6,7 @@ import android.app.Dialog
 import android.app.ProgressDialog
 import android.os.Bundle
 import android.os.Handler
+import android.text.InputType
 import android.util.Log
 import android.util.Patterns
 import androidx.fragment.app.Fragment
@@ -19,9 +20,11 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.DialogReviewBinding
 import com.example.canorecoapp.databinding.FragmentLoginEmployeeBinding
+import com.example.canorecoapp.utils.DialogUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
@@ -36,8 +39,7 @@ import kotlinx.coroutines.withContext
 class LoginEmployeeFragment : Fragment() {
     private lateinit var binding : FragmentLoginEmployeeBinding
     private lateinit var auth : FirebaseAuth
-    private lateinit var progressDialog : ProgressDialog
-    private var backPressTime = 0L
+    private lateinit var loadingDialog: SweetAlertDialog
     private var doubleBackToExitPressedOnce = false
     private val handler = Handler()
     private lateinit var fireStore : FirebaseFirestore
@@ -54,12 +56,19 @@ class LoginEmployeeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         auth = FirebaseAuth.getInstance()
         fireStore = FirebaseFirestore.getInstance()
-        progressDialog = ProgressDialog(this.requireContext())
-        progressDialog.setTitle("Please wait")
-        progressDialog.setCanceledOnTouchOutside(false)
+        auth = FirebaseAuth.getInstance()
+        fireStore = FirebaseFirestore.getInstance()
+        binding.etPass.inputType =
+            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+        binding.etUsernameLogin.inputType =
+            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS
+
         handler.postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
+
         binding.buttonLoginLogin.setOnClickListener {
-            validateData()
+            loadingDialog = DialogUtils.showLoading(requireActivity())
+            loadingDialog.show()
+            checkUser()
         }
         binding.tvForgotPasswordLogin.setOnClickListener {
             findNavController().apply {
@@ -75,21 +84,7 @@ class LoginEmployeeFragment : Fragment() {
     var email = ""
     var pass = ""
 
-    private fun validateData() {
-        email = binding.etUsernameLogin.text.toString().trim()
-        pass = binding.etPass.text.toString().trim()
 
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-            //invalid email
-            Toast.makeText(this.requireContext(),"Email Invalid", Toast.LENGTH_SHORT).show()
-        }
-        else if (pass.isEmpty()){
-            Toast.makeText(this.requireContext(),"Empty Fields are not allowed", Toast.LENGTH_SHORT).show()
-        }
-        else{
-            loginUser()
-        }
-    }
     override fun onDestroyView() {
         super.onDestroyView()
         handler.removeCallbacksAndMessages(null)
@@ -115,166 +110,122 @@ class LoginEmployeeFragment : Fragment() {
             }
         }
     }
-    private fun loginUser() {
-        val email = binding.etUsernameLogin.text.toString()
-        val password = binding.etPass.text.toString()
-        progressDialog.setMessage("Logging In...")
-        progressDialog.show()
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                auth.signInWithEmailAndPassword(email,password).await()
-                withContext(Dispatchers.Main){
-                    checkUser()
-                }
-
-            }
-            catch (e : Exception){
-                withContext(Dispatchers.Main){
-                    progressDialog.dismiss()
-                    Toast.makeText(
-                        this@LoginEmployeeFragment.requireContext(),
-                        "${e.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-            }
-        }
-    }
     private fun checkUser() {
-        progressDialog.setTitle("Checking user")
-        progressDialog.setMessage("Signing In...")
-        progressDialog.show()
+        val phoneOrEmail = binding.etUsernameLogin.text?.trim().toString()
+        val password = binding.etPass.text?.trim().toString()
 
-        val firebaseUser = auth.currentUser
-
-        if (firebaseUser != null) {
-            val dbref = FirebaseFirestore.getInstance().collection("users").document(firebaseUser.uid)
-            dbref.get().addOnCompleteListener { task ->
-                progressDialog.dismiss()
-                if (task.isSuccessful) {
-                    val snapshot = task.result
-                    if (snapshot != null && snapshot.exists()) {
-                        val userType = snapshot.getString("userType")
-                        val access = snapshot.getBoolean("access")
-                        when (userType) {
-                            "linemen" -> {
-                                if (access == false) {
-                                    val dialogBinding = DialogReviewBinding.inflate(layoutInflater)
-                                    val dialog = Dialog(this@LoginEmployeeFragment.requireContext())
-                                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-                                    dialog.setContentView(dialogBinding.root)
-                                    dialog.show()
-                                    auth.signOut()
-                                }
-                                else{
-
-                                    Toast.makeText(
-                                        this@LoginEmployeeFragment.requireContext(),
-                                        "Login Successfully",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                    progressDialog.setMessage("Redirecting...")
-                                    progressDialog.show()
-                                    findNavController().apply {
-                                        popBackStack(R.id.splashFragment, false)
-                                        navigate(R.id.adminHolderFragment)
-                                    }
-
-                                    progressDialog.dismiss()
-                                }
-
-                            }
-                            "member" -> {
-                                if (auth.currentUser?.isEmailVerified == true) {
-                                    findNavController().apply {
-                                        popBackStack(R.id.splashFragment, false)
-                                        navigate(R.id.userHolderFragment)
-                                    }
-                                } else if (auth.currentUser?.isEmailVerified == false) {
-                                    verifyEmail(firebaseUser)
-                                }
-                            }
-
-                            else-> {
-
-                            }
-                        }
-                    } else {
-                        Toast.makeText(this@LoginEmployeeFragment.requireContext(), "User not found.", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    Toast.makeText(this@LoginEmployeeFragment.requireContext(), "An error occurred. Please try again later.", Toast.LENGTH_SHORT).show()
-                }
-            }
-        } else {
-            progressDialog.dismiss()
-            Toast.makeText(this@LoginEmployeeFragment.requireContext(), "User not authenticated.", Toast.LENGTH_SHORT).show()
-        }
-    }
-    @SuppressLint("MissingInflatedId")
-    private fun showVerificationDialog(user: FirebaseUser) {
-        val dialogBuilder = AlertDialog.Builder(requireContext())
-        val inflater = layoutInflater
-        val dialogView = inflater.inflate(R.layout.dialog_verification, null)
-        dialogBuilder.setView(dialogView)
-        val btnContinue = dialogView.findViewById<Button>(R.id.btnContinue)
-        val btnResend = dialogView.findViewById<TextView>(R.id.btnResend)
-
-        val dialog = dialogBuilder.create()
-        dialog.setCancelable(false)
-        dialog.show()
-
-        btnContinue.isEnabled = false
-        btnResend.setOnClickListener {
-            verifyEmail(user)
-        }
-
-        lifecycleScope.launch {
-            while (auth.currentUser?.isEmailVerified == false) {
-                try {
-                    auth.currentUser?.reload()?.addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            if (auth.currentUser?.isEmailVerified == true) {
-                                btnContinue.isEnabled = true
-                            }
-                        } else {
-                            Log.e("VerificationDialog", "Failed to reload user", task.exception)
-                        }
-                    }
-                } catch (e: Exception) {
-                    Log.e("VerificationDialog", "Error during email verification", e)
-                }
-                delay(5000)
-            }
-        }
-
-        btnContinue.setOnClickListener {
-            if (auth.currentUser?.isEmailVerified == true) {
-                dialog.dismiss()
-            } else {
-                Toast.makeText(requireContext(), "Please verify your email before proceeding.", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-    private fun verifyEmail(user: FirebaseUser?) {
-        if (user == null) {
-            Log.e("EmailVerification", "User is not logged in. Cannot send verification email.")
+        // Check if phoneOrEmail and password are not empty
+        if (phoneOrEmail.isEmpty() || password.isEmpty()) {
+            loadingDialog.dismiss()
+            Toast.makeText(requireContext(), "Phone/Email or password cannot be empty.", Toast.LENGTH_SHORT).show()
             return
         }
-        user.sendEmailVerification()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Log.d("EmailVerification", "Verification email sent to ${user.email}")
-                    showVerificationDialog(user)
-                } else {
-                    Log.e("EmailVerification", "Failed to send verification email to ${user.email}. Task failed.")
 
+        val dbref = FirebaseFirestore.getInstance().collection("users")
+
+        // Determine whether the input is a phone number or an email
+        val isEmail = android.util.Patterns.EMAIL_ADDRESS.matcher(phoneOrEmail).matches()
+
+        // Query Firestore: if it's an email, check the "email" field, otherwise check the "phone" field
+        val query = if (isEmail) {
+            dbref.whereEqualTo("email", phoneOrEmail) // Query by email
+        } else {
+            dbref.whereEqualTo("phone", phoneOrEmail) // Query by phone number
+        }
+
+        // Execute the query
+        query.get().addOnCompleteListener { task ->
+            loadingDialog.dismiss()  // Dismiss the loading dialog once the task is complete
+
+            if (task.isSuccessful) {
+                val snapshot = task.result
+                if (snapshot != null && !snapshot.isEmpty) {
+                    // Assume the first document matches the user (in case multiple documents are returned)
+                    val userDoc = snapshot.documents.first()
+                    val authEmail = userDoc.getString("authEmail")
+                    val userType = userDoc.getString("userType")
+
+                    if (!authEmail.isNullOrEmpty()) {
+                        // Proceed to login with the fetched email
+                        loginUser(authEmail, userType)
+                    } else {
+                        loadingDialog.dismiss()
+                        // authEmail not found in the user document
+                        Toast.makeText(requireContext(), "Phone/Email is wrong.", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    loadingDialog.dismiss()
+                    // User not found
+                    Toast.makeText(requireContext(), "User not found.", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                loadingDialog.dismiss()
+                // Error occurred while fetching user data
+                Toast.makeText(requireContext(), "An error occurred: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+    private fun loginUser(authEmail: String?, userType: String?) {
+        val password = binding.etPass.text.toString()
+
+        if (authEmail.isNullOrEmpty()) {
+            loadingDialog.dismiss()
+            Toast.makeText(requireContext(), "authEmail is null, cannot log in.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // Sign in using the retrieved authEmail and the entered password
+                auth.signInWithEmailAndPassword(authEmail, password).await()
+
+                withContext(Dispatchers.Main) {
+                    // After login, check the user type and navigate accordingly
+                    checkUserType(userType)
+                }
+
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    loadingDialog.dismiss()  // Dismiss the loading dialog on failure
+                    // Handle login failure
+                    Toast.makeText(this@LoginEmployeeFragment.requireContext(), "Password is Incorrect", Toast.LENGTH_SHORT).show()
                 }
             }
-            .addOnFailureListener { exception ->
-                Log.e("EmailVerification", "Error sending verification email: ${exception.message}")
+        }
+    }
+    private fun checkUserType(userType: String?) {
+        when (userType) {
+            "linemen" -> {
+                loadingDialog.dismiss()  // Dismiss the loading dialog when done
+                Toast.makeText(this@LoginEmployeeFragment.requireContext(), "Login Successfully", Toast.LENGTH_SHORT).show()
+                // Navigate to adminHolderFragment for "linemen"
+                findNavController().apply {
+                    popBackStack(R.id.splashFragment, false)
+                    navigate(R.id.adminHolderFragment)
+                }
+            }
+
+            "member" -> {
+                loadingDialog.dismiss()
+                DialogUtils.showSuccessMessage(
+                    requireActivity(),
+                    "Success",
+                    "Welcome to Canoreco App"
+                ).show()
+                // Navigate to userHolderFragment for verified members
+                findNavController().apply {
+                    popBackStack(R.id.splashFragment, false)
+                    navigate(R.id.userHolderFragment)
+                }
 
             }
+
+            else -> {
+                loadingDialog.dismiss()
+                // Handle unknown userType or show an appropriate message
+                Toast.makeText(requireContext(), "Unknown user type. Please contact support.", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
+
 }

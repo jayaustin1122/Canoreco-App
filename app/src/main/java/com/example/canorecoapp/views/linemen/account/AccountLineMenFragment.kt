@@ -116,10 +116,16 @@ class AccountLineMenFragment : Fragment() {
 
                     binding.username.text = "$userName $lastName"
                     binding.contactNumber.text = contact
-                    val context = context ?: return@addOnSuccessListener
-                    Glide.with(context)
-                        .load(image)
-                        .into(binding.imgUserProfile)
+                    if (!image.isNullOrEmpty()) {
+                        Glide.with(requireContext())
+                            .load(email)
+                            .into(binding.imgUserProfile)
+                    } else {
+                        // Set a default image if the user's image is missing
+                        Glide.with(requireContext())
+                            .load(R.drawable.img_user_placeholder) // replace with your default image
+                            .into(binding.imgUserProfile)
+                    }
 
                 }
                 .addOnFailureListener { exception ->
