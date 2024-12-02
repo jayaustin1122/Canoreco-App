@@ -417,15 +417,11 @@ class SignUpFragment : Fragment() {
             .addOnSuccessListener {
                 Log.d("logging", "Account Number4: ${viewModel.meterNumber}")
 
-                // Log successful update
-                Log.d("sa", "Account $accountNumber status successfully updated to 'linked'")
-                Toast.makeText(requireContext(), "Account successfully linked", Toast.LENGTH_SHORT).show()
-            }
+             }
             .addOnFailureListener { e ->
                 // Log the error
                 Log.e("sa", "Error updating account $accountNumber status to 'linked'", e)
-                Toast.makeText(context, "Error updating account status", Toast.LENGTH_SHORT).show()
-            }
+              }
     }
 
 
