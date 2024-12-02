@@ -274,7 +274,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                     }.addOnFailureListener { usersError ->
                         Log.e(
                             "DeviceNotifFragment",
-                            "Failed to read user phone numbers",
+                            "Failed to read user phone numberas",
                             usersError
                         )
                     }
