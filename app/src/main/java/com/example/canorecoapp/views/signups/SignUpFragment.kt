@@ -251,13 +251,15 @@ class SignUpFragment : Fragment() {
     private fun verifyInFirebase(typedOTP: String) {
         val smsRef = FirebaseFirestore.getInstance().collection("sms").document("otp")
         Log.d("VerifyOTP", "Checking OTP in Firestore...")
+
         smsRef.get()
             .addOnSuccessListener { snapshot ->
                 if (snapshot != null && snapshot.exists()) {
-                    val status = snapshot.getBoolean("status") ?: false
+                    Log.d("VerifyOTP", "Snapshot exists, checking data...")
                     val code = snapshot.getString("code") ?: ""
                     val phone = snapshot.getString("phone") ?: ""
-                    if (status && typedOTP == code) {
+
+                    if (typedOTP == code) {
                         Log.d("VerifyOTP", "OTP matched. Verifying...")
 
                         smsRef.update(
@@ -268,25 +270,33 @@ class SignUpFragment : Fragment() {
                             )
                         ).addOnSuccessListener {
                             Log.d("VerifyOTP", "OTP verified successfully, Firestore data cleared.")
+                            loadingDialog.dismiss()
                             Toast.makeText(requireContext(), "OTP Verified Successfully", Toast.LENGTH_SHORT).show()
                             createUserAccount()
 
-                        }.addOnFailureListener {
+                        }.addOnFailureListener { e ->
                             loadingDialog.dismiss()
-                            Log.e("VerifyOTP", "Failed to update OTP data in Firestore.")
+                            Log.e("VerifyOTP", "Failed to update OTP data in Firestore.", e)
                             Toast.makeText(requireContext(), "Failed to update OTP data", Toast.LENGTH_SHORT).show()
                         }
+                    } else {
+                        loadingDialog.dismiss()
+                        Log.d("VerifyOTP", "OTP does not match or status is false.")
+                        Toast.makeText(requireContext(), "Invalid OTP or OTP already used", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    Log.d("DeviceNotifFragment", "No OTP data found in Firestore.")
+                    loadingDialog.dismiss()
+                    Log.d("VerifyOTP", "No OTP data found in Firestore.")
                     Toast.makeText(requireContext(), "No OTP data found", Toast.LENGTH_SHORT).show()
                 }
             }
             .addOnFailureListener { e ->
-                Log.e("DeviceNotifFragment", "Failed to retrieve document", e)
+                loadingDialog.dismiss()
+                Log.e("VerifyOTP", "Failed to retrieve document from Firestore.", e)
                 Toast.makeText(requireContext(), "Failed to retrieve OTP data", Toast.LENGTH_SHORT).show()
             }
     }
+
 
     fun backItem() {
         val currentItem = viewPager.currentItem
@@ -303,9 +313,6 @@ class SignUpFragment : Fragment() {
             viewPager.currentItem = nextItem
         }
     }
-
-
-
 
     private fun generateRandomOtp(): String {
         val randomNumber = Random.nextInt(100000, 999999)
@@ -413,20 +420,27 @@ class SignUpFragment : Fragment() {
     private fun updateAccountStatusToLinked(accountNumber: String) {
         val accountRef = firebaseUtils.fireStore.collection("accounts").document(accountNumber)
 
-        accountRef.update("status", "linked")
-            .addOnSuccessListener {
-                Log.d("logging", "Account Number4: ${viewModel.meterNumber}")
+        try {
+            accountRef.update("status", "linked")
+                .addOnSuccessListener {
+                    Log.d("logging", "Account Number4: ${viewModel.meterNumber}")
 
-                // Log successful update
-                Log.d("sa", "Account $accountNumber status successfully updated to 'linked'")
-                Toast.makeText(context, "Account successfully linked", Toast.LENGTH_SHORT).show()
-            }
-            .addOnFailureListener { e ->
-                // Log the error
-                Log.e("sa", "Error updating account $accountNumber status to 'linked'", e)
-                Toast.makeText(context, "Error updating account status", Toast.LENGTH_SHORT).show()
-            }
+                    // Log successful update
+                    Log.d("sa", "Account $accountNumber status successfully updated to 'linked'")
+                    Toast.makeText(requireContext(), "Account successfully linked", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener { e ->
+                    // Log the error
+                    Log.e("sa", "Error updating account $accountNumber status to 'linked'", e)
+                    Toast.makeText(requireContext(), "Error updating account status", Toast.LENGTH_SHORT).show()
+                }
+        } catch (e: Exception) {
+            // Log the exception
+            Log.e("sa", "Exception caught while updating account status", e)
+            Toast.makeText(requireContext(), "An error occurred while updating account status", Toast.LENGTH_SHORT).show()
+        }
     }
+
 
 
     private fun showReviewDialog() {
