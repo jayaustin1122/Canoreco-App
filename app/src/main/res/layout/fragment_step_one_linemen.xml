@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_black"
-            android:text="Papaltan"
+            android:text="Employee Details"
             android:textSize="24sp"
             android:textColor="@color/text_dark_color"
             app:layout_constraintStart_toStartOf="parent"
@@ -28,7 +28,7 @@
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Your contact number and/or email will be used as your login credential together with your password."
+            android:text="Enter your basic employee information."
             android:textSize="15sp"
             android:textColor="#666666"
             android:fontFamily="@font/roboto_medium"
@@ -64,12 +64,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:hint="First Name"
-                android:inputType="phone"
+                android:inputType="text"
                 android:lines="1"
                 android:scrollbars="horizontal"
                 android:singleLine="true"
                 app:boxStrokeWidth="1dp"
-                app:boxStrokeWidthFocused="2dp"  />
+                app:boxStrokeWidthFocused="2dp" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -125,7 +125,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:fontFamily="@font/roboto_medium"
-            android:text="Company Position"
+            android:text="Position"
             android:textColor="@color/text_dark_color"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -156,8 +156,45 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Password Strength TextView -->
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/areaTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/roboto_medium"
+            android:text="Area Designation"
+            android:textColor="@color/text_dark_color"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/brgy_type_input_layout" />
 
-        <!-- Confirm Password Input -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/area"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            app:hintEnabled="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/areaTextView">
+
+            <AutoCompleteTextView
+                android:id="@+id/tvArea"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:hint="Area Designation"
+                android:inputType="none"
+                android:lines="1"
+                android:clickable="false"
+                android:scrollbars="horizontal"
+                android:singleLine="true"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                app:boxStrokeWidth="1dp"
+                app:boxStrokeWidthFocused="2dp"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Password Match Status TextView -->
 

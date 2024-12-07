@@ -64,14 +64,12 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigationUser"
-        style="@style/Widget.MaterialComponents.BottomNavigationView.Colored"
+        style="@style/Widget.App.BottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        app:itemActiveIndicatorStyle="@color/text_dark_color"
-        app:itemIconSize="24dp"
-        app:itemIconTint="@color/primary_main_color"
-        app:itemTextColor="@color/primary_dark_color"
+        app:elevation="4dp"
+        app:labelVisibilityMode="labeled"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

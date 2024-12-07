@@ -66,6 +66,7 @@
                 android:hint="Contact Number"
                 android:inputType="phone"
                 android:lines="1"
+                android:maxLength="11"
                 android:scrollbars="horizontal"
                 android:singleLine="true"
                 app:boxStrokeWidth="1dp"

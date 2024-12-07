@@ -86,6 +86,8 @@
                 android:textColor="@color/text_dark_color"
                 android:fontFamily="@font/roboto_medium"
                 android:hint="0"
+                android:maxLength="1"
+                android:maxLines="1"
                 android:inputType="number" />
 
             <EditText
@@ -99,6 +101,8 @@
                 android:textColor="@color/text_dark_color"
                 android:fontFamily="@font/roboto_medium"
                 android:hint="0"
+                android:maxLength="1"
+                android:maxLines="1"
                 android:inputType="number" />
 
             <EditText
@@ -112,6 +116,8 @@
                 android:textColor="@color/text_dark_color"
                 android:fontFamily="@font/roboto_medium"
                 android:hint="0"
+                android:maxLength="1"
+                android:maxLines="1"
                 android:inputType="number" />
 
             <EditText
@@ -125,6 +131,8 @@
                 android:textColor="@color/text_dark_color"
                 android:fontFamily="@font/roboto_medium"
                 android:hint="0"
+                android:maxLength="1"
+                android:maxLines="1"
                 android:inputType="number" />
 
             <EditText
@@ -135,6 +143,8 @@
                 android:background="@drawable/edit_text_bg"
                 android:gravity="center"
                 android:hint="0"
+                android:maxLength="1"
+                android:maxLines="1"
                 android:inputType="number" />
 
             <EditText
@@ -148,6 +158,8 @@
                 android:textColor="@color/text_dark_color"
                 android:fontFamily="@font/roboto_medium"
                 android:hint="0"
+                android:maxLength="1"
+                android:maxLines="1"
                 android:inputType="number" />
         </LinearLayout>
 

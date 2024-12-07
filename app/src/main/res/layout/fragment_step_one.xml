@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_black"
-            android:text="Account Register"
+            android:text="CANORECO Account"
             android:textColor="@color/text_dark_color"
             android:textSize="24sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -39,8 +39,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="search"
+            android:backgroundTint="@color/primary_main_color"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="@color/primary_light_color"
             app:layout_constraintBottom_toTopOf="@+id/textInputLayout1"
             app:layout_constraintEnd_toEndOf="parent" />
+
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/accountNumberTextView"
             android:layout_width="wrap_content"
