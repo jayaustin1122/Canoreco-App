@@ -79,7 +79,7 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:scaleType="center"
+                android:scaleType="fitXY"
                 android:src="@drawable/bg_main"
                 android:tileMode="disabled" />
 

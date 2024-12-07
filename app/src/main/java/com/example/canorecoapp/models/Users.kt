@@ -15,5 +15,6 @@ data class Users(
     val timestamp: Long,
     val token: String,
     val uid: String,
-    val userType: String
+    val userType: String,
+    val accountNumber: String
 )

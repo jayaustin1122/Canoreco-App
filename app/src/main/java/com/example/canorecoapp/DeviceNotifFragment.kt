@@ -338,16 +338,33 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
                             // Now handle different statuses
                             when (status) {
-                                "damaged", "working", "under repair" -> {
+                                "damaged" -> {
                                     Log.e("DeviceNotifFragment", "Device is $status")
                                     sendSmsto(barangay, status)
                                     sendnotif(barangay, id, status)
+
+                                }
+
+                                "under repair" -> {
+                                    Log.e("DeviceNotifFragment", "Device is $status")
+                                    sendSmsto(barangay, status)
+                                    sendnotif(barangay, id, status)
+                                    // No need to upload logs here
+                                }
+                                "working"-> {
+                                    Log.e("DeviceNotifFragment", "Device is $status")
+                                    sendSmsto(barangay, status)
+                                    sendnotif(barangay, id, status)
+                                    // No need to upload logs here
+                                    val new = FirebaseDatabase.getInstance().getReference("devices/9001")
+                                    updateDevice(new)
                                 }
 
                                 else -> {
                                     Log.e("DeviceNotifFragment", "Unknown status: $status")
                                 }
                             }
+
                         }
 
                         override fun onCancelled(error: DatabaseError) {
@@ -366,6 +383,29 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             }
         })
     }
+
+    private fun updateDevice(devicesRef: DatabaseReference) {
+        // Get the current timestamp
+        val timestamp = System.currentTimeMillis()
+
+        // Update the 'timeResolved' field with the current timestamp
+        val updates = mapOf(
+            "timeResolved" to timestamp,
+            "startTime" to "",
+            "assigned" to "",
+            "date" to "",
+            "endTime" to ""
+        )
+
+        devicesRef.updateChildren(updates)
+            .addOnSuccessListener {
+                Log.d("DeviceNotifFragment", "Device updated successfully.")
+            }
+            .addOnFailureListener { e ->
+                Log.e("DeviceNotifFragment", "Failed to update device", e)
+            }
+    }
+
 
     private fun startListeningForDeviceStatuse2() {
         // Reference the specific device by its id (9000)
@@ -387,12 +427,27 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                             val barangay =
                                 parentSnapshot.child("barangay").getValue(String::class.java) ?: ""
 
-                            // Now handle different statuses
                             when (status) {
-                                "damaged", "working", "under repair" -> {
+                                "damaged" -> {
                                     Log.e("DeviceNotifFragment", "Device is $status")
                                     sendSmsto(barangay, status)
                                     sendnotif(barangay, id, status)
+
+                                }
+
+                                "under repair" -> {
+                                    Log.e("DeviceNotifFragment", "Device is $status")
+                                    sendSmsto(barangay, status)
+                                    sendnotif(barangay, id, status)
+                                    // No need to upload logs here
+                                }
+                                "working"-> {
+                                    Log.e("DeviceNotifFragment", "Device is $status")
+                                    sendSmsto(barangay, status)
+                                    sendnotif(barangay, id, status)
+                                    // No need to upload logs here
+                                    val new = FirebaseDatabase.getInstance().getReference("devices/9000")
+                                    updateDevice(new)
                                 }
 
                                 else -> {

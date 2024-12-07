@@ -80,14 +80,14 @@ class ChangePersonalFragment : Fragment() {
         viewModel.userInfo.observe(viewLifecycleOwner, Observer { userInfo ->
             userInfo?.let {
                 binding.apply {
-//                    // Set the user's profile image
-//                    binding.etFirstName.setText(userInfo.firstName)
-//                    binding.etLastName.setText(userInfo.lastName)
-//                    binding.etBirthDate.setText(userInfo.dateOfBirth)
-//
-//                    Glide.with(requireContext())
-//                        .load(userInfo.image)
-//                        .into(binding.imgPersonal)
+                    // Set the user's profile image
+                    binding.etAccountNumber.setText(userInfo.accountNumber)
+                    binding.etAccountName.setText("${userInfo.firstName} ${userInfo.lastName}")
+                    binding.etBarangay.setText(userInfo.barangay)
+                    binding.etMunicipality.setText(userInfo.municipality)
+
+
+
                 }
                 if (userInfo.userType == "member") {
                     requireActivity().onBackPressedDispatcher.addCallback(
@@ -102,18 +102,12 @@ class ChangePersonalFragment : Fragment() {
                         }
                     )
                     binding.backButton.setOnClickListener {
-                        DialogUtils.showWarningMessage(
-                            requireActivity(),
-                            "Warning",
-                            "Are you sure you want to exit? Changes will not be saved."
-                        ) { sweetAlertDialog ->
-                            sweetAlertDialog.dismissWithAnimation()
 
                             val bundle = Bundle().apply {
                                 putInt("selectedFragmentId", R.id.navigation_account)
                             }
                             findNavController().navigate(R.id.userHolderFragment, bundle)
-                        }
+
                     }
                 } else {
                     requireActivity().onBackPressedDispatcher.addCallback(

@@ -54,7 +54,8 @@ class UserViewModel : ViewModel() {
                                 timestamp = it.getLong("timestamp") ?: 0L,
                                 token = it.getString("token") ?: "",
                                 uid = it.getString("uid") ?: "",
-                                userType = it.getString("userType") ?: ""
+                                userType = it.getString("userType") ?: "",
+                                accountNumber = it.getString("accountNumber") ?: ""
                             )
 
                             withContext(Dispatchers.Main) {

@@ -26,6 +26,7 @@ class SignUpViewModel  : ViewModel() {
     var resendAttempts = 0
     var skipOtpVerification = false
     var uid : String = ""
+    var position : String = ""
 
     var image: Uri? = null
 
