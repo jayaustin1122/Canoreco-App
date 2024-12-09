@@ -45,17 +45,33 @@
             app:layout_constraintBottom_toTopOf="@+id/textInputLayout1"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <com.google.android.material.textview.MaterialTextView
+        <LinearLayout
             android:id="@+id/accountNumberTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dimen_20dp"
-            android:fontFamily="@font/roboto_medium"
-            android:text="Account Number"
-            android:textColor="@color/text_dark_color"
-            android:textSize="16sp"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView2" />
+            app:layout_constraintTop_toBottomOf="@+id/textView2">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Account Number"
+                android:textSize="16sp"
+                android:textColor="@color/text_dark_color"
+                android:fontFamily="@font/roboto_medium" />
+
+            <TextView
+                android:id="@+id/asteriskFirstName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" (Enter with hypen)"
+                android:textColor="#777777"
+                android:textSize="14sp"
+                android:textStyle="italic" />
+        </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout1"

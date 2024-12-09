@@ -28,7 +28,7 @@
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Your contact number and/or email will be used as your login credential together with your password."
+            android:text="Your contact number and email will be used as your login credential together with your password."
             android:textSize="15sp"
             android:textColor="#666666"
             android:fontFamily="@font/roboto_medium"
