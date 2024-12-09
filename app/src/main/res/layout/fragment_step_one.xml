@@ -23,6 +23,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageView
+            android:id="@+id/file_upload_container"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@drawable/upload"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:scaleType="fitXY"
+            app:layout_constraintTop_toBottomOf="@+id/accountNumberTextView" />
         <TextView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
@@ -30,6 +39,7 @@
             android:fontFamily="@font/roboto_medium"
             android:text="Enter your CANORECO Account Number to register to the app"
             android:textColor="#666666"
+            android:visibility="gone"
             android:textSize="15sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
@@ -37,10 +47,11 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/search"
             android:layout_width="wrap_content"
+            android:visibility="gone"
             android:layout_height="wrap_content"
-            android:text="search"
             android:backgroundTint="@color/primary_main_color"
             android:fontFamily="@font/roboto_medium"
+            android:text="search"
             android:textColor="@color/primary_light_color"
             app:layout_constraintBottom_toTopOf="@+id/textInputLayout1"
             app:layout_constraintEnd_toEndOf="parent" />
@@ -58,7 +69,7 @@
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Account Number"
+                android:text="Accc Number"
                 android:textSize="16sp"
                 android:textColor="@color/text_dark_color"
                 android:fontFamily="@font/roboto_medium" />
@@ -80,6 +91,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
             app:hintEnabled="false"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/accountNumberTextView">

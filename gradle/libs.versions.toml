@@ -12,6 +12,9 @@ constraintlayout = "2.1.4"
 firebaseFirestoreKtx = "25.0.0"
 firebaseMessagingKtx = "24.0.0"
 places = "3.5.0"
+visionCommon = "17.3.0"
+playServicesMlkitTextRecognition = "19.0.1"
+playServicesMlkitTextRecognitionCommon = "19.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -25,6 +28,9 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessagingKtx" }
 places = { group = "com.google.android.libraries.places", name = "places", version.ref = "places" }
+vision-common = { group = "com.google.mlkit", name = "vision-common", version.ref = "visionCommon" }
+play-services-mlkit-text-recognition = { group = "com.google.android.gms", name = "play-services-mlkit-text-recognition", version.ref = "playServicesMlkitTextRecognition" }
+play-services-mlkit-text-recognition-common = { group = "com.google.android.gms", name = "play-services-mlkit-text-recognition-common", version.ref = "playServicesMlkitTextRecognitionCommon" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

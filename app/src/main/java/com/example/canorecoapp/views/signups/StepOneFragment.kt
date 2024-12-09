@@ -7,6 +7,7 @@ import android.content.ContentValues.TAG
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -29,6 +30,9 @@ import com.example.canorecoapp.utils.FirebaseUtils
 import com.example.canorecoapp.viewmodels.SignUpViewModel
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import org.bouncycastle.asn1.x500.style.RFC4519Style.uid
 import java.util.Calendar
 import kotlin.random.Random
@@ -36,9 +40,13 @@ import kotlin.random.Random
 class StepOneFragment : Fragment() {
     private lateinit var binding: FragmentStepOneBinding
     private lateinit var viewModel: SignUpViewModel
-
+    private val CAMERA_PERMISSION_CODE = 101
     private lateinit var firebaseUtils: FirebaseUtils
-
+    private val IMAGE_PICK_GALLERY_CODE = 102
+    private val IMAGE_PICK_CAMERA_CODE = 103
+    private var selectedImage: Uri? = null
+    private var extractedText: String = ""
+    private val firestore = FirebaseFirestore.getInstance()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -56,83 +64,195 @@ class StepOneFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        firebaseUtils = FirebaseUtils()
-        firebaseUtils.initialize(requireContext())
-        binding.search.setOnClickListener {
-            val accountNumber = binding.etAccountNumber.text.toString()
-            if (accountNumber.isNotEmpty()) {
-                fetchAccountDetails(accountNumber)
-            } else {
-                Toast.makeText(context, "Please enter an account number", Toast.LENGTH_SHORT).show()
-            }
+        binding.fileUploadContainer.setOnClickListener {
+            showImagePickerDialog()
         }
     }
-    private fun fetchAccountDetails(accountNumber: String) {
-        firebaseUtils.fireStore.collection("accounts")
-            .document(accountNumber)
-            .get()
-            .addOnSuccessListener { document ->
-                if (document != null && document.exists()) {
-                    // Fetch and log the fields from Firestore
-                    val consumerAccount = document.getString("consumerAccount") ?: "N/A"
-                    val accountNumbers = document.getString("accountNumber") ?: "N/A"
-                    val barangay = document.getString("barangay") ?: "N/A"
-                    val firstName = document.getString("firstName") ?: "N/A"
-                    val lastName = document.getString("lastName") ?: "N/A"
-                    val municipality = document.getString("municipality") ?: "N/A"
-                    val status = document.getString("status") ?: "N/A"
-                    val street = document.getString("street") ?: "N/A"
 
-                    // Log all fields
-                    Log.d(TAG, "Consumer Account: $consumerAccount")
-                    Log.d(TAG, "Barangay: $barangay")
-                    Log.d(TAG, "First Name: $firstName")
-                    Log.d(TAG, "Last Name: $lastName")
-                    Log.d(TAG, "Municipality: $municipality")
-                    Log.d(TAG, "Status: $status")
-                    Log.d(TAG, "Street: $street")
 
-                    if (status == "unlinked") {
-                        // Set the view model data
-                        viewModel.firstName = firstName
-                        viewModel.lastName = lastName
-                        viewModel.barangay = barangay
-                        viewModel.street = street
-                        viewModel.municipality = municipality
-                        viewModel.meterNumber = accountNumbers
-                        Log.d("logging", "Account Number: ${viewModel.meterNumber}")
-
-                        // Update UI to display the account details
-                        binding.divider1.visibility = View.VISIBLE
-                        binding.accountDetailsTextView.visibility = View.VISIBLE
-                        binding.accountNameTextView.visibility = View.VISIBLE
-                        binding.accountNumberTextView.visibility = View.VISIBLE
-
-                        binding.accountNameTextInputLayout.visibility = View.VISIBLE
-                        binding.etAccountName.setText(firstName + " " + lastName)
-
-                        binding.municipality.visibility = View.VISIBLE
-                        binding.etMunicipality.setText(municipality)
-
-                        binding.barangaytextInputLayout.visibility = View.VISIBLE
-                        binding.etBarangay.setText(barangay)
-
-                        binding.streetTextInputLayout.visibility = View.VISIBLE
-                        binding.etStreet.setText(street)
-                    } else {
-                        // If the status is 'linked', show a Toast
-                        Toast.makeText(context, "This account is already in use", Toast.LENGTH_SHORT).show()
+    private fun showImagePickerDialog() {
+        val options = arrayOf("Camera", "Gallery")
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Choose Image From")
+            .setItems(options) { dialog: DialogInterface?, which: Int ->
+                when (which) {
+                    0 -> {
+                        if (checkCameraPermission()) {
+                            pickImageFromCamera()
+                        } else {
+                            requestCameraPermission()
+                        }
                     }
-                } else {
-                    Toast.makeText(context, "Account not found", Toast.LENGTH_SHORT).show()
+
+                    1 -> pickImageFromGallery()
                 }
             }
-            .addOnFailureListener { e ->
-                Log.w(TAG, "Error fetching account details", e)
-                Toast.makeText(context, "Error retrieving details", Toast.LENGTH_SHORT).show()
-            }
+            .show()
+    }
+    private fun checkCameraPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            requireContext(),
+            android.Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
+    private fun requestCameraPermission() {
+        ActivityCompat.requestPermissions(
+            requireActivity(),
+            arrayOf(android.Manifest.permission.CAMERA),
+            CAMERA_PERMISSION_CODE
+        )
+    }
+
+    private fun pickImageFromGallery() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, IMAGE_PICK_GALLERY_CODE)
+    }
+
+    private fun pickImageFromCamera() {
+        val values = ContentValues()
+        values.put(MediaStore.Images.Media.TITLE, "Temp Pic")
+        values.put(MediaStore.Images.Media.DESCRIPTION, "Temp Description")
+        selectedImage = requireActivity().contentResolver.insert(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            values
+        )
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, selectedImage)
+        startActivityForResult(intent, IMAGE_PICK_CAMERA_CODE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == android.app.Activity.RESULT_OK) {
+            when (requestCode) {
+                IMAGE_PICK_GALLERY_CODE -> {
+                    selectedImage = data?.data
+                    binding.fileUploadContainer.setImageURI(selectedImage)
+                    Log.d("ReportFragment", "Image selected from gallery: $selectedImage")
+                    val imageUri = data?.data
+                    val bitmap = MediaStore.Images.Media.getBitmap(this@StepOneFragment.requireActivity().contentResolver, imageUri)
+                    processImage(bitmap)
+                    binding.fileUploadContainer.visibility =View.GONE
+                }
+
+                IMAGE_PICK_CAMERA_CODE -> {
+                    val imageUri = data?.data
+                    val bitmap = MediaStore.Images.Media.getBitmap(this@StepOneFragment.requireActivity().contentResolver, imageUri)
+                    processImage(bitmap)
+                    binding.fileUploadContainer.setImageURI(selectedImage)
+                    binding.fileUploadContainer.visibility =View.GONE
+                    Log.d("ReportFragment", "Image captured from camera: $selectedImage")
+                }
+            }
+
+        }
+    }
+    private fun processImage(bitmap: Bitmap) {
+        val image = InputImage.fromBitmap(bitmap, 0)
+        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+
+        recognizer.process(image)
+            .addOnSuccessListener { visionText ->
+                extractedText = visionText.text
+                Log.d("TextRecognition", "Extracted Text: $extractedText")
+                verifyReceipt()
+            }
+            .addOnFailureListener { e ->
+
+            }
+    }
+    private fun verifyReceipt() {
+        val trimmedText = extractedText.trim()
+        Log.d("ExtractedText", "Full Text: $trimmedText")
+
+        // Regex to extract CCT# value
+        val accountNumberRegex = Regex("cct#:\\s*(\\d{2}-\\d{4}-\\d{4})", RegexOption.IGNORE_CASE)
+        val match = accountNumberRegex.find(trimmedText)
+        val extractedAccountNumber = match?.groups?.get(1)?.value
+
+        if (extractedAccountNumber != null) {
+            Log.d("ExtractedCCT", "CCT#: $extractedAccountNumber")
+
+            firestore.collection("accounts")
+                .whereEqualTo("accountNumber", extractedAccountNumber)
+                .get()
+                .addOnSuccessListener { documents ->
+                    if (!documents.isEmpty) {
+                        for (document in documents) {
+                            // Extract fields from the Firestore document
+                            val consumerAccount = document.getString("consumerAccount") ?: "N/A"
+                            val accountNumbers = document.getString("accountNumber") ?: "N/A"
+                            val barangay = document.getString("barangay") ?: "N/A"
+                            val firstName = document.getString("firstName") ?: "N/A"
+                            val lastName = document.getString("lastName") ?: "N/A"
+                            val municipality = document.getString("municipality") ?: "N/A"
+                            val status = document.getString("status") ?: "N/A"
+                            val street = document.getString("street") ?: "N/A"
+
+                            // Log all fields
+                            Log.d("VerifyReceipt", "Consumer Account: $consumerAccount")
+                            Log.d("VerifyReceipt", "Account Numbers: $accountNumbers")
+                            Log.d("VerifyReceipt", "Barangay: $barangay")
+                            Log.d("VerifyReceipt", "First Name: $firstName")
+                            Log.d("VerifyReceipt", "Last Name: $lastName")
+                            Log.d("VerifyReceipt", "Municipality: $municipality")
+                            Log.d("VerifyReceipt", "Status: $status")
+                            Log.d("VerifyReceipt", "Street: $street")
+
+                            if (status == "unlinked") {
+                                // Set data in the view model
+                                viewModel.firstName = firstName
+                                viewModel.lastName = lastName
+                                viewModel.barangay = barangay
+                                viewModel.street = street
+                                viewModel.municipality = municipality
+                                viewModel.meterNumber = accountNumbers
+                                Log.d("VerifyReceipt", "ViewModel Updated: ${viewModel.meterNumber}")
+
+                                // Update UI to display account details
+                                binding.divider1.visibility = View.VISIBLE
+                                binding.accountDetailsTextView.visibility = View.VISIBLE
+                                binding.accountNameTextView.visibility = View.VISIBLE
+                                binding.accountNumberTextView.visibility = View.VISIBLE
+
+                                binding.accountNameTextInputLayout.visibility = View.VISIBLE
+                                binding.etAccountName.setText("$firstName $lastName")
+
+                                binding.municipality.visibility = View.VISIBLE
+                                binding.etMunicipality.setText(municipality)
+
+                                binding.barangaytextInputLayout.visibility = View.VISIBLE
+                                binding.etBarangay.setText(barangay)
+
+                                binding.streetTextInputLayout.visibility = View.VISIBLE
+                                binding.etStreet.setText(street)
+                            } else {
+                                // If the account is already linked
+
+
+                                // Dialog -----------------
+                                binding.fileUploadContainer.visibility =View.VISIBLE
+                                Toast.makeText(context, "This account is already in use", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        // No matching documents found
+                        Toast.makeText(context, "No account found for the provided CCT#", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Log.e("VerifyReceipt", "Error fetching account: ${e.message}")
+                    Toast.makeText(context, "Error verifying account: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+        } else {
+            binding.fileUploadContainer.visibility =View.VISIBLE
+            // Log an error message if the CCT# is not found
+            Log.e("ExtractedCCT", "No CCT# found in the receipt text.")
+            Toast.makeText(context, "No CCT# found in the receipt text.", Toast.LENGTH_SHORT).show()
+        }
+    }
 
 
 }
