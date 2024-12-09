@@ -54,8 +54,8 @@ class NotifDetailsAdapter(private val context: Context,
         val newsTitle = model.title
         val text = model.text
         val timeStamp = model.timestamp
-        val status = model.status
-        val isFromDevice = model.isFromDevice
+        val status = model.isFromDevice
+        val isFromDevice = model.status
         val formattedDate = parseAndFormatDate(timeStamp)
 
         holder.title.text = newsTitle

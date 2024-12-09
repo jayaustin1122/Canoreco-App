@@ -231,7 +231,7 @@ class NotifFragment : Fragment() {
                         for (document in querySnapshot.documents) {
                             val title = document.getString("title") ?: ""
                             val text = document.getString("text") ?: ""
-                            val status = document.getBoolean("status") ?: false
+                            val status = document.getBoolean("isFromDevice") ?: false
                             val timestamp = document.get("timestamp")
                             if (timestamp is Long) {
                                 val news = Notif(title, text, timestamp.toString(), status)
