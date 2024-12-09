@@ -81,7 +81,7 @@ class ReportViewModel : ViewModel() {
             "concern" to concern,
             "concernDescription" to concernDescription,
             "image" to imageUrl,
-            "timestamp" to timestamp,
+            "timestamp" to timestamp.toString(),
             "status" to "Sent",
             "address" to address
         )

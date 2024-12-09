@@ -1,0 +1,79 @@
+<!-- fragment_view_compaint.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@android:color/white"
+    android:scrollbars="vertical">
+
+    <!-- Complaint Title -->
+    <TextView
+        android:id="@+id/complaintTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Report Title"
+        android:textColor="#000"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="10dp"/>
+
+    <!-- Complaint Address -->
+    <TextView
+        android:id="@+id/complaintAddress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Address"
+        android:textColor="#000"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Concern Type -->
+    <TextView
+        android:id="@+id/complaintConcern"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Concern"
+        android:textColor="#000"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Concern Description -->
+    <TextView
+        android:id="@+id/complaintDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Description"
+        android:textColor="#000"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Complaint Status -->
+    <TextView
+        android:id="@+id/complaintStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Status"
+        android:textColor="#000"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Date and Time -->
+    <TextView
+        android:id="@+id/complaintTimestamp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Timestamp"
+        android:textColor="#000"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Image Link (Optional) -->
+    <ImageView
+        android:id="@+id/complaintImage"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:src="@drawable/ic_launcher_background"
+        android:scaleType="centerCrop"
+        android:layout_marginBottom="16dp"/>
+</LinearLayout>

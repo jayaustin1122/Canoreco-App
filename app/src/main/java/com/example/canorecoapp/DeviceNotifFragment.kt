@@ -554,7 +554,8 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                         "status" to false,
                         "isRead" to false,
                         "message" to notificationMessage,
-                        "timestamp" to timestamp.toString()
+                        "timestamp" to timestamp.toString(),
+                        "isFromDevice" to true
                     )
 
                     // Sending notification to the matching user

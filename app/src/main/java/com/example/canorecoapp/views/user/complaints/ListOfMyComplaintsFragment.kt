@@ -104,9 +104,9 @@ class ListOfMyComplaintsFragment : Fragment() {
                 newsList.clear()
                 for (document in documents) {
                     val title = document.getString("reportTitle") ?: ""
-                    val timestamp = document.getDouble("timestamp") ?: ""
+                    val timestamp = document.getString("timestamp") ?: ""
                     val status = document.getString("status") ?: ""
-
+                    Log.d("Here", timestamp.toString())
                     val complaints = News(title, "", "", "", timestamp.toString(), "", "", "", "", "", status)
                     newsList.add(complaints)
                 }

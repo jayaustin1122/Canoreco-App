@@ -210,4 +210,9 @@
         android:name="com.example.canorecoapp.views.linemen.home.HomeLineMenFragment"
         android:label="fragment_home_line_men"
         tools:layout="@layout/fragment_home_line_men" />
+    <fragment
+        android:id="@+id/viewCompaintFragment"
+        android:name="com.example.canorecoapp.views.user.complaints.ViewCompaintFragment"
+        android:label="fragment_view_compaint"
+        tools:layout="@layout/fragment_view_compaint" />
 </navigation>

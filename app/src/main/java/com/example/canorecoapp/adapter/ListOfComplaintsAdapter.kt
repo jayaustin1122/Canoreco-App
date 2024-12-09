@@ -17,6 +17,8 @@ import androidx.navigation.fragment.findNavController
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.ItemComplaintsBinding
 import com.example.canorecoapp.models.News
+import com.example.canorecoapp.views.user.complaints.ViewCompaintFragment
+import com.example.canorecoapp.views.user.news.NewsDetailsFragment
 import com.example.canorecoapp.views.user.news.ViewMapsWithAreasFragment
 import org.json.JSONException
 import org.json.JSONObject
@@ -53,6 +55,15 @@ class   ListOfComplaintsAdapter(
 
         holder.selectedLocationsText.text = title
         holder.status.text = status
+
+        holder.itemView.setOnClickListener {
+            val detailsFragment = ViewCompaintFragment()
+            val bundle = Bundle().apply {
+                putString("timestamp", model.timestamp)
+            }
+            detailsFragment.arguments = bundle
+            navController.navigate(R.id.viewCompaintFragment, bundle)
+        }
 
         when (status) {
             "Sent" -> holder.status.setTextColor(context.getColor(R.color.g_green))
