@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/background_color"
-    android:padding="@dimen/dimen_20dp"
->
+    android:padding="@dimen/dimen_20dp" >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
