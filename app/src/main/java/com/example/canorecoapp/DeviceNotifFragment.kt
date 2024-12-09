@@ -654,12 +654,12 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private fun sendSmsOtp(phoneNumber: String, notificationMessage: String) {
         val sms = SmsManager.getDefault()
         try {
-            val s= "NEVER SHARE YOUR OTP OR USE IT IN ANY LINK. Your OTP code is: $notificationMessage. Please use this code to complete your verification. If you did not request this code, please ignore this message."
+            val s= "NEVER SHARE YOUR OTP WITH ANYONE. Your Canoreco App verification is: $notificationMessage.If you did not request this, please ignore this message."
 
-            sms.sendTextMessage(phoneNumber, null, notificationMessage, null, null)
+            sms.sendTextMessage(phoneNumber, null, s, null, null)
             Log.d(
                 "DeviceNotifFragment",
-                "SMS sent to: $phoneNumber with message: $notificationMessage"
+                "SMS sent to: $phoneNumber with message: $s"
             )
             Toast.makeText(requireContext(), "SMS sent to $phoneNumber", Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {

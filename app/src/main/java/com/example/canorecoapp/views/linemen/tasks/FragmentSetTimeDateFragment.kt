@@ -2,13 +2,11 @@ package com.example.canorecoapp.views.linemen.tasks
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
-import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentSetTimeDateragmentBinding
@@ -24,6 +22,8 @@ import java.util.Calendar
 class FragmentSetTimeDateFragment : BottomSheetDialogFragment() {
     private var _binding: FragmentSetTimeDateragmentBinding? = null
     val binding get() = _binding!!
+    private var startTime: String? = null
+    private var endTime: String? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -36,35 +36,37 @@ class FragmentSetTimeDateFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val userName = arguments?.getString("userName")
+        val lastName = arguments?.getString("lastName")
         val id = arguments?.getString("id")
         Log.d("UploadData1", "recieve: $userName and id: $id")
         binding.etBirthDate.setOnClickListener {
             showDatePickerDialog()
         }
         binding.etStartTime.setOnClickListener {
-            showTimePicker(binding.etStartTime)
+            showTimePicker(binding.etStartTime, "start")
         }
         binding.etEndTime.setOnClickListener {
-            showTimePicker(binding.etEndTime)
+            showTimePicker(binding.etEndTime, "end")
         }
         binding.btnSet.setOnClickListener {
-            uploadData(userName, id)
+            uploadData(userName, id,lastName)
         }
 
     }
 
 
-    private fun uploadData(userName: String?, id: String?) {
+    private fun uploadData(userName: String?, id: String?, lastName: String?) {
         val database: DatabaseReference = FirebaseDatabase.getInstance().reference
         val devicesRef = database.child("devices/$id")
+        val timestamp = System.currentTimeMillis() / 1000
 
-        // Prepare the data to update
         val updates = mapOf<String, Any?>(
-            "assigned" to userName,
+            "assigned" to "$userName $lastName",
             "date" to binding.etBirthDate.text.toString(),
-            "endTime" to "15:00",
-            "startTime" to "09:00",
-            "status" to "under repair"
+            "endTime" to endTime,
+            "startTime" to startTime,
+            "status" to "under repair",
+            "timestamp" to timestamp
         )
 
         devicesRef.updateChildren(updates)
@@ -106,7 +108,7 @@ class FragmentSetTimeDateFragment : BottomSheetDialogFragment() {
         datePicker.show(parentFragmentManager, "MaterialDatePicker")
     }
 
-    private fun showTimePicker(editText: EditText) {
+    private fun showTimePicker(editText: EditText, timeType: String) {
         val timePicker = MaterialTimePicker.Builder()
             .setTimeFormat(TimeFormat.CLOCK_24H)
             .setHour(12)
@@ -116,7 +118,14 @@ class FragmentSetTimeDateFragment : BottomSheetDialogFragment() {
 
         timePicker.show(parentFragmentManager, "TIME_PICKER")
         timePicker.addOnPositiveButtonClickListener {
-            editText.setText(formatTime(timePicker.hour, timePicker.minute))
+            val time = formatTime(timePicker.hour, timePicker.minute)
+            if (timeType == "start") {
+                startTime = time
+                editText.setText(time)
+            } else if (timeType == "end") {
+                endTime = time
+                editText.setText(time)
+            }
         }
     }
 

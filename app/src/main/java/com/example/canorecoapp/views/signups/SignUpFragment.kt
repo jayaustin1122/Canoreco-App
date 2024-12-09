@@ -427,13 +427,11 @@ class SignUpFragment : Fragment() {
 
                     // Log successful update
                     Log.d("sa", "Account $accountNumber status successfully updated to 'linked'")
-                    Toast.makeText(requireContext(), "Account successfully linked", Toast.LENGTH_SHORT).show()
                 }
                 .addOnFailureListener { e ->
                     // Log the error
                     Log.e("sa", "Error updating account $accountNumber status to 'linked'", e)
-                    Toast.makeText(requireContext(), "Error updating account status", Toast.LENGTH_SHORT).show()
-                }
+                 }
         } catch (e: Exception) {
             // Log the exception
             Log.e("sa", "Exception caught while updating account status", e)

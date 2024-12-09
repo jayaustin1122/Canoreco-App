@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentTasksDetailsBinding
@@ -215,7 +214,7 @@ class TasksDetailsFragment  : BottomSheetDialogFragment() {
                     val email = document.getString("email")
                     val password = document.getString("password")
                     Log.d("UploadData1", "saveUserTaskInDevice called with userName: $userName and id: $id")
-                    saveUserTaskInDevice(userName,id)
+                    saveUserTaskInDevice(userName,id,lastName)
 
                 }
                 .addOnFailureListener { exception ->
@@ -236,10 +235,11 @@ class TasksDetailsFragment  : BottomSheetDialogFragment() {
         }
     }
 
-    private fun saveUserTaskInDevice(userName: String?, id: String?) {
+    private fun saveUserTaskInDevice(userName: String?, id: String?, lastName: String?) {
         val detailsDialog = FragmentSetTimeDateFragment()
         val bundle = Bundle().apply {
             putString("userName", userName)
+            putString("lastName", lastName)
             putString("id", id )
             Log.d("UploadData1", "pass: $userName and id: $id")
 

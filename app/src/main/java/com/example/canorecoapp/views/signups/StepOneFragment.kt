@@ -111,16 +111,30 @@ class StepOneFragment : Fragment() {
     }
 
     private fun pickImageFromCamera() {
-        val values = ContentValues()
-        values.put(MediaStore.Images.Media.TITLE, "Temp Pic")
-        values.put(MediaStore.Images.Media.DESCRIPTION, "Temp Description")
+        // Create a ContentValues object to store metadata for the image
+        val values = ContentValues().apply {
+            put(MediaStore.Images.Media.TITLE, "Temp Pic")
+            put(MediaStore.Images.Media.DESCRIPTION, "Temp Description")
+        }
+
+        // Insert the metadata into MediaStore and get a URI to save the captured image
         selectedImage = requireActivity().contentResolver.insert(
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
             values
         )
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, selectedImage)
-        startActivityForResult(intent, IMAGE_PICK_CAMERA_CODE)
+
+        if (selectedImage != null) {
+            // Create an Intent for the camera
+            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).apply {
+                putExtra(MediaStore.EXTRA_OUTPUT, selectedImage) // Pass the URI to save the image
+            }
+
+            // Start the camera activity
+            startActivityForResult(intent, IMAGE_PICK_CAMERA_CODE)
+        } else {
+            Log.e("PickImageFromCamera", "Failed to create MediaStore entry for image.")
+            Toast.makeText(context, "Unable to access camera. Please try again.", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -129,26 +143,43 @@ class StepOneFragment : Fragment() {
             when (requestCode) {
                 IMAGE_PICK_GALLERY_CODE -> {
                     selectedImage = data?.data
-                    binding.fileUploadContainer.setImageURI(selectedImage)
-                    Log.d("ReportFragment", "Image selected from gallery: $selectedImage")
-                    val imageUri = data?.data
-                    val bitmap = MediaStore.Images.Media.getBitmap(this@StepOneFragment.requireActivity().contentResolver, imageUri)
-                    processImage(bitmap)
-                    binding.fileUploadContainer.visibility =View.GONE
+                    if (selectedImage != null) {
+                        binding.fileUploadContainer.setImageURI(selectedImage)
+                        Log.d("ReportFragment", "Image selected from gallery: $selectedImage")
+                        val bitmap = MediaStore.Images.Media.getBitmap(
+                            this@StepOneFragment.requireActivity().contentResolver,
+                            selectedImage
+                        )
+                        processImage(bitmap)
+                        binding.fileUploadContainer.visibility = View.GONE
+                    } else {
+                        Log.e("ReportFragment", "Failed to get image URI from gallery.")
+                    }
                 }
 
                 IMAGE_PICK_CAMERA_CODE -> {
-                    val imageUri = data?.data
-                    val bitmap = MediaStore.Images.Media.getBitmap(this@StepOneFragment.requireActivity().contentResolver, imageUri)
-                    processImage(bitmap)
-                    binding.fileUploadContainer.setImageURI(selectedImage)
-                    binding.fileUploadContainer.visibility =View.GONE
-                    Log.d("ReportFragment", "Image captured from camera: $selectedImage")
+                    if (selectedImage != null) {
+                        // Use the URI provided during camera intent setup
+                        binding.fileUploadContainer.setImageURI(selectedImage)
+                        Log.d("ReportFragment", "Image captured from camera: $selectedImage")
+                        val bitmap = MediaStore.Images.Media.getBitmap(
+                            this@StepOneFragment.requireActivity().contentResolver,
+                            selectedImage
+                        )
+                        processImage(bitmap)
+                        binding.fileUploadContainer.visibility = View.GONE
+                    } else {
+                        Log.e("ReportFragment", "Image URI is null after capturing.")
+                    }
                 }
             }
-
+        } else if (resultCode == android.app.Activity.RESULT_CANCELED) {
+            Log.d("ReportFragment", "Image selection or capture canceled by user.")
+        } else {
+            Log.e("ReportFragment", "Unexpected resultCode: $resultCode")
         }
     }
+
     private fun processImage(bitmap: Bitmap) {
         val image = InputImage.fromBitmap(bitmap, 0)
         val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
