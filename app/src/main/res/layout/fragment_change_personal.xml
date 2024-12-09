@@ -52,14 +52,15 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/dimen_20dp">
         <!-- Account Number -->
+
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/accountNumberTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Account Number"
-            android:textSize="16sp"
-            android:textColor="@color/text_dark_color"
             android:fontFamily="@font/roboto_medium"
+            android:text="Account Number"
+            android:textColor="@color/text_dark_color"
+            android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -367,7 +368,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/area"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"
@@ -376,7 +377,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/areaTextView">
 
-            <AutoCompleteTextView
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/tvArea"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"

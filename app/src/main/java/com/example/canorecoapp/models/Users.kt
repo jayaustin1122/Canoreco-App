@@ -16,5 +16,7 @@ data class Users(
     val token: String,
     val uid: String,
     val userType: String,
-    val accountNumber: String
+    val accountNumber: String,
+    val position: String,
+    val area: String
 )

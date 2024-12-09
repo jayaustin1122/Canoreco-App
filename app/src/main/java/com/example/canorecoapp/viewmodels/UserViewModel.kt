@@ -55,7 +55,9 @@ class UserViewModel : ViewModel() {
                                 token = it.getString("token") ?: "",
                                 uid = it.getString("uid") ?: "",
                                 userType = it.getString("userType") ?: "",
-                                accountNumber = it.getString("accountNumber") ?: ""
+                                accountNumber = it.getString("accountNumber") ?: "",
+                                position = it.getString("position") ?: "",
+                                area = it.getString("area") ?: ""
                             )
 
                             withContext(Dispatchers.Main) {

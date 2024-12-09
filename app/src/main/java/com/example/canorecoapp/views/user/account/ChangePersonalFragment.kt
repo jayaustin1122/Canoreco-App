@@ -86,10 +86,22 @@ class ChangePersonalFragment : Fragment() {
                     binding.etBarangay.setText(userInfo.barangay)
                     binding.etMunicipality.setText(userInfo.municipality)
 
-
+                    binding.etFirstNameSignUp.setText(userInfo.firstName)
+                    binding.etLastNameSignUp.setText(userInfo.lastName)
+                    binding.etPosition.setText(userInfo.position)
+                    binding.tvArea.setText(userInfo.area)
 
                 }
                 if (userInfo.userType == "member") {
+                    binding.firstNameTextView.visibility = View.GONE
+                    binding.municipality.visibility = View.GONE
+                    binding.emaiTextView.visibility = View.GONE
+                    binding.municipality.visibility = View.GONE
+                    binding.emailtextInputLayout3.visibility = View.GONE
+                    binding.lastNameTextView.visibility = View.GONE
+                    binding.brgyTypeInputLayout.visibility = View.GONE
+                    binding.areaTextView.visibility = View.GONE
+                    binding.area.visibility = View.GONE
                     requireActivity().onBackPressedDispatcher.addCallback(
                         viewLifecycleOwner,
                         object : OnBackPressedCallback(true) {
@@ -103,13 +115,22 @@ class ChangePersonalFragment : Fragment() {
                     )
                     binding.backButton.setOnClickListener {
 
-                            val bundle = Bundle().apply {
-                                putInt("selectedFragmentId", R.id.navigation_account)
-                            }
-                            findNavController().navigate(R.id.userHolderFragment, bundle)
+                        val bundle = Bundle().apply {
+                            putInt("selectedFragmentId", R.id.navigation_account)
+                        }
+                        findNavController().navigate(R.id.userHolderFragment, bundle)
 
                     }
                 } else {
+                    binding.accountNameTextView.visibility = View.GONE
+                    binding.accountNumberTextView.visibility = View.GONE
+                    binding.textInputLayoutAccountNumber.visibility = View.GONE
+                    binding.accountNameTextView.visibility = View.GONE
+                    binding.textInputLayoutAccountName.visibility = View.GONE
+                    binding.barangayTextView.visibility = View.GONE
+                    binding.textInputLayoutBarangay.visibility = View.GONE
+                    binding.municipalityTextView.visibility = View.GONE
+                    binding.textInputLayoutMunicipality.visibility = View.GONE
                     requireActivity().onBackPressedDispatcher.addCallback(
                         viewLifecycleOwner,
                         object : OnBackPressedCallback(true) {

@@ -284,7 +284,25 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             }
         }
     }
+    private fun sendLogs2(assigned: String, status: String) {
+        val timestamp = System.currentTimeMillis() / 1000
+        val db = FirebaseFirestore.getInstance()
+        val logData = hashMapOf(
+            "assigned" to assigned,
+            "deviceID" to "9000",
+            "status" to status,
+            "timestamp" to timestamp
+        )
 
+        db.collection("maintenanceLogs")
+            .add(logData)
+            .addOnSuccessListener { documentReference ->
+                println("Log added successfully with ID: ${documentReference.id}")
+            }
+            .addOnFailureListener { e ->
+                println("Error adding log: ${e.message}")
+            }
+    }
     private fun startListeningForSmsOtp() {
         val smsRef = FirebaseFirestore.getInstance().collection("sms").document("otp")
 
@@ -331,14 +349,15 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 parentRef?.let { parentSnapshotRef ->
                     parentSnapshotRef.addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(parentSnapshot: DataSnapshot) {
-                            val id =
-                                parentSnapshot.child("id").getValue(String::class.java) ?: "unknown"
-                            val barangay =
-                                parentSnapshot.child("barangay").getValue(String::class.java) ?: ""
+                            val id = parentSnapshot.child("id").getValue(String::class.java) ?: "unknown"
+                            val barangay = parentSnapshot.child("barangay").getValue(String::class.java) ?: ""
+                            val assigned = parentSnapshot.child("assigned").getValue(String::class.java) ?: ""
+
 
                             // Now handle different statuses
                             when (status) {
                                 "damaged" -> {
+                                    val new = FirebaseDatabase.getInstance().getReference("devices/9001")
                                     Log.e("DeviceNotifFragment", "Device is $status")
                                     sendSmsto(barangay, status)
                                     sendnotif(barangay, id, status)
@@ -349,6 +368,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                                     Log.e("DeviceNotifFragment", "Device is $status")
                                     sendSmsto(barangay, status)
                                     sendnotif(barangay, id, status)
+                                    sendLogs(assigned,status)
                                     // No need to upload logs here
                                 }
                                 "working"-> {
@@ -358,6 +378,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                                     // No need to upload logs here
                                     val new = FirebaseDatabase.getInstance().getReference("devices/9001")
                                     updateDevice(new)
+                                    sendLogs(assigned,status)
                                 }
 
                                 else -> {
@@ -384,13 +405,30 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         })
     }
 
-    private fun updateDevice(devicesRef: DatabaseReference) {
-        // Get the current timestamp
-        val timestamp = System.currentTimeMillis()
+    private fun sendLogs(assigned: String, status: String) {
+        val timestamp = System.currentTimeMillis() / 1000
+        val db = FirebaseFirestore.getInstance()
+        val logData = hashMapOf(
+            "assigned" to assigned,
+            "deviceID" to "9001",
+            "status" to status,
+            "timestamp" to timestamp
+        )
 
-        // Update the 'timeResolved' field with the current timestamp
+        db.collection("maintenanceLogs")
+            .add(logData)
+            .addOnSuccessListener { documentReference ->
+                println("Log added successfully with ID: ${documentReference.id}")
+            }
+            .addOnFailureListener { e ->
+                println("Error adding log: ${e.message}")
+            }
+    }
+
+    private fun updateDevice(devicesRef: DatabaseReference) {
+
         val updates = mapOf(
-            "timeResolved" to timestamp,
+            "timestamp" to 0,
             "startTime" to "",
             "assigned" to "",
             "date" to "",
@@ -426,6 +464,8 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                                 parentSnapshot.child("id").getValue(String::class.java) ?: "unknown"
                             val barangay =
                                 parentSnapshot.child("barangay").getValue(String::class.java) ?: ""
+                            val assigned = parentSnapshot.child("assigned").getValue(String::class.java) ?: ""
+
 
                             when (status) {
                                 "damaged" -> {
@@ -439,7 +479,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                                     Log.e("DeviceNotifFragment", "Device is $status")
                                     sendSmsto(barangay, status)
                                     sendnotif(barangay, id, status)
-                                    // No need to upload logs here
+                                    sendLogs2(assigned,status)
                                 }
                                 "working"-> {
                                     Log.e("DeviceNotifFragment", "Device is $status")
@@ -448,6 +488,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                                     // No need to upload logs here
                                     val new = FirebaseDatabase.getInstance().getReference("devices/9000")
                                     updateDevice(new)
+                                    sendLogs2(assigned,status)
                                 }
 
                                 else -> {
