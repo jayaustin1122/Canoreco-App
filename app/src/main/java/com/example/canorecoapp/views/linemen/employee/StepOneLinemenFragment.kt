@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
@@ -29,6 +30,7 @@ class StepOneLinemenFragment : Fragment() {
 
         viewModel = ViewModelProvider(requireActivity())[SignUpViewModel::class.java]
     }
+    private val areas = listOf("Area 1", "Area 2", "Area 3", "Area 4")
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -42,6 +44,13 @@ class StepOneLinemenFragment : Fragment() {
         }
         binding.etPosition.addTextChangedListener {
             viewModel.position = it.toString()
+        }
+        val barangayAdapter = ArrayAdapter(requireContext(), R.layout.address_item_views, areas)
+        binding.tvArea.setAdapter(barangayAdapter)
+
+        binding.tvArea.setOnItemClickListener { parent, view, position, id ->
+            val selectedBarangay = parent.getItemAtPosition(position).toString()
+            viewModel.area = selectedBarangay
         }
 
     }

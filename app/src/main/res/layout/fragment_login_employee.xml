@@ -6,10 +6,41 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:visibility="gone"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="wrap_content"
+        android:visibility="gone"
+        android:background="@android:color/transparent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:layout_constraintBottom_toBottomOf="@+id/viewpager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:tabBackground="@drawable/indicator_selector"
+        app:tabGravity="center"
+        app:tabIndicator="@android:color/transparent"
+        app:tabIndicatorAnimationDuration="300"
+        app:tabIndicatorColor="@color/g_blue2"
+        app:tabRippleColor="@android:color/transparent"
+        app:tabSelectedTextColor="@color/purple_700" />
+
     <ImageView
         android:id="@+id/backgroundImageView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="280dp"
         android:scaleType="fitXY"
         android:src="@drawable/background_login"
         app:layout_constraintEnd_toEndOf="parent"
@@ -28,7 +59,6 @@
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/backgroundImageView" />
-
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/schoolNameTextView"
         android:layout_width="wrap_content"
@@ -45,10 +75,10 @@
         android:id="@+id/useridTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
         android:fontFamily="@font/roboto_medium"
-        android:text="Email or Phone number"
+        android:text="Email or Phone Number"
         android:textColor="@color/text_dark_color"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -71,7 +101,9 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:hint="Email or Phone"
-            android:scrollbars="vertical"
+            android:lines="1"
+            android:scrollbars="horizontal"
+            android:singleLine="true"
             app:boxStrokeWidth="1dp"
             app:boxStrokeWidthFocused="2dp" />
 
@@ -91,16 +123,15 @@
         app:layout_constraintTop_toBottomOf="@+id/useridInputLayout" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/passwordInputLayout"
+        android:id="@+id/brgy_type_input_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
         android:layout_marginTop="3dp"
-        app:hintEnabled="false"
         app:endIconMode="password_toggle"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:hintEnabled="false"
+        app:layout_constraintEnd_toEndOf="@+id/useridInputLayout"
+        app:layout_constraintStart_toStartOf="@+id/useridInputLayout"
         app:layout_constraintTop_toBottomOf="@+id/passwordTextView">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -108,50 +139,52 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:hint="Password"
-            android:scrollbars="vertical"
-            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            android:lines="1"
+            android:scrollbars="horizontal"
+            android:singleLine="true"
             app:boxStrokeWidth="1dp"
             app:boxStrokeWidthFocused="2dp" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
+
     <TextView
         android:id="@+id/tvForgotPasswordLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:layout_marginHorizontal="20dp"
         android:gravity="center"
         android:text="Forgot password?"
         android:textAlignment="center"
         android:textColor="@color/secondary_color"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/passwordInputLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/brgy_type_input_layout" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonLoginLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginBottom="20dp"
         android:backgroundTint="@color/primary_main_color"
-        android:text="Login"
-        android:textColor="@color/primary_light_color"
         android:fontFamily="@font/roboto_medium"
+        android:text="Login"
+        android:layout_marginTop="@dimen/dimen_12dp"
+        android:textColor="@color/primary_light_color"
         app:cornerRadius="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/tvForgotPasswordLogin" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="@dimen/dimen_12dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonLoginLogin">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/dontTextView"
@@ -174,7 +207,7 @@
             android:textColor="@color/secondary_color"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
     </LinearLayout>
 

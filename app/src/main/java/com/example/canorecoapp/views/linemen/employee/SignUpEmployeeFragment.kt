@@ -82,7 +82,6 @@ class SignUpEmployeeFragment : Fragment() {
         progressDialog.setCanceledOnTouchOutside(false)
         auth = FirebaseAuth.getInstance()
         viewPager.adapter = adapter
-
         adapter.addFragment(StepOneLinemenFragment())
         adapter.addFragment(StepTwoFragment())
         adapter.addFragment(OtpFragment())
@@ -186,6 +185,7 @@ class SignUpEmployeeFragment : Fragment() {
         val firstName = viewModel.firstName
         val lastName = viewModel.lastName
         val position = viewModel.position
+        val area = viewModel.area
 
         if (firstName.isEmpty()) {
             Toast.makeText(requireContext(), "Please add your First Name to continue", Toast.LENGTH_SHORT).show()
@@ -196,7 +196,14 @@ class SignUpEmployeeFragment : Fragment() {
         } else if (position.isEmpty()) {
             Toast.makeText(requireContext(), "Please add your position to continue", Toast.LENGTH_SHORT).show()
             return
-        } else {
+        } else if (area.isEmpty()) {
+            Toast.makeText(
+                requireContext(),
+                "Please add your area designation to continue",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }else {
             nextItem()
 
         }
@@ -236,7 +243,7 @@ class SignUpEmployeeFragment : Fragment() {
                     } else {
                         loadingDialog.dismiss()
                         Log.d("VerifyOTP", "OTP does not match or status is false.")
-                        Toast.makeText(requireContext(), "Invalid OTP or OTP already used", Toast.LENGTH_SHORT).show()
+                     //   Toast.makeText(requireContext(), "Invalid OTP or OTP already used", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     loadingDialog.dismiss()
@@ -310,8 +317,8 @@ class SignUpEmployeeFragment : Fragment() {
         }
 
         val user: HashMap<String, Any?> = hashMapOf(
-            "uid" to uid, // Use the authenticated user's UID instead of timestamp
-            "email" to "",
+            "uid" to uid,
+            "email" to viewModel.authEmail,
             "authEmail" to  viewModel.email,
             "password" to password,
             "firstName" to firstName,
@@ -320,9 +327,10 @@ class SignUpEmployeeFragment : Fragment() {
             "userType" to "linemen",
             "access" to true,
             "timestamp" to timestamp,
-            "barangay" to viewModel.barangay,
-            "municipality" to viewModel.municipality,
+            "barangay" to "CNCS_GAD_BLDG",
+            "municipality" to "Daet",
             "position" to viewModel.position,
+            "area" to viewModel.area,
         )
 
         val firestore = FirebaseFirestore.getInstance()

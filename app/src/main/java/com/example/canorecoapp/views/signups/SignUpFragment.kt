@@ -282,7 +282,7 @@ class SignUpFragment : Fragment() {
                     } else {
                         loadingDialog.dismiss()
                         Log.d("VerifyOTP", "OTP does not match or status is false.")
-                        Toast.makeText(requireContext(), "Invalid OTP or OTP already used", Toast.LENGTH_SHORT).show()
+                    //    Toast.makeText(requireContext(), "Invalid OTP or OTP already used", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     loadingDialog.dismiss()
@@ -337,7 +337,7 @@ class SignUpFragment : Fragment() {
 
         val user: HashMap<String, Any?> = hashMapOf(
             "uid" to uid, // Use the authenticated user's UID instead of timestamp
-            "email" to "",
+            "email" to viewModel.authEmail ,
             "authEmail" to  viewModel.email,
             "password" to password,
             "firstName" to firstName,

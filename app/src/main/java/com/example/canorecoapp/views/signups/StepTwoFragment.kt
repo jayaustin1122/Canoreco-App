@@ -57,7 +57,7 @@ class StepTwoFragment : Fragment() {
             viewModel.phone = it.toString()
         }
         binding.etEmail.addTextChangedListener {
-            viewModel.email = it.toString()
+            viewModel.authEmail = it.toString()
         }
         // Enhanced password strength logic
         binding.etPasswordSignUp.addTextChangedListener(object : TextWatcher {

@@ -18,13 +18,19 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.OptIn
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.viewpager2.widget.ViewPager2
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.example.canorecoapp.R
+import com.example.canorecoapp.adapter.SignInViewPagerAdapter
 import com.example.canorecoapp.databinding.DialogReviewBinding
 import com.example.canorecoapp.databinding.FragmentLoginEmployeeBinding
+import com.example.canorecoapp.databinding.FragmentSignInBinding
 import com.example.canorecoapp.utils.DialogUtils
+import com.google.android.material.badge.ExperimentalBadgeUtils
+import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
@@ -38,30 +44,66 @@ import kotlinx.coroutines.withContext
 
 class LoginEmployeeFragment : Fragment() {
     private lateinit var binding : FragmentLoginEmployeeBinding
-    private lateinit var auth : FirebaseAuth
-    private lateinit var loadingDialog: SweetAlertDialog
+    private lateinit var auth: FirebaseAuth
     private var doubleBackToExitPressedOnce = false
     private val handler = Handler()
-    private lateinit var fireStore : FirebaseFirestore
+    private lateinit var fireStore: FirebaseFirestore
+    private lateinit var imageSliderAdapter: SignInViewPagerAdapter
+    private lateinit var loadingDialog: SweetAlertDialog
+    private var currentPage = 0
+    private val imageList = listOf(
+        R.drawable.background_login,
+        R.drawable.img_onboarding_three,
+        R.drawable.img_onboarding_one,
+        R.drawable.img_onboarding_three
+    )
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentLoginEmployeeBinding.inflate(layoutInflater)
-        // Inflate the layout for this fragment
         return binding.root
     }
 
+    private fun setupImageSlider() {
+        imageSliderAdapter = SignInViewPagerAdapter(imageList)
+        binding.viewpager?.adapter = imageSliderAdapter
+        binding.viewpager?.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+        binding.tabLayout?.let { tabLayout ->
+            binding.viewpager?.let { viewPager ->
+                TabLayoutMediator(tabLayout, viewPager) { tab, position -> }.attach()
+            }
+        }
+
+        startAutoSlide()
+    }
+
+    private fun startAutoSlide() {
+        lifecycleScope.launch {
+            while (isAdded) {
+                delay(3000)
+                if (currentPage == imageList.size) {
+                    currentPage = 0
+                }
+                binding.viewpager?.setCurrentItem(currentPage++, true)
+            }
+        }
+    }
+
+
+    @OptIn(ExperimentalBadgeUtils::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        auth = FirebaseAuth.getInstance()
-        fireStore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
         fireStore = FirebaseFirestore.getInstance()
         binding.etPass.inputType =
             InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
         binding.etUsernameLogin.inputType =
             InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS
+
+        setupImageSlider()
+
 
         handler.postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
 
@@ -70,6 +112,7 @@ class LoginEmployeeFragment : Fragment() {
             loadingDialog.show()
             checkUser()
         }
+
         binding.tvForgotPasswordLogin.setOnClickListener {
             findNavController().apply {
                 navigate(R.id.forgotPasswordFragment)
@@ -77,13 +120,13 @@ class LoginEmployeeFragment : Fragment() {
         }
         binding.register.setOnClickListener {
             findNavController().apply {
-                navigate(R.id.signUpFragment)
+                navigate(R.id.signUpEmployeeFragment)
             }
         }
     }
+
     var email = ""
     var pass = ""
-
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -99,13 +142,15 @@ class LoginEmployeeFragment : Fragment() {
         callback.remove()
         super.onPause()
     }
+
     private val callback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             if (doubleBackToExitPressedOnce) {
                 requireActivity().finish()
             } else {
                 doubleBackToExitPressedOnce = true
-                Toast.makeText(requireContext(), "Press back again to exit", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Press back again to exit", Toast.LENGTH_SHORT)
+                    .show()
                 handler.postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
             }
         }
@@ -165,6 +210,9 @@ class LoginEmployeeFragment : Fragment() {
             }
         }
     }
+
+
+
     private fun loginUser(authEmail: String?, userType: String?) {
         val password = binding.etPass.text.toString()
 
@@ -193,6 +241,7 @@ class LoginEmployeeFragment : Fragment() {
             }
         }
     }
+
     private fun checkUserType(userType: String?) {
         when (userType) {
             "linemen" -> {
