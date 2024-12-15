@@ -460,16 +460,18 @@ class HomeUserFragment : Fragment() {
                         }
                     }
 
-                    if (notificationCount > 0) {
-                        // New notifications: Set notif icon to red
-                        binding.notif.setColorFilter(
-                            ContextCompat.getColor(this@HomeUserFragment.requireContext(), R.color.g_red)
-                        )
-                    } else {
-                        // No new notifications: Reset notif icon to default color
-                        binding.notif.setColorFilter(
-                            ContextCompat.getColor(this@HomeUserFragment.requireContext(), R.color.white)
-                        )
+                    if (isAdded) {
+                        if (notificationCount > 0) {
+                            // New notifications: Set notif icon to red
+                            binding.notif.setColorFilter(
+                                ContextCompat.getColor(requireContext(), R.color.g_red)
+                            )
+                        } else {
+                            // No new notifications: Reset notif icon to default color
+                            binding.notif.setColorFilter(
+                                ContextCompat.getColor(requireContext(), R.color.white)
+                            )
+                        }
                     }
                 }
             }
