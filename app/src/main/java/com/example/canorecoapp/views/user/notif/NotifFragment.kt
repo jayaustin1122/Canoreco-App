@@ -224,57 +224,60 @@ class NotifFragment : Fragment() {
                 .document(user.uid)
                 .collection("notifications")
 
-            notificationsRef.get()
-                .addOnSuccessListener { querySnapshot ->
-                    if (querySnapshot != null && !querySnapshot.isEmpty) {
-                        notifList.clear()
-                        for (document in querySnapshot.documents) {
-                            val title = document.getString("title") ?: ""
-                            val text = document.getString("message") ?: ""
-                            val isFromDevice = document.getBoolean("isFromDevice") ?: false
-                            val status = document.getBoolean("status") ?: false
-                            val isRead = document.getBoolean("isRead") ?: false
-                            val timestamp = document.get("timestamp")
-                            if (timestamp is Long) {
-                                val news = Notif(title, text, timestamp.toString(), status,isRead,isFromDevice)
-                                notifList.add(news)
-                            } else if (timestamp is Double) {
-                                val news = Notif(title, text, timestamp.toString(), status,isRead,isFromDevice)
-                                notifList.add(news)
-                            } else {
-                                val news = Notif(title, text, timestamp.toString(), status,isRead,isFromDevice)
-                                notifList.add(news)
-                            }
-                        }
-                        notifList.reverse()
-                        Log.d("NewsFragment", "Fetched ${notifList.size} news items")
-
-                        binding.recyclerNews.visibility = View.VISIBLE
-
-                        lifecycleScope.launchWhenResumed {
-                            newsAdapter = NotifDetailsAdapter(requireContext(), findNavController(), notifList)
-                            binding.recyclerNews.setHasFixedSize(true)
-                            val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-                            binding.recyclerNews.layoutManager = layoutManager
-                            binding.recyclerNews.adapter = newsAdapter
-                            newsAdapter.notifyDataSetChanged()
-                        }
-                    } else {
-                        Log.d("NewsFragment", "No documents found")
-                        // Show the "No Notifications" text and hide the RecyclerView
-                        binding.tvEmpty.visibility = View.VISIBLE
-                        binding.imgEmpty.visibility = View.VISIBLE
-                        binding.recyclerNews.visibility = View.GONE
-                    }
-                }
-                .addOnFailureListener { exception ->
+            // Use snapshot listener for real-time updates
+            notificationsRef.addSnapshotListener { querySnapshot, exception ->
+                if (exception != null) {
                     Log.e("NewsFragment", "Error fetching news: ${exception.message}")
                     Toast.makeText(requireContext(), "Error fetching news", Toast.LENGTH_SHORT).show()
+                    return@addSnapshotListener
                 }
+
+                if (querySnapshot != null && !querySnapshot.isEmpty) {
+                    notifList.clear()
+                    for (document in querySnapshot.documents) {
+                        val title = document.getString("title") ?: ""
+                        val text = document.getString("message") ?: ""
+                        val isFromDevice = document.getBoolean("isFromDevice") ?: false
+                        val status = document.getBoolean("status") ?: false
+                        val isRead = document.getBoolean("isRead") ?: false
+                        val timestamp = document.get("timestamp")
+                        if (timestamp is Long) {
+                            val news = Notif(title, text, timestamp.toString(), status, isRead, isFromDevice)
+                            notifList.add(news)
+                        } else if (timestamp is Double) {
+                            val news = Notif(title, text, timestamp.toString(), status, isRead, isFromDevice)
+                            notifList.add(news)
+                        } else {
+                            val news = Notif(title, text, timestamp.toString(), status, isRead, isFromDevice)
+                            notifList.add(news)
+                        }
+                    }
+                    notifList.reverse()
+                    Log.d("NewsFragment", "Fetched ${notifList.size} news items")
+
+                    binding.recyclerNews.visibility = View.VISIBLE
+
+                    lifecycleScope.launchWhenResumed {
+                        newsAdapter = NotifDetailsAdapter(requireContext(), findNavController(), notifList)
+                        binding.recyclerNews.setHasFixedSize(true)
+                        val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                        binding.recyclerNews.layoutManager = layoutManager
+                        binding.recyclerNews.adapter = newsAdapter
+                        newsAdapter.notifyDataSetChanged()
+                    }
+                } else {
+                    Log.d("NewsFragment", "No documents found")
+                    // Show the "No Notifications" text and hide the RecyclerView
+                    binding.tvEmpty.visibility = View.VISIBLE
+                    binding.imgEmpty.visibility = View.VISIBLE
+                    binding.recyclerNews.visibility = View.GONE
+                }
+            }
         } ?: run {
             Toast.makeText(requireContext(), "User not authenticated", Toast.LENGTH_SHORT).show()
         }
     }
+
 
 
 
