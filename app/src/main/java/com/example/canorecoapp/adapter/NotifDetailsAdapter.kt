@@ -53,7 +53,7 @@ class NotifDetailsAdapter(private val context: Context,
         val newsTitle = model.title
         val text = model.message
         val timeStamp = model.timestamp
-        val status = model.isRead
+        val status = model.status
         val isFromDevice = model.isFromDevice
         val formattedDate = parseAndFormatDate(timeStamp)
 
@@ -62,21 +62,8 @@ class NotifDetailsAdapter(private val context: Context,
         holder.image.visibility = View.GONE
         holder.indicator.visibility = if (!status) View.VISIBLE else View.GONE
 
-        // Logging all notification data
-        Log.d(
-            "NotificationAdapter",
-            """
-        Notification Data:
-        Title: $newsTitle
-        Text: $text
-        Timestamp: $timeStamp
-        Formatted Date: $formattedDate
-        Is Read: $status
-        Is From Device: $isFromDevice
-        """.trimIndent()
-        )
 
-        binding.root.setOnClickListener {
+        holder.itemView.setOnClickListener {
             updateNotifStatus(timeStamp)
 
             // Log click with full notification data
@@ -126,7 +113,7 @@ class NotifDetailsAdapter(private val context: Context,
             .collection("notifications")
             .document(timeStamp)
 
-        notificationsRef.update("isRead", true)
+        notificationsRef.update("status", true)
             .addOnCompleteListener { updateTask ->
                 if (updateTask.isSuccessful) {
                     Log.d("NotificationService", "Notification status updated successfully")
