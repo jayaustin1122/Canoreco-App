@@ -1,9 +1,7 @@
 package com.example.canorecoapp.views.signups
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.ContentValues
-import android.content.ContentValues.TAG
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -12,30 +10,24 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
-import com.example.bidnshare.notification.FirebaseServiceCanoreco.Companion.token
 import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentStepOneBinding
-import com.example.canorecoapp.utils.DialogUtils
 import com.example.canorecoapp.utils.FirebaseUtils
 import com.example.canorecoapp.viewmodels.SignUpViewModel
-import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
-import org.bouncycastle.asn1.x500.style.RFC4519Style.uid
-import java.util.Calendar
-import kotlin.random.Random
+
 
 class StepOneFragment : Fragment() {
     private lateinit var binding: FragmentStepOneBinding
@@ -245,7 +237,7 @@ class StepOneFragment : Fragment() {
                                 // Update UI to display account details
                                 binding.divider1.visibility = View.VISIBLE
                                 binding.accountDetailsTextView.visibility = View.VISIBLE
-                                binding.accountNameTextView.visibility = View.VISIBLE
+                                binding.accountNameTextView.visibility = View.GONE
                                 binding.accountNumberTextView.visibility = View.VISIBLE
 
                                 binding.accountNameTextInputLayout.visibility = View.VISIBLE
@@ -264,13 +256,22 @@ class StepOneFragment : Fragment() {
 
 
                                 // Dialog -----------------
+
+                                binding.fileUploadContainer.setImageDrawable(
+                                    ContextCompat.getDrawable(requireContext(), R.drawable.upload)
+                                );
+
                                 binding.fileUploadContainer.visibility =View.VISIBLE
+
                                 Toast.makeText(context, "This account is already in use", Toast.LENGTH_SHORT).show()
                             }
                         }
                     } else {
+                        binding.fileUploadContainer.setImageDrawable(
+                            ContextCompat.getDrawable(requireContext(), R.drawable.upload)
+                        );
                         // No matching documents found
-                        Toast.makeText(context, "No account found for the provided CCT#", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Account is not registered.", Toast.LENGTH_SHORT).show()
                     }
                 }
                 .addOnFailureListener { e ->
@@ -278,10 +279,20 @@ class StepOneFragment : Fragment() {
                     Toast.makeText(context, "Error verifying account: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
         } else {
+            binding.fileUploadContainer.setImageDrawable(
+                ContextCompat.getDrawable(requireContext(), R.drawable.upload)
+            );
             binding.fileUploadContainer.visibility =View.VISIBLE
+
             // Log an error message if the CCT# is not found
             Log.e("ExtractedCCT", "No CCT# found in the receipt text.")
-            Toast.makeText(context, "No CCT# found in the receipt text.", Toast.LENGTH_SHORT).show()
+
+            Snackbar.make(
+                binding.root,
+                "Image unclear or no Canoreco bill detected. Please retake a clear photo of your bill.",
+                Snackbar.LENGTH_LONG
+            )
+                .show()
         }
     }
 

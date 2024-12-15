@@ -303,6 +303,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                 println("Error adding log: ${e.message}")
             }
     }
+
     private fun startListeningForSmsOtp() {
         val smsRef = FirebaseFirestore.getInstance().collection("sms").document("otp")
 
@@ -655,7 +656,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private fun sendSmsOtp(phoneNumber: String, notificationMessage: String) {
         val sms = SmsManager.getDefault()
         try {
-            val s= "NEVER SHARE YOUR OTP WITH ANYONE. Your Canoreco App verification is: $notificationMessage.If you did not request this, please ignore this message."
+            val s= "NEVER SHARE YOUR OTP WITH ANYONE. Your Canoreco App verification is: $notificationMessage. If you did not request this, please ignore this message."
 
             sms.sendTextMessage(phoneNumber, null, s, null, null)
             Log.d(
