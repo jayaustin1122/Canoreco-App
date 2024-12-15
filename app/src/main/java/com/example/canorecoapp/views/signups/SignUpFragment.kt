@@ -348,6 +348,7 @@ class SignUpFragment : Fragment() {
             "timestamp" to timestamp,
             "barangay" to viewModel.barangay,
             "municipality" to viewModel.municipality,
+            "accountNumber" to viewModel.meterNumber,
         )
 
         val firestore = FirebaseFirestore.getInstance()
