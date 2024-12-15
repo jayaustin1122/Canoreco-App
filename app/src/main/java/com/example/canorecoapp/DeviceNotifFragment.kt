@@ -284,9 +284,13 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
             }
         }
     }
-    private fun sendLogs2(assigned: String, status: String) {
+    private fun sendLogs2(assigned: String?, status: String) {
         val timestamp = System.currentTimeMillis() / 1000
         val db = FirebaseFirestore.getInstance()
+        if (assigned.isNullOrEmpty()) {
+            Log.d("sendLogs2", "No log added because 'assigned' is null or empty.")
+            return
+        }
         val logData = hashMapOf(
             "assigned" to assigned,
             "deviceID" to "9000",
@@ -297,12 +301,13 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         db.collection("maintenanceLogs")
             .add(logData)
             .addOnSuccessListener { documentReference ->
-                println("Log added successfully with ID: ${documentReference.id}")
+                Log.d("sendLogs2", "Log added successfully with ID: ${documentReference.id}")
             }
             .addOnFailureListener { e ->
-                println("Error adding log: ${e.message}")
+                Log.e("sendLogs2", "Error adding log: ${e.message}")
             }
     }
+
 
     private fun startListeningForSmsOtp() {
         val smsRef = FirebaseFirestore.getInstance().collection("sms").document("otp")
@@ -409,9 +414,13 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private fun sendLogs(assigned: String, status: String) {
         val timestamp = System.currentTimeMillis() / 1000
         val db = FirebaseFirestore.getInstance()
+        if (assigned.isNullOrEmpty()) {
+            Log.d("sendLogs2", "No log added because 'assigned' is null or empty.")
+            return
+        }
         val logData = hashMapOf(
             "assigned" to assigned,
-            "deviceID" to "9001",
+            "deviceID" to "9000",
             "status" to status,
             "timestamp" to timestamp
         )
@@ -419,10 +428,10 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
         db.collection("maintenanceLogs")
             .add(logData)
             .addOnSuccessListener { documentReference ->
-                println("Log added successfully with ID: ${documentReference.id}")
+                Log.d("sendLogs2", "Log added successfully with ID: ${documentReference.id}")
             }
             .addOnFailureListener { e ->
-                println("Error adding log: ${e.message}")
+                Log.e("sendLogs2", "Error adding log: ${e.message}")
             }
     }
 
