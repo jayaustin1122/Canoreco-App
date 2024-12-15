@@ -80,6 +80,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/dimen_10dp"
+            android:paddingBottom="5dp"
             android:elevation="20dp"
             android:visibility="visible"
             app:sv_animationType="Line"
