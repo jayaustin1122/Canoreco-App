@@ -106,7 +106,7 @@ class NotifFragment : Fragment() {
                     deletedNotifications = querySnapshot.documents.map { document ->
                         Notif(
                             title = document.getString("title") ?: "",
-                            text = document.getString("text") ?: "",
+                            message = document.getString("message") ?: "",
                             timestamp = document.get("timestamp").toString(),
                             status = document.getBoolean("status") ?: false
                         )
@@ -147,7 +147,7 @@ class NotifFragment : Fragment() {
             notificationsRef.add(
                 mapOf(
                     "title" to notif.title,
-                    "text" to notif.text,
+                    "text" to notif.message,
                     "timestamp" to notif.timestamp.toLong(),
                     "status" to notif.status
                 )
@@ -230,28 +230,25 @@ class NotifFragment : Fragment() {
                         notifList.clear()
                         for (document in querySnapshot.documents) {
                             val title = document.getString("title") ?: ""
-                            val text = document.getString("text") ?: ""
-                            val status = document.getBoolean("isFromDevice") ?: false
+                            val text = document.getString("message") ?: ""
+                            val isFromDevice = document.getBoolean("isFromDevice") ?: false
+                            val status = document.getBoolean("status") ?: false
+                            val isRead = document.getBoolean("isRead") ?: false
                             val timestamp = document.get("timestamp")
                             if (timestamp is Long) {
-                                val news = Notif(title, text, timestamp.toString(), status)
+                                val news = Notif(title, text, timestamp.toString(), status,isRead,isFromDevice)
                                 notifList.add(news)
                             } else if (timestamp is Double) {
-                                val news = Notif(title, text, timestamp.toString(), status)
+                                val news = Notif(title, text, timestamp.toString(), status,isRead,isFromDevice)
                                 notifList.add(news)
                             } else {
-                                val news = Notif(title, text, timestamp.toString(), status)
+                                val news = Notif(title, text, timestamp.toString(), status,isRead,isFromDevice)
                                 notifList.add(news)
                             }
                         }
                         notifList.reverse()
                         Log.d("NewsFragment", "Fetched ${notifList.size} news items")
-                        binding.tvClearAll.setOnClickListener {
-                            loadingDialog = DialogUtils.showLoading(requireActivity())
-                            loadingDialog.show()
-                            clearAllNotifications()
 
-                        }
                         binding.recyclerNews.visibility = View.VISIBLE
 
                         lifecycleScope.launchWhenResumed {

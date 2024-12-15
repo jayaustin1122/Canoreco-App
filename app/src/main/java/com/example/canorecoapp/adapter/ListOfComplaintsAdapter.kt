@@ -55,7 +55,6 @@ class   ListOfComplaintsAdapter(
 
         holder.selectedLocationsText.text = title
         holder.status.text = status
-
         holder.itemView.setOnClickListener {
             val detailsFragment = ViewCompaintFragment()
             val bundle = Bundle().apply {
@@ -65,12 +64,28 @@ class   ListOfComplaintsAdapter(
             navController.navigate(R.id.viewCompaintFragment, bundle)
         }
 
-        when (status) {
-            "Sent" -> holder.status.setTextColor(context.getColor(R.color.g_green))
-            "Review" -> holder.status.setTextColor(context.getColor(R.color.g_orange_yellow))
-            "Processing" -> holder.status.setTextColor(context.getColor(R.color.g_blue2))
-            else -> holder.status.setTextColor(context.getColor(android.R.color.black))
+// Concatenate and update status text and color
+        val statusMessage = when (status) {
+            "Sent" -> {
+                holder.status.setTextColor(context.getColor(R.color.g_green))
+                "Your complaint has been sent."
+            }
+            "Review" -> {
+                holder.status.setTextColor(context.getColor(R.color.g_orange_yellow))
+                "Your complaint is under review."
+            }
+            "Processing" -> {
+                holder.status.setTextColor(context.getColor(R.color.g_blue2))
+                "Your complaint is being processed."
+            }
+            else -> {
+                holder.status.setTextColor(context.getColor(android.R.color.black))
+                "Status not available."
+            }
         }
+
+        holder.status.text = statusMessage
+
     }
 
 

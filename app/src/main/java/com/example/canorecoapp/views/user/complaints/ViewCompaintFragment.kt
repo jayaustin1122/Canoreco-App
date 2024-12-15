@@ -8,8 +8,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.example.canorecoapp.R
 import com.example.canorecoapp.databinding.FragmentViewCompaintBinding
+import com.example.canorecoapp.utils.DialogUtils
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -34,6 +37,17 @@ class ViewCompaintFragment : Fragment() {
         Log.d("Here", timestamp.toString())
         if (timestamp != null) {
             retrieveMyComplaint(timestamp)
+        }
+        binding.backArrow.setOnClickListener {
+            DialogUtils.showWarningMessage(requireActivity(), "Warning", "Are you sure you want to exit? Changes will not be saved."
+            ) { sweetAlertDialog ->
+                sweetAlertDialog.dismissWithAnimation()
+
+                val bundle = Bundle().apply {
+                    putInt("selectedFragmentId", R.id.servicesUserFragment)
+                }
+                findNavController().navigate(R.id.userHolderFragment, bundle)
+            }
         }
     }
 

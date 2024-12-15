@@ -2,7 +2,7 @@ package com.example.canorecoapp.models
 
 data class Notif (
     val title: String = "",
-    val text: String = "",
+    val message: String = "",
     val timestamp : String =  "",
     val status : Boolean =  false,
     val isRead : Boolean =  false,

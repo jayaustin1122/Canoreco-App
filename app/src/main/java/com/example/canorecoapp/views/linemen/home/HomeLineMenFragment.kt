@@ -170,7 +170,7 @@ class HomeLineMenFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerCl
 
                         // Set polygon style
                         polygonOptions.strokeColor(Color.parseColor("#dc3545"))
-                        polygonOptions.fillColor(Color.parseColor("#99DC3545"))
+                        polygonOptions.fillColor(Color.parseColor("#27DC3545"))
                         polygonOptions.strokeWidth(3f)
                         val polygon = gMap?.addPolygon(polygonOptions)
                         polygon?.tag = barangayName

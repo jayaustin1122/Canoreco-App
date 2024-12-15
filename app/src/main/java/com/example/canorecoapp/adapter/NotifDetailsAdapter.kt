@@ -36,8 +36,7 @@ class NotifDetailsAdapter(private val context: Context,
         var date: TextView = binding.tvDate
         var image: ImageView = binding.ivThumbnail
         var indicator: ImageView = binding.imgMessageIndicator
-//        var indicator: ImageView = binding.indicator
-//        var logo: ImageView = binding.logo
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -52,25 +51,49 @@ class NotifDetailsAdapter(private val context: Context,
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val model = notifArrayList[position]
         val newsTitle = model.title
-        val text = model.text
+        val text = model.message
         val timeStamp = model.timestamp
-        val status = model.isFromDevice
-        val isFromDevice = model.status
+        val status = model.isRead
+        val isFromDevice = model.isFromDevice
         val formattedDate = parseAndFormatDate(timeStamp)
 
         holder.title.text = newsTitle
         holder.date.text = formattedDate
         holder.image.visibility = View.GONE
-
         holder.indicator.visibility = if (!status) View.VISIBLE else View.GONE
 
-        holder.itemView.setOnClickListener {
+        // Logging all notification data
+        Log.d(
+            "NotificationAdapter",
+            """
+        Notification Data:
+        Title: $newsTitle
+        Text: $text
+        Timestamp: $timeStamp
+        Formatted Date: $formattedDate
+        Is Read: $status
+        Is From Device: $isFromDevice
+        """.trimIndent()
+        )
+
+        binding.root.setOnClickListener {
             updateNotifStatus(timeStamp)
 
-            // Log whether the notification is from a device
-            Log.d("NotificationAdapter", "Notification clicked: Title: $newsTitle, From Device: $isFromDevice")
+            // Log click with full notification data
+            Log.d(
+                "NotificationAdapter",
+                """
+            Notification Clicked:
+            Title: $newsTitle
+            Text: $text
+            Timestamp: $timeStamp
+            Formatted Date: $formattedDate
+            Is Read: $status
+            Is From Device: $isFromDevice
+            """.trimIndent()
+            )
 
-            if (!isFromDevice) {
+            if (isFromDevice) {
                 val materialDialog = NotificationBottomSheetDialogFragment.newInstance(
                     title = newsTitle,
                     text = text,
@@ -78,7 +101,6 @@ class NotifDetailsAdapter(private val context: Context,
                     date = formattedDate
                 )
                 materialDialog.show((context as AppCompatActivity).supportFragmentManager, "NotificationDialog")
-
             } else {
                 // Navigate to NewsDetailsFragment for non-device notifications
                 val detailsFragment = NewsDetailsFragment()
@@ -104,7 +126,7 @@ class NotifDetailsAdapter(private val context: Context,
             .collection("notifications")
             .document(timeStamp)
 
-        notificationsRef.update("status", true)
+        notificationsRef.update("isRead", true)
             .addOnCompleteListener { updateTask ->
                 if (updateTask.isSuccessful) {
                     Log.d("NotificationService", "Notification status updated successfully")

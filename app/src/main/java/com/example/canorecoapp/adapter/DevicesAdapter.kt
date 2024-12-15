@@ -67,7 +67,7 @@ class DevicesAdapter(private val context: Context,
             putString("startTime", startTime)
             putString("endTime", endTime)
             putString("barangay", barangay)
-            putString("status", status)
+            putString("status", "Status: $status")
             putString("id", dataKey)
             putString("assigned", assigned)
         }

@@ -148,40 +148,40 @@ class SignUpFragment : Fragment() {
         val confirmPass = viewModel.confirmPass
         val phone = viewModel.phone
 
-
-
-        // Ensure password is not empty
         if (password.isEmpty()) {
             Toast.makeText(requireContext(), "Password cannot be empty!", Toast.LENGTH_SHORT).show()
             return
         }
-        // Ensure confirm password is not empty
         else if (confirmPass.isEmpty()) {
-            Toast.makeText(requireContext(), "Please confirm your password", Toast.LENGTH_SHORT)
-                .show()
+            Toast.makeText(requireContext(), "Please confirm your password", Toast.LENGTH_SHORT).show()
             return
         }
-        // Ensure passwords match
+
         else if (password != confirmPass) {
             Toast.makeText(requireContext(), "Passwords do not match", Toast.LENGTH_SHORT).show()
             return
         }
-        // Ensure phone is not empty
+
         else if (phone.isEmpty()) {
             Toast.makeText(requireContext(), "Phone number cannot be empty!", Toast.LENGTH_SHORT).show()
             return
+        } else if (!phone.matches(Regex("^09\\d{9}$"))) {
+            Toast.makeText(
+                requireContext(),
+                "Phone number must start with '09' and be exactly 11 digits!",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        } else {
+            uploadInFireStore(viewModel.phone)
         }
-        else  {
-         uploadInFireStore(viewModel.phone)
-
-        }
-
     }
+
 
     private fun createUserAccount() {
 
-        // Generate a random number and append it to the base email
-        val randomNumber = (1000..9999).random() // You can adjust the range as needed
+
+        val randomNumber = (1000..9999).random()
         val email = "canoreco${randomNumber}@gmail.com"
         val password = viewModel.password
 

@@ -17,6 +17,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.OptIn
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
@@ -33,8 +35,12 @@ import com.example.canorecoapp.models.News
 import com.example.canorecoapp.utils.DialogUtils
 import com.example.canorecoapp.utils.ProgressDialogUtils
 import com.example.canorecoapp.viewmodels.UserViewModel
+import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.badge.BadgeUtils
+import com.google.android.material.badge.ExperimentalBadgeUtils
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -119,6 +125,7 @@ class HomeUserFragment : Fragment() {
                 navigate(R.id.bayadCentersFragment, bundle)
             }
         }
+        loadNotificationBadge()
         binding.reportConcerns.setOnClickListener {
             findNavController().apply {
                 val bundle = Bundle().apply {
@@ -413,6 +420,66 @@ class HomeUserFragment : Fragment() {
             .addOnFailureListener { exception ->
                 Log.e("Home", "Error getting documents: ", exception)
             }
+    }
+
+
+    private var notificationsListener: ListenerRegistration? = null
+
+    @OptIn(ExperimentalBadgeUtils::class)
+    private fun loadNotificationBadge() {
+        val db = FirebaseFirestore.getInstance()
+        val currentUser = FirebaseAuth.getInstance().currentUser
+
+        currentUser?.let { user ->
+            val notificationsRef = db.collection("users")
+                .document(user.uid)
+                .collection("notifications")
+
+            notificationsListener?.remove()
+
+            notificationsListener = notificationsRef.addSnapshotListener { snapshot, exception ->
+                if (exception != null) {
+                    Toast.makeText(
+                        this@HomeUserFragment.requireContext(),
+                        "Error Loading Notifications: ${exception.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@addSnapshotListener
+                }
+
+                snapshot?.let { querySnapshot ->
+                    var notificationCount = 0
+                    for (document in querySnapshot.documents) {
+                        val status = document.get("status")
+                        val notificationStatus = when (status) {
+                            is Boolean -> status
+                            else -> false
+                        }
+                        if (!notificationStatus) {
+                            notificationCount++
+                        }
+                    }
+
+                    if (notificationCount > 0) {
+                        // New notifications: Set notif icon to red
+                        binding.notif.setColorFilter(
+                            ContextCompat.getColor(this@HomeUserFragment.requireContext(), R.color.g_red)
+                        )
+                    } else {
+                        // No new notifications: Reset notif icon to default color
+                        binding.notif.setColorFilter(
+                            ContextCompat.getColor(this@HomeUserFragment.requireContext(), R.color.white)
+                        )
+                    }
+                }
+            }
+        } ?: run {
+            Toast.makeText(
+                this@HomeUserFragment.requireContext(),
+                "User not authenticated",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
 }

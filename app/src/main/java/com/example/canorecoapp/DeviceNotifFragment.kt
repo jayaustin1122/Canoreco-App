@@ -45,7 +45,6 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
     private lateinit var realtimeDatabase: FirebaseDatabase
     private lateinit var devicesRef: DatabaseReference
     private val viewModel: DeviceViewModel by viewModels()
-
     private var notificationsListener: ListenerRegistration? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -127,6 +126,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                                 .collection("notifications")
                                 .document(timestamp.toString())
                             createNotification(
+
                                 title,
                                 timestamp.toString(),
                                 notificationsRef2,
@@ -555,7 +555,7 @@ class DeviceNotifFragment : Fragment(), EasyPermissions.PermissionCallbacks {
                         "isRead" to false,
                         "message" to notificationMessage,
                         "timestamp" to timestamp.toString(),
-                        "isFromDevice" to true
+                        "isFromDevice" to true,
                     )
 
                     // Sending notification to the matching user
