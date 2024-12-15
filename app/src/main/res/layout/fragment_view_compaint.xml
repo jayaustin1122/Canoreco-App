@@ -1,79 +1,156 @@
-<!-- fragment_view_compaint.xml -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="@android:color/white"
-    android:scrollbars="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/background_color"
+    tools:context=".views.user.news.NewsDetailsFragment">
 
-    <!-- Complaint Title -->
-    <TextView
-        android:id="@+id/complaintTitle"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Report Title"
-        android:textColor="#000"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="10dp"/>
+        android:layout_height="@dimen/top_bar_dimen"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <!-- Complaint Address -->
-    <TextView
-        android:id="@+id/complaintAddress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Address"
-        android:textColor="#000"
-        android:textSize="16sp"
-        android:layout_marginBottom="8dp"/>
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="@dimen/dimen_30dp"
+            android:background="@drawable/bg_topappbar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" >
 
-    <!-- Concern Type -->
-    <TextView
-        android:id="@+id/complaintConcern"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Concern"
-        android:textColor="#000"
-        android:textSize="16sp"
-        android:layout_marginBottom="8dp"/>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="View Complaint"
+                android:textColor="@color/text_light_color"
+                android:textSize="22sp"
+                android:fontFamily="@font/roboto_bold"/>
 
-    <!-- Concern Description -->
-    <TextView
-        android:id="@+id/complaintDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Description"
-        android:textColor="#000"
-        android:textSize="16sp"
-        android:layout_marginBottom="8dp"/>
+            <ImageButton
+                android:id="@+id/backArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/back_arrow"
+                android:background="@android:color/transparent"
+                app:tint="@color/text_light_color"/>
 
-    <!-- Complaint Status -->
-    <TextView
-        android:id="@+id/complaintStatus"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Status"
-        android:textColor="#000"
-        android:textSize="16sp"
-        android:layout_marginBottom="8dp"/>
+        </androidx.appcompat.widget.Toolbar>
 
-    <!-- Date and Time -->
-    <TextView
-        android:id="@+id/complaintTimestamp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Timestamp"
-        android:textColor="#000"
-        android:textSize="16sp"
-        android:layout_marginBottom="8dp"/>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- Image Link (Optional) -->
-    <ImageView
-        android:id="@+id/complaintImage"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:src="@drawable/ic_launcher_background"
-        android:scaleType="centerCrop"
-        android:layout_marginBottom="16dp"/>
-</LinearLayout>
+        android:layout_height="0dp"
+        android:padding="20dp"
+        android:scrollbars="none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
+        app:layout_constraintBottom_toTopOf="@+id/bottomLinearLayout">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/complaintTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="CANORECO Advisory: Emergency Power Em..."
+                android:textColor="@color/text_dark_color"
+                android:textSize="16sp"
+                android:fontFamily="@font/roboto_medium" />
+
+            <TextView
+                android:id="@+id/complaintTimestamp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dimen_15dp"
+                android:text="March 4, 2024"
+                android:textColor="@color/text_dark_color"
+                android:textSize="14sp"
+                android:fontFamily="@font/roboto_regular"/>
+
+
+            <TextView
+                android:id="@+id/complaintStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dimen_15dp"
+                android:text="March 4, 2024"
+                android:textColor="@color/text_dark_color"
+                android:textSize="14sp"
+                android:visibility="gone"
+                android:fontFamily="@font/roboto_regular"/>
+
+            <ImageView
+                android:id="@+id/complaintImage"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginBottom="@dimen/dimen_15dp"
+                android:src="@drawable/ic_launcher_background"
+                android:scaleType="centerCrop" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/ss"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="Magkakaroon ng power service interruption:"
+                    android:textColor="@color/text_dark_color"
+                    android:textSize="15sp"
+                    android:fontFamily="@font/roboto_regular" />
+
+                <TextView
+                    android:id="@+id/complaintAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text="PETSA    : March 9, 2024 (Sabado)"
+                    android:textSize="15sp"
+                    android:textColor="@color/text_dark_color"
+                    android:fontFamily="@font/roboto_regular" />
+
+                <TextView
+                    android:id="@+id/complaintDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:text="ORAS      : 5:00 A.M. – 9:00 A.M. (4 Oras)"
+                    android:textSize="15sp"
+                    android:textColor="@color/text_dark_color"
+                    android:fontFamily="@font/roboto_regular" />
+
+                <TextView
+                    android:id="@+id/complaintConcern"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Maaaring maibalik ang serbisyo ng kuryente anumang
+                    oras matapos ang nasabing gawain. Para sa kaligtasan ng mga
+                    miyembro-konsumidores, parating ituring na may kuryente ang mga
+                    linya at mga kagamitan sa lahat ng oras."
+                    android:textSize="15sp"
+                    android:textColor="@color/text_dark_color"
+                    android:fontFamily="@font/roboto_regular" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

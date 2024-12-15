@@ -12,37 +12,39 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <!-- Title and Instructions -->
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/titleTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_black"
-            android:text="CANORECO Account"
-            android:textColor="@color/text_dark_color"
+            android:text="Account Details"
             android:textSize="24sp"
+            android:textColor="@color/text_dark_color"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Scan or upload a clear photo of your latest CANORECO Bill to indentify and verify your account."
+            android:textSize="15sp"
+            android:textColor="#666666"
+            android:fontFamily="@font/roboto_medium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
 
         <ImageView
             android:id="@+id/file_upload_container"
             android:layout_width="match_parent"
             android:layout_height="200dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/upload"
             android:gravity="center"
             android:orientation="vertical"
             android:scaleType="fitXY"
             app:layout_constraintTop_toBottomOf="@+id/accountNumberTextView" />
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/roboto_medium"
-            android:text="Enter your CANORECO Account Number to register to the app"
-            android:textColor="#666666"
-            android:visibility="gone"
-            android:textSize="15sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/search"
@@ -57,6 +59,7 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/accountNumberTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
