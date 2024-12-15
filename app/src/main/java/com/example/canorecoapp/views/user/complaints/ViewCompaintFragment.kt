@@ -79,15 +79,32 @@ class ViewCompaintFragment : Fragment() {
                     val image = document.getString("image") ?: ""
                     val timestampLong = document.getString("timestamp") ?: ""
 
-                    // Format the timestamp to a readable date and time
-                    val formattedDate = DateFormat.format("yyyy-MM-dd HH:mm:ss", Date(timestampLong.toLong() * 1000)).toString()
 
-                    // Set data to UI elements
+
+                    val formattedDate = DateFormat.format("yyyy-MM-dd hh:mm a", Date(timestampLong.toLong() * 1000)).toString()
+
                     binding.complaintTitle.text = title
                     binding.complaintAddress.text = address
                     binding.complaintConcern.text = concern
                     binding.complaintDescription.text = concernDescription
-                    binding.complaintStatus.text = status
+                    val statusMessage = when (status) {
+                        "Sent" -> {
+                            "Your complaint has been sent."
+                        }
+                        "Review" -> {
+                            "Your complaint is under review."
+                        }
+                        "Processing" -> {
+
+                            "Your complaint is being processed."
+                        }
+                        else -> {
+                             "Status not available."
+                        }
+                    }
+
+                    binding.complaintStatus.text = statusMessage
+
                     binding.complaintTimestamp.text = "Reported on: $formattedDate"
 
                     // Load image using Glide
