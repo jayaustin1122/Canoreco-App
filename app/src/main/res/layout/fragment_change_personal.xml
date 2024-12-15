@@ -81,6 +81,8 @@
                 android:layout_height="56dp"
                 android:hint="Account Number"
                 android:focusable="false"
+                android:clickable="false"
+                android:enabled="false"
                 android:focusableInTouchMode="false"
                 android:inputType="none"
                 app:boxStrokeWidth="1dp"
@@ -115,6 +117,8 @@
                 android:id="@+id/etAccountName"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
+                android:clickable="false"
+                android:enabled="false"
                 android:hint="Account Name"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
@@ -152,6 +156,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:hint="Barangay"
+                android:clickable="false"
+                android:enabled="false"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
                 android:inputType="none"
@@ -190,6 +196,8 @@
                 android:hint="Municipality"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
+                android:clickable="false"
+                android:enabled="false"
                 android:inputType="none"
                 app:boxStrokeWidth="1dp"
                 app:boxStrokeWidthFocused="2dp" />
@@ -266,6 +274,9 @@
                 android:lines="1"
                 android:scrollbars="horizontal"
                 android:singleLine="true"
+                android:clickable="false"
+                android:enabled="false"
+
                 app:boxStrokeWidth="1dp"
                 app:boxStrokeWidthFocused="2dp" />
 
@@ -312,6 +323,8 @@
                 android:scrollbars="horizontal"
                 android:singleLine="true"
                 app:boxStrokeWidth="1dp"
+                android:clickable="false"
+                android:enabled="false"
                 app:boxStrokeWidthFocused="2dp" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -348,6 +361,8 @@
                 android:lines="1"
                 android:scrollbars="horizontal"
                 android:singleLine="true"
+                android:clickable="false"
+                android:enabled="false"
                 app:boxStrokeWidth="1dp"
                 app:boxStrokeWidthFocused="2dp" />
 
@@ -387,6 +402,7 @@
                 android:clickable="false"
                 android:scrollbars="horizontal"
                 android:singleLine="true"
+
                 android:focusable="false"
                 android:focusableInTouchMode="false"
                 app:boxStrokeWidth="1dp"
